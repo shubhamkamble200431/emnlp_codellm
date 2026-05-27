@@ -93,11 +93,11 @@ Outputs per seed (written under `scripts/baseline_results_*/`):
 
 ## Datasets
 
-| Script | Dataset | Problems |
-|--------|---------|----------|
-| `*_humanevalplus.py` | HumanEvalPlus (evalplus pkg / HuggingFace) | 164 |
-| `*_mbppplus.py` | MBPP+ (evalplus pkg / google-research-datasets/mbpp) | 500 |
-| `*_bigcodebench.py` | BigCodeBench v0.1.4 (bigcode/bigcodebench) | 1140 |
+| Script | Dataset |
+|--------|---------|
+| `*_humanevalplus.py` | HumanEvalPlus (evalplus pkg / HuggingFace) |
+| `*_mbppplus.py` | MBPP+ (evalplus pkg / google-research-datasets/mbpp) |
+| `*_bigcodebench.py` | BigCodeBench v0.1.4 (bigcode/bigcodebench) |
 
 ## Steering Interventions
 
