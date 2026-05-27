@@ -107,4 +107,4 @@ Outputs per seed (written under `scripts/baseline_results_*/`):
 | Backward subtraction | h ← h + α·d̂, α < 0 | right runs | negative (degradation) |
 | Direction ablation | h ← h − (h·d̂)·d̂ | right runs | negative (degradation) |
 
-Alpha (steering strength): forward `[0.5, 1, 2, 5, 10]`, backward `[-0.5, -1, -2, -5, -10]`.
+Alpha (steering strength): forward `[0.5, 1, 2, 5, 10]`, backward `[-0.5, -1, -2, -5, -10]`, ablation `[1]`
