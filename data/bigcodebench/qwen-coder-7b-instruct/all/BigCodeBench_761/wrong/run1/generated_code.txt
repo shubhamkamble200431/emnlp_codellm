@@ -1,0 +1,48 @@
+import json
+import re
+from collections import Counter
+
+# Constants
+REPLACE_NONE = "None"
+
+def task_func(json_str):
+    """
+    Process a JSON string by:
+    1. Removing None values.
+    2. Counting the frequency of each unique value.
+    3. Replacing all email addresses with the placeholder "None".
+    
+    Parameters:
+    json_str (str): The JSON string to be processed.
+    
+    Returns:
+    dict: A dictionary containing:
+        - "data": Processed JSON data.
+        - "value_counts": A Counter object with the frequency of each unique value.
+    
+    Requirements:
+    - json
+    - re
+    - collections.Counter
+    
+    Example:
+    >>> json_str = '{"name": "John", "age": null, "email": "john@example.com"}'
+    >>> task_func(json_str)
+    {'data': {'name': 'John', 'email': 'None'}, 'value_counts': Counter({'John': 1, 'None': 1})}
+    """
+    data = json.loads(json_str)
+    
+    def remove_none_and_replace_email(obj):
+        if isinstance(obj, dict):
+            return {k: remove_none_and_replace_email(v) for k, v in obj.items() if v is not REPLACE_NONE}
+        elif isinstance(obj, list):
+            return [remove_none_and_replace_email(item) for item in obj]
+        elif isinstance(obj, str):
+            return re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', REPLACE_NONE, obj)
+        else:
+            return obj
+    
+    processed_data = remove_none_and_replace_email(data)
+    value_counts = Counter(processed_data)
+    
+    return {"data": processed_data, "value_counts": value_counts}

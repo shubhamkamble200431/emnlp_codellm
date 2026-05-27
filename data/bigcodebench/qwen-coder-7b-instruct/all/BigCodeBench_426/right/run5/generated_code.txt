@@ -1,0 +1,47 @@
+import numpy as np
+import cv2
+import os
+
+def task_func(image_path='image.jpg', threshold=128):
+    """
+    Read an image, convert it to grayscale, binarize it using a given threshold, and save it as 'binary_image.jpg'.
+    The function returns numpy arrays of the original and binarized images, and ensures that the threshold value is valid.
+
+    Parameters:
+    - image_path (str): The path to the image file. Default is 'image.jpg'.
+    - threshold (int): The threshold value for binarization, must be between 0 and 255. Default is 128.
+
+    Returns:
+    - tuple: A tuple containing two numpy arrays; the first is the original grayscale image, the second is the binarized image.
+
+    Raises:
+    - FileNotFoundError: If the image file does not exist at the specified path.
+    - ValueError: If the threshold is not an integer or not in the range 0-255.
+
+    Requirements:
+    - opencv
+    - numpy
+    - os
+    - pillow
+
+    Example:
+    >>> create_dummy_image('image.jpg')
+    >>> original_img_array, binary_img_array = task_func('image.jpg', 128)
+    >>> os.remove('image.jpg')
+    >>> original_img_array.shape, binary_img_array.shape # ((image_height, image_width), (image_height, image_width))
+    ((20, 20), (20, 20))
+    """
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"The image file '{image_path}' does not exist.")
+
+    if not isinstance(threshold, int) or not (0 <= threshold <= 255):
+        raise ValueError("The threshold must be an integer between 0 and 255.")
+
+    image = cv2.imread(image_path)
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    _, binary_image = cv2.threshold(gray_image, threshold, 255, cv2.THRESH_BINARY)
+
+    cv2.imwrite('binary_image.jpg', binary_image)
+
+    return gray_image, binary_image

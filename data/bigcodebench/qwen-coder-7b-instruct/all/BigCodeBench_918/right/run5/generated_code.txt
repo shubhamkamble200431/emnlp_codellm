@@ -1,0 +1,38 @@
+import pandas as pd
+import re
+
+# Function to replace acronyms in DataFrame
+def task_func(data, mapping):
+    """
+    Replace all acronyms in a DataFrame with their full words according to a provided dictionary.
+    
+    Requirements:
+    - pandas
+    - re
+
+    Parameters:
+    - data (dict): A dictionary where keys are column names and values are lists of strings.
+    - mapping (dict): A dictionary where keys are acronyms and values are the full words.
+    
+    Returns:
+    - pd.DataFrame: A DataFrame where all acronyms in string cells have been replaced with their full words.
+    
+    Examples:
+    >>> data = {'text': ['NASA is great', 'I live in the USA']}
+    >>> mapping = {'NASA': 'National Aeronautics and Space Administration', 'USA': 'United States of America'}
+    >>> print(task_func(data, mapping))
+                                                    text
+    0  National Aeronautics and Space Administration ...
+    1             I live in the United States of America
+    """
+    df = pd.DataFrame(data)
+    pattern = re.compile(r'\b(' + '|'.join(re.escape(acronym) for acronym in mapping.keys()) + r')\b')
+
+    def replace_acronyms(text):
+        return re.sub(pattern, lambda x: mapping[x.group()], text)
+
+    for column in df.columns:
+        if df[column].dtype == 'object':
+            df[column] = df[column].apply(lambda x: replace_acronyms(x) if isinstance(x, str) else x)
+
+    return df

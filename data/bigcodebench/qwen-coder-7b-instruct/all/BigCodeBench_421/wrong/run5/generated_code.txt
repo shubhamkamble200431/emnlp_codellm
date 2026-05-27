@@ -1,0 +1,56 @@
+import requests
+import os
+import json
+import time
+
+# Redefining the function in the current context
+
+HEADERS = {
+    'accept': 'text/json',
+    'Content-Type': 'application/json'
+}
+
+def task_func(url, directory, metadata):
+    """
+    Upload all files from a specific directory to the specified server URL, along with the associated metadata. 
+    In addition, the speed limit function pauses for one second after each upload.
+
+    Parameters:
+    url (str): The server URL.
+    directory (str): The directory containing the files to be uploaded.
+    metadata (dict): The metadata to be associated with the files.
+
+    Returns:
+    list: A list of status codes for the upload responses.
+
+    Requirements:
+    - requests
+    - os
+    - json
+    - time
+
+    Raises:
+    - The function will raise FileNotFoundError if the directory does not exist.
+    - The function will raise TypeError if the url is invalid.
+
+    Example:
+    >>> task_func('https://www.example.com', './uploads', {'userId': 'abc'})
+    """
+    if not os.path.exists(directory):
+        raise FileNotFoundError(f"The directory {directory} does not exist.")
+
+    if not isinstance(url, str) or not url.startswith('http'):
+        raise TypeError("Invalid URL provided.")
+
+    status_codes = []
+
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        if os.path.isfile(file_path):
+            with open(file_path, 'rb') as file:
+                files = {'file': (filename, file)}
+                response = requests.post(url, headers=HEADERS, data=json.dumps(metadata), files=files)
+                status_codes.append(response.status_code)
+                time.sleep(1)
+
+    return status_codes

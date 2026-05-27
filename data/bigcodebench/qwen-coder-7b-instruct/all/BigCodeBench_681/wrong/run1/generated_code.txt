@@ -1,0 +1,32 @@
+import pandas as pd
+import json
+
+
+def task_func(file_path, key):
+    """
+    Load a JSON file into a Pandas DataFrame, remove a specific key from each object and write the processed DataFrame back into a JSON file oriented by records.
+    
+    Parameters:
+    - file_path (str): The path to the JSON file.
+    - key (str): The key to remove from each object.
+    
+    Returns:
+    - df (DataFrame): A pandas DataFrame representation of the processed JSON data.
+
+    Requirements:
+    - pandas
+    - json
+    
+    Example:
+    >>> df = task_func('data.json', 'ele')
+    """
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    
+    data = [{k: v for k, v in d.items() if k != key} for d in data]
+    
+    df = pd.DataFrame(data)
+    
+    df.to_json(file_path, orient='records', lines=True)
+    
+    return df

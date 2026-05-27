@@ -1,0 +1,30 @@
+import pytz
+from dateutil.parser import parse
+
+
+def task_func(date_str, from_tz, to_tz):
+    """
+    Convert a date string from one time zone to another and return the time difference in seconds to the current time
+    in the destination time zone.
+
+    Parameters:
+    date_str (str): The date string in "yyyy-mm-dd hh:mm:ss" format.
+    from_tz (str): The timezone of the given date string.
+    to_tz (str): The timezone to which the date string should be converted.
+
+    Returns:
+    int: The time difference in seconds.
+
+    Requirements:
+    - pytz
+    - dateutil.parser
+    Example:
+    >>> type(task_func('2022-10-22 11:59:59', 'UTC', 'America/Chicago'))
+    <class 'int'>
+    """
+    dt = parse(date_str)
+    from_tz = pytz.timezone(from_tz)
+    to_tz = pytz.timezone(to_tz)
+    dt_from_tz = dt.replace(tzinfo=from_tz).astimezone(to_tz)
+    now_to_tz = datetime.now(to_tz)
+    return int((now_to_tz - dt_from_tz).total_seconds())

@@ -1,0 +1,47 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import norm
+from itertools import chain
+
+
+def task_func(L):
+    '''
+    Convert a list of lists 'L' into a flattened list of integers, then fit a normal distribution to the data 
+    and plot a histogram with the fitted normal distribution overlay.
+
+    Requirements:
+    - numpy
+    - itertools.chain
+    - scipy.stats.norm
+    - matplotlib.pyplot
+
+    Parameters:
+    L (list of lists): A nested list where each inner list contains integers.
+
+    Returns:
+    matplotlib.axes._axes.Axes: Axes object with the plotted histogram and normal distribution overlay.
+
+    Example:
+    >>> ax = task_func([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    '''
+    # Flatten the list of lists into a single list of integers
+    flat_list = list(chain.from_iterable(L))
+    
+    # Convert the flat list to a numpy array
+    data = np.array(flat_list)
+    
+    # Fit a normal distribution to the data
+    mu, sigma = norm.fit(data)
+    
+    # Create a range of values for plotting the normal distribution
+    x = np.linspace(min(data), max(data), 100)
+    y = norm.pdf(x, mu, sigma)
+    
+    # Plot the histogram of the data
+    ax = plt.hist(data, bins='auto', density=True, alpha=0.6, color='g')
+    
+    # Overlay the fitted normal distribution on the histogram
+    plt.plot(x, y, 'r-', lw=2)
+    
+    # Return the Axes object with the plot
+    return ax[0]

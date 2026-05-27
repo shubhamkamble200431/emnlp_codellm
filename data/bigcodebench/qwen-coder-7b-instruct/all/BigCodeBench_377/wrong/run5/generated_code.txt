@@ -1,0 +1,35 @@
+from texttable import Texttable
+import os
+import psutil
+
+def task_func():
+    """
+    Generates a table displaying the system's CPU usage, memory usage, and disk usage.
+
+    Returns:
+        A string representation of a table with the columns of 'Item' and 'Value',
+        and the following system information:
+        - CPU Usage (%)
+        - Memory Usage (%)
+        - Disk Usage (%)
+
+    Requirements:
+    - texttable.Texttable
+    - os
+    - psutil
+
+    Examples:
+    >>> table_str = task_func()
+    >>> isinstance(table_str, str)
+    True
+    >>> 'CPU Usage (%)' in table_str and 'Memory Usage (%)' in table_str
+    True
+    """
+t = Texttable()
+cpu_usage = psutil.cpu_percent(interval=1)
+memory = psutil.virtual_memory()
+disk_usage = psutil.disk_usage('/')
+t.add_row(['CPU Usage (%)', cpu_usage])
+t.add_row(['Memory Usage (%)', memory.percent])
+t.add_row(['Disk Usage (%)', disk_usage.percent])
+return t.draw()

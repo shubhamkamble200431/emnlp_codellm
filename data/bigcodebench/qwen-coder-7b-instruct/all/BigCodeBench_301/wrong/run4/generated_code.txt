@@ -1,0 +1,46 @@
+import pytz
+import numpy as np
+from dateutil.parser import parse
+import math
+
+
+SOLAR_CYCLE_YEARS = np.array([1986, 1996, 2008, 2019])
+
+def task_func(date_str, from_tz, to_tz):
+    """
+    Calculate solar activity based on the date and time, taking into account the solar cycle of 11 years.
+
+    Parameters:
+    date_str (str): The date string in "yyyy-mm-dd hh:mm:ss" format.
+    from_tz (str): The timezone of the given date string.
+    to_tz (str): The timezone to which the given date and time should be converted.
+
+    Returns:
+    float: The solar activity between 0 and 1. The value represents the solar activity 
+           calculated using a cosine function based on the years since the closest solar cycle year.
+
+    Requirements:
+    - pytz
+    - numpy
+    - dateutil.parser
+    - math
+
+    Example:
+    >>> task_func('1970-01-01 00:00:00', 'UTC', 'America/New_York')
+    0.14231483827328487
+    >>> task_func('1990-01-01 00:00:00', 'UTC', 'America/New_York')
+    0.6548607339452851
+    """
+    dt = parse(date_str)
+    from_zone = pytz.timezone(from_tz)
+    to_zone = pytz.timezone(to_tz)
+    utc_dt = from_zone.localize(dt).astimezone(pytz.utc)
+    year = utc_dt.year
+    
+    closest_year = min(SOLAR_CYCLE_YEARS, key=lambda x: abs(x - year))
+    years_since_cycle_start = year - closest_year
+    normalized_years = years_since_cycle_start % 11 / 11
+    
+    solar_activity = 0.5 * (math.cos(normalized_years * 2 * math.pi) + 1)
+    
+    return solar_activity

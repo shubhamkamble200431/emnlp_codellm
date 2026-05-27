@@ -1,0 +1,71 @@
+import sqlite3
+import pandas as pd
+import csv
+from io import StringIO
+
+# Constants
+DATABASE_NAME = 'test.db'
+TABLE_NAME = 'test_table'
+
+
+def task_func(csv_input):
+    """
+    Imports data from a specified CSV input into an SQLite database and retrieves it as a pandas DataFrame. The function
+    reads the CSV input (file path or `StringIO`), creates a new database table or replaces an existing one, inserts
+    data into the table, and finally queries the table to return the data as a DataFrame.
+
+    Parameters:
+    csv_input (str or StringIO): The path to the CSV file or a `StringIO` object containing CSV data.
+
+    Returns:
+    DataFrame: A pandas DataFrame containing the data from the newly populated SQLite database table. The DataFrame
+    provides a convenient and familiar data structure for further data manipulation and analysis in Python.
+
+    Requirements:
+    - sqlite3
+    - pandas
+    - csv
+    - io
+
+    Example:
+    >>> from io import StringIO
+    >>> test_csv_data = "id,name\\n1,Alice\\n2,Bob"
+    >>> test_csv_file = StringIO(test_csv_data)  # This is the in-memory CSV data
+    >>> # Testing the function with the in-memory CSV data
+    >>> df = task_func(test_csv_file)
+    >>> print(df)
+      id   name
+    0  1  Alice
+    1  2    Bob
+    """
+    connection = sqlite3.connect(DATABASE_NAME)
+    cursor = connection.cursor()
+
+    # Create table if it doesn't exist, otherwise replace it
+    cursor.execute(f"DROP TABLE IF EXISTS {TABLE_NAME}")
+    cursor.execute(f"""
+        CREATE TABLE {TABLE_NAME} (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        )
+    """)
+
+    # Insert data into the table
+    if isinstance(csv_input, StringIO):
+        csv_data = csv_input.getvalue()
+    else:
+        with open(csv_input, 'r') as file:
+            csv_data = file.read()
+
+    csv_reader = csv.reader(StringIO(csv_data))
+    next(csv_reader)  # Skip header row
+    insert_query = f"INSERT INTO {TABLE_NAME} (id, name) VALUES (?, ?)"
+    cursor.executemany(insert_query, csv_reader)
+
+    # Commit changes and close the connection
+    connection.commit()
+    connection.close()
+
+    # Query the table and return as a pandas DataFrame
+    query = f"SELECT * FROM {TABLE_NAME}"
+    return pd.read_sql_query(query, DATABASE_NAME)

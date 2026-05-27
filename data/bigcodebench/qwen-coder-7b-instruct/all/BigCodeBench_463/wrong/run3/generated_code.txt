@@ -1,0 +1,50 @@
+import numpy as np
+import pandas as pd
+
+
+def task_func(data_str, separator=",", bins=20):
+    """
+    Convert a string of numerical values separated by a specified separator into a pandas
+    numerical series with int64, and then draw a histogram of the data.
+
+    The function raises a ValueError if data is empty or it fails to convert the data.
+    It plots the histogram with the following attributes:
+    - grid: True
+    - rwidth: 0.9
+    - color: '#607c8e'
+
+    Parameters:
+    - data_str (str): The string of numbers separated by the specified separator.
+    - separator (str, optional): The separator used in the data string. Default is ','.
+    - bins (int, optional): Number of histogram bins. Default is 20.
+
+    Returns:
+    - tuple: A tuple containing:
+        1. Series: A pandas Series of the data coonverted into integers.
+        2. Axes: The Axes object of the plotted histogram.
+
+    Requirements:
+    - numpy
+    - pandas
+
+    Example:
+    >>> series, ax = task_func('1,2,3,4,5,5,5,4,3,2,1')
+    >>> print(type(series), series.tolist())
+    <class 'pandas.core.series.Series'> [1, 2, 3, 4, 5, 5, 5, 4, 3, 2, 1]
+    >>> print(type(ax))
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    import matplotlib.pyplot as plt
+
+    if not data_str:
+        raise ValueError("Data string is empty.")
+
+    try:
+        data_series = pd.Series([int(x) for x in data_str.split(separator)], dtype='int64')
+    except ValueError:
+        raise ValueError("Failed to convert data to integers.")
+
+    fig, ax = plt.subplots()
+    n, bins, patches = ax.hist(data_series, bins=bins, grid=True, rwidth=0.9, color='#607c8e')
+
+    return data_series, ax

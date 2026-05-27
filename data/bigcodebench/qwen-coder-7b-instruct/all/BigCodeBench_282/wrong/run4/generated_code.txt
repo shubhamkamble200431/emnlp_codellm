@@ -1,0 +1,66 @@
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+import cv2
+import os
+
+def task_func(file_path, onpick):
+    """
+    Draw the color histogram of an image in 3D and call a function when a data point is selected.
+
+    Parameters:
+    file_path (str): The path to the image file.
+    onpick (function): The function to be called when a data point is picked.
+
+    Returns:
+    matplotlib.axes.Axes: The Axes object of the 3D plot.
+
+    Raises:
+    FileNotFoundError: If the image file does not exist.
+    
+    Requirements:
+    - matplotlib
+    - mpl_toolkits.mplot3d
+    - numpy
+    - cv2
+    - os
+    - tempfile
+    
+    Example:
+    >>> def onpick(event):
+    ...     ind = event.ind
+    ...     print(f'You picked data point(s) {ind}')
+    >>> np.random.seed(42)
+    >>> dummy_img_path = 'image.jpg'
+    >>> dummy_img = np.random.randint(0, 255, (20, 20, 3), dtype=np.uint8)
+    >>> cv2.imwrite(dummy_img_path, dummy_img)
+    True
+    >>> ax = task_func('image.jpg', onpick)
+    >>> os.remove(dummy_img_path)
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+
+    img = cv2.imread(file_path)
+    if img is None:
+        raise ValueError(f"Failed to read the image {file_path}.")
+
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    hist = cv2.calcHist([hsv], [0, 1, 2], None, [8, 8, 8], [0, 180, 0, 256, 0, 256])
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    colors = hsv.reshape(-1, 3).astype(np.float32)
+    counts = hist.flatten()
+
+    ax.scatter(colors[:, 0], colors[:, 1], colors[:, 2], s=counts, picker=True)
+
+    def on_pick(event):
+        ind = event.ind
+        onpick(ind)
+
+    ax.callbacks.connect('pick_event', on_pick)
+
+    plt.show(block=False)
+    return ax

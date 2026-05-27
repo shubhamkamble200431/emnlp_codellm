@@ -1,0 +1,35 @@
+from collections import Counter
+from operator import itemgetter
+import itertools
+
+#CONSTANT
+ANIMAL = ['cat', 'camel', 'cow', 'dog', 'elephant', 'fox', 'giraffe', 'hippo', 'iguana', 'jaguar']
+
+def task_func(animal_dict):
+    """
+    Given a dictionary of animals as keys and letters as values, count the frequency of each letter in the animals.
+    
+    Note:
+    - Remove key in the dictionary if it is not an animal from ANIMAL constant
+
+    Parameters:
+    animal_dict (dict): The dictionary with animals as keys and their letters as values.
+    
+    Returns:
+    dict: A dictionary with letters as keys and their frequencies as values, sorted in descending order by frequency. Format: {letter: frequency}.
+    
+    Requirements:
+    - collections.Counter
+    - operator.itemgetter
+    - itertools
+    
+    Example:
+    >>> animal_dict = {'cat': 'c', 'dog': 'd', 'elephant': 'e', 'fox': 'f', 'giraffe': 'g', 'hippo': 'h', 'iguana': 'i', 'jaguar': 'j'}
+    >>> counts = task_func(animal_dict)
+    >>> print(counts)
+    {'a': 7, 'g': 4, 'o': 3, 'e': 3, 'p': 3, 'f': 3, 'i': 3, 't': 2, 'h': 2, 'n': 2, 'r': 2, 'u': 2, 'c': 1, 'd': 1, 'l': 1, 'x': 1, 'j': 1}
+    """
+    filtered_dict = {key: value for key, value in animal_dict.items() if key in ANIMAL}
+    flattened_letters = list(itertools.chain.from_iterable(filtered_dict.values()))
+    counter = Counter(flattened_letters)
+    return dict(sorted(counter.items(), key=itemgetter(1), reverse=True))

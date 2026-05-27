@@ -1,0 +1,40 @@
+import nltk
+nltk.download('stopwords')
+from collections import Counter
+import os
+from nltk.corpus import stopwords
+
+# Constants
+STOPWORDS = set(stopwords.words('english'))
+
+def task_func(directory_path):
+    """
+    Count the number of unique non-stop words across all '.txt' files in a specified directory.
+
+    Parameters:
+    directory_path (str): The path to the directory containing '.txt' files.
+
+    Returns:
+    int: The total count of unique non-stop words across all files.
+
+    Requirements:
+    - collections.Counter
+    - os
+    - nltk.corpus.stopwords
+
+    Example:
+    >>> task_func('./yourdictfiles/')
+    1500
+    """
+
+    word_count = Counter()
+
+    for filename in os.listdir(directory_path):
+        if filename.endswith('.txt'):
+            with open(os.path.join(directory_path, filename), 'r') as file:
+                text = file.read().lower()
+                words = nltk.word_tokenize(text)
+                filtered_words = [word for word in words if word.isalnum() and word not in STOPWORDS]
+                word_count.update(filtered_words)
+
+    return len(word_count)

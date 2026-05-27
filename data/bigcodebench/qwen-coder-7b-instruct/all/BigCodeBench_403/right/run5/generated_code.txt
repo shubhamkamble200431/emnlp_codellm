@@ -1,0 +1,54 @@
+from PIL import Image, ImageFilter
+import cv2
+import numpy as np
+import os
+
+def task_func(img_path, blur_radius=5):
+    """
+    Open an RGB image from a specific path, apply a blur filter, convert it to grayscale, and then display both the original and the edited images side by side.
+    Returns numpy arrays representing both the original and the processed images.
+
+    Parameters:
+    - img_path (str): The path of the image file.
+    - blur_radius (int): The radius of the Gaussian blur filter. Default is 5.
+
+    Returns:
+    - tuple: A tuple containing two numpy arrays, the first representing the original image and 
+             the second representing the blurred and grayscaled image.
+
+    Raises:
+    - FileNotFoundError: If the image file does not exist at the specified path.
+
+    Requirements:
+    - PIL
+    - opencv-python
+    - numpy
+    - os
+
+    Example:
+    >>> image_path = 'sample.png'
+    >>> create_dummy_image(image_path=image_path)
+    >>> original, processed = task_func(image_path)
+    >>> os.remove(image_path)
+    """
+    try:
+        # Open the image using PIL
+        img = Image.open(img_path)
+
+        # Convert the image to RGB if it's not already
+        img_rgb = img.convert('RGB')
+
+        # Apply Gaussian blur using PIL
+        blurred_img = img_rgb.filter(ImageFilter.GaussianBlur(blur_radius))
+
+        # Convert the blurred image to grayscale using OpenCV
+        blurred_gray = cv2.cvtColor(np.array(blurred_img), cv2.COLOR_RGB2GRAY)
+
+        # Convert both images back to numpy arrays
+        original_array = np.array(img_rgb)
+        processed_array = blurred_gray
+
+        return original_array, processed_array
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"The image file does not exist at {img_path}")

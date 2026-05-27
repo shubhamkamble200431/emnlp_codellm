@@ -1,0 +1,60 @@
+import time
+from datetime import datetime
+import random
+import matplotlib.pyplot as plt
+
+# Constants
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+def task_func(n, output_path=None):
+    """
+    Generate n random Unix timestamps and convert them to strings formatted as UTC DATE_FORMAT.
+    Plot a histogram of the distribution of the generated timestamps. If an output path is provided,
+    save the histogram to the specified path. Otherwise, display the plot.
+
+    Parameters:
+    n (int): The number of timestamps to generate.
+    output_path (str, optional): Path to save the histogram plot. Defaults to None.
+
+    Returns:
+    list: The list of n formatted timestamps.
+
+    Requirements:
+    - time
+    - datetime
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> random.seed(42)
+    >>> timestamps = task_func(n=3, output_path=None)
+    >>> print(timestamps)
+    ['2013-07-06 20:56:46', '1977-07-29 23:34:23', '1971-09-14 11:29:44']
+    """
+    # Initialize the list to store the formatted timestamps
+    formatted_timestamps = []
+
+    # Generate n random Unix timestamps
+    for _ in range(n):
+        unix_time = random.randint(0, int(time.time()))
+        timestamp = datetime.utcfromtimestamp(unix_time).strftime(DATE_FORMAT)
+        formatted_timestamps.append(timestamp)
+
+    # Create a histogram of the distribution of the generated timestamps
+    unix_times = [datetime.strptime(ts, DATE_FORMAT).timestamp() for ts in formatted_timestamps]
+    plt.hist(unix_times, bins='auto', density=True, alpha=0.6, color='g')
+
+    # Set the labels and title
+    plt.xlabel('Unix Time')
+    plt.ylabel('Frequency')
+    plt.title('Histogram of Randomly Generated Unix Timestamps')
+
+    # Save the plot if an output path is provided
+    if output_path:
+        plt.savefig(output_path)
+    else:
+        # Display the plot
+        plt.show()
+
+    return formatted_timestamps

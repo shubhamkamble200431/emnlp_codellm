@@ -1,0 +1,47 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.formula.api import ols
+
+
+def task_func(mu, sigma, seed=0, num_samples=1000, num_bins=30):
+    '''
+    Create a histogram of a normal distribution with a given mean and standard deviation, and overlay the 
+    probability density function (PDF) of the normal distribution on the histogram. Additionally, overlay a 
+    second order polynomial function on the histogram fitted bin-wise using ordinary least squares (OLS) 
+    regression. The random seed is set for reproducibility. The color of the PDF line is red, and the color of the OLS line is green.
+    
+    Parameters:
+    - mu (float): The mean of the distribution.
+    - sigma (float): The standard deviation of the distribution.
+    - seed (int, Optional): The random seed for reproducibility. Defaults to 0.
+    - num_samples (int, Optional): The number of samples to generate from the distribution. Defaults to 1000.
+    - num_bins (int, Optional): The number of bins to use in the histogram. Defaults to 30.
+    
+    Returns:
+    - matplotlib.axes.Axes: The Axes object with the histogram and overlaid PDF.
+    
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - statsmodels.formula.api
+    
+    Example:
+    >>> ax = task_func(0, 1)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    '''
+    np.random.seed(seed)
+    data = np.random.normal(mu, sigma, num_samples)
+    ax = plt.hist(data, bins=num_bins, density=True, alpha=0.6, color='g')
+    x = np.linspace(min(data), max(data), 100)
+    y = (1 / (sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mu) / sigma) ** 2)
+    ax[0].plot(x, y, 'r-', linewidth=2)
+
+    # Fit second-order polynomial using OLS
+    data_with_index = np.column_stack((np.arange(len(data)), data))
+    model = ols('data ~ I(index**2)', data=data_with_index).fit()
+    polynomial_coefficients = model.params
+    polynomial_function = polynomial_coefficients['Intercept'] + polynomial_coefficients['index']**2 * polynomial_coefficients['I(index**2)']
+    ax[0].plot(x, polynomial_function, 'g--', linewidth=2)
+
+    return ax[0]

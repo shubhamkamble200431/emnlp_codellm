@@ -1,0 +1,35 @@
+import itertools
+import math
+
+def task_func(x):
+    """
+    Find the key pair in a dictionary, x, which has the highest sum of the cosine of each of its values.
+
+    Parameters:
+    - x (dict): The dictionary of key-value pairs.
+
+    Returns:
+    - tuple: The pair of keys with the highest sum of the cosine of their values.
+
+    Requirements:
+    - itertools
+    - math
+
+    Example:
+    >>> task_func({'a': 1, 'b': 2, 'c': 3})
+    ('a', 'b')
+    ('a', 'b')
+    >>> task_func({'a': 1, 'b': 2, 'c': 3, 'd': 4})
+    ('a', 'b')
+    ('a', 'b')
+    """
+    max_sum = float('-inf')
+    result_pairs = []
+    for pair in combinations(x.keys(), 2):
+        cos_sum = sum(math.cos(val) for val in [x[pair[0]], x[pair[1]]])
+        if cos_sum > max_sum:
+            max_sum = cos_sum
+            result_pairs = [(pair[0], pair[1])]
+        elif cos_sum == max_sum:
+            result_pairs.append((pair[0], pair[1]))
+    return result_pairs[0]

@@ -1,0 +1,60 @@
+import os
+import re
+import json
+import glob
+
+
+def task_func(directory_path: str) -> list:
+    """
+    Protect all double quotes in all JSON files in the specified directory by prepending them with a double backslash.
+    
+    Functionality:
+    - Reads each JSON file in the given directory.
+    - Escapes the double quotes by prepending them with a double backslash.
+    - Writes back the modified content to the respective JSON file.
+    
+    Parameters:
+    - directory_path (str): Path to the directory containing JSON files.
+    
+    Returns:
+    - list: A list of the processed JSON files.
+    
+    Requirements:
+    - re
+    - json
+    - glob
+    - os
+
+    Raises:
+    - FileNotFoundError: If the specified directory does not exist.
+    
+    Example:
+    >>> import tempfile
+    >>> import json
+    >>> directory = tempfile.mkdtemp()
+    >>> with open(directory + "/file1.json", "w") as file:
+    ...     json.dump({"name": "John", "age": 30, "city": "New York"}, file)
+    >>> with open(directory + "/file2.json", "w") as file:
+    ...     json.dump('{"book": "Harry Potter", "author": "J.K. Rowling", "quote": "\\"Magic\\" is everywhere!"}', file)
+    >>> files = task_func(directory)
+    >>> len(files)
+    2
+    """
+    if not os.path.exists(directory_path):
+        raise FileNotFoundError(f"Directory {directory_path} does not exist.")
+
+    processed_files = []
+    json_pattern = re.compile(r'"')
+
+    for json_file_path in glob.glob(os.path.join(directory_path, '*.json')):
+        with open(json_file_path, 'r') as file:
+            content = file.read()
+
+        escaped_content = json_pattern.sub(r'\\"', content)
+
+        with open(json_file_path, 'w') as file:
+            file.write(escaped_content)
+
+        processed_files.append(json_file_path)
+
+    return processed_files

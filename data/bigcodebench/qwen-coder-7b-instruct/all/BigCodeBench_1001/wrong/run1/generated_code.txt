@@ -1,0 +1,48 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def task_func(csv_file_path: str):
+    """
+    This function reads data from a CSV file, normalizes a specific column named 'column1', and then plots the normalized data.
+
+    - The title is created using Python's string formatting, aligning 'Plot Title' and 'Normalized Column 1' on either side of a 
+    colon, each padded to 20 characters.
+    - Similarly, the x-label is formatted with 'Index' and 'Normalized Value' on either side of a colon, 
+    each padded to 20 characters.
+    - The y-label is set in the same manner, with 'Frequency' and 'Normalized Value' on either side of a colon.
+
+    Parameters:
+    - csv_file_path (str): Path to the CSV file. The file must contain a column named 'column1'.
+
+    Returns:
+    - The matplotlib.axes.Axes object with the plot of the normalized data.
+
+    Requirements:
+    - pandas
+    - matplotlib
+
+    Example:
+    >>> ax = task_func('data.csv')
+    >>> ax.get_title()
+    "          Plot Title :  Normalized Column 1"
+    """
+    # Read data from CSV file
+    df = pd.read_csv(csv_file_path)
+    
+    # Normalize the 'column1'
+    df['column1'] = (df['column1'] - df['column1'].mean()) / df['column1'].std()
+    
+    # Create a plot
+    ax = df.plot(kind='line', x='index', y='column1')
+    
+    # Format the title
+    ax.set_title(f"{'{':^20} {':>20}'}.format('Plot Title', 'Normalized Column 1')")
+    
+    # Format the x-label
+    ax.set_xlabel(f"{'{':^20} {':>20}'}.format('Index', 'Normalized Value')")
+    
+    # Format the y-label
+    ax.set_ylabel(f"{'{':^20} {':>20}'}.format('Frequency', 'Normalized Value')")
+    
+    return ax

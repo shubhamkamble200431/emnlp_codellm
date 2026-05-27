@@ -1,0 +1,45 @@
+import pickle
+import os
+import matplotlib.pyplot as plt
+
+
+def task_func(numbers, file_path="save.pkl"):
+    """
+    Save a Matplotlib image generated from the provided "numbers" list in a pickle file.
+    The function then reads the image back from the file for validation and deletes the pickle file afterward.
+
+    Parameters:
+    - numbers  (list): List of int/float values used to generate the matplotlib figure.
+    - file_path (str): Path to temporary pickle file. Defaults to 'save.pkl'.
+
+    Returns:
+    - loaded_fig (matplotlib.figure.Figure): The loaded matplotlib figure from file_path.
+
+    Requirements:
+    - pickle
+    - os
+    - matplotlib.pyplot
+
+    Raises:
+    - TypeError: If the input is not a list of numbers.
+    
+    Example:
+    >>> numbers = [random.random() for _ in range(100)]
+    >>> loaded_fig = task_func(numbers)
+    >>> type(loaded_fig)
+    <class 'matplotlib.figure.Figure'>
+    """
+    if not all(isinstance(x, (int, float)) for x in numbers):
+        raise TypeError("Input must be a list of numbers")
+
+    fig, ax = plt.subplots()
+    ax.plot(numbers)
+
+    with open(file_path, 'wb') as f:
+        pickle.dump(fig, f)
+
+    with open(file_path, 'rb') as f:
+        loaded_fig = pickle.load(f)
+
+    os.remove(file_path)
+    return loaded_fig

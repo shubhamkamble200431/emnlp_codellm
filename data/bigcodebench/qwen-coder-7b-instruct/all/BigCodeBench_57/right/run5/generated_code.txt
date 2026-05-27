@@ -1,0 +1,31 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def task_func(csv_file_path: str, title: str):
+    """
+    Create a heatmap of the correlation matrix of a DataFrame built from a CSV file. Round each correlation to 2 decimals.
+
+    Parameters:
+    csv_file_path (str): The path to the CSV file containing the input data.
+    title (str): The title of the heatmap.
+
+    Returns:
+    DataFrame: correlation dataframe where each row and each column correspond to a specific column.
+    matplotlib.axes.Axes: The Axes object of the plotted data.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+    - seaborn
+
+    Example:
+    >>> data = "data/task_func/csv_1.csv"
+    >>> c, ax = task_func(data, 'Correlation Heatmap')
+    """
+    df = pd.read_csv(csv_file_path)
+    corr_matrix = df.corr().round(2)
+    plt.figure(figsize=(10, 8))
+    ax = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0)
+    ax.set_title(title)
+    return corr_matrix, ax

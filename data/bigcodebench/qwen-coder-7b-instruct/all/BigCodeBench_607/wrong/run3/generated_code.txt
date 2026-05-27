@@ -1,0 +1,43 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from random import sample
+
+# Constants for column names to use in plots
+COLUMNS = ['A', 'B', 'C', 'D', 'E']
+
+
+def task_func(df: pd.DataFrame, tuples: list, n_plots: int) -> (pd.DataFrame, list):
+    '''
+    Remove rows from a dataframe based on column values and generate random scatter plots.
+
+    Parameters:
+    - df (pd.DataFrame): The input DataFrame to be modified.
+    - tuples (list): A list of tuples, each representing a row's values for removal.
+    - n_plots (int): Number of scatter plots to generate from random pairs of columns.
+
+    Returns:
+    - pd.DataFrame: The DataFrame after removal of specified rows.
+    - list: A list containing matplotlib Axes objects of the generated plots.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+    - random
+
+    Example:
+    >>> df = pd.DataFrame(np.random.randint(0,100,size=(100, 5)), columns=COLUMNS)
+    >>> tuples = [(10, 20, 30, 40, 50), (60, 70, 80, 90, 100)]
+    >>> modified_df, plots = task_func(df, tuples, 3)
+    '''
+    # Remove rows based on specified tuples
+    mask = ((df[COLUMNS] == tuples[0]).all(axis=1)) | ((df[COLUMNS] == tuples[1]).all(axis=1))
+    df = df[~mask]
+
+    # Generate random scatter plots
+    axes = []
+    cols = sample(COLUMNS, k=n_plots * 2)
+    for i in range(n_plots):
+        ax = df.plot.scatter(x=cols[i*2], y=cols[i*2+1], title=f'Scatter Plot between {cols[i*2]} and {cols[i*2+1]}')
+        axes.append(ax)
+
+    return df, axes

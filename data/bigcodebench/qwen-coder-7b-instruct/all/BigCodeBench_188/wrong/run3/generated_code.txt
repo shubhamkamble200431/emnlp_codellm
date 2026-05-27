@@ -1,0 +1,61 @@
+import pandas as pd
+import folium
+from geopy.geocoders import Photon
+
+def task_func(dic):
+    """
+    Generates a Folium map with markers for specified locations. It preprocesses the input to handle
+    both direct geographical coordinates and address strings. For address strings, it dynamically resolves
+    their latitude and longitude using the Photon geolocation service. This flexible input handling
+    allows for easy mapping of various location types.
+
+    Parameters:
+        dic (dict): A dictionary with location names as keys. Each key can either map to a dictionary
+                    {'Lat': latitude, 'Lon': longitude} for direct coordinates, or to a string indicating
+                    the location's address for geolocation lookup using Photon.
+
+    Returns:
+        folium.Map: A Folium map object with markers for each specified location.
+
+    Requirements:
+    - pandas
+    - folium
+    - geopy.geocoders.Photon
+
+    Notes:
+    - The geolocator, instantiated as Photon(user_agent="geoapiExercises"), plays a crucial role in enabling
+    the function to handle string addresses by converting them into latitude and longitude, thus broadening
+    the scope of input data that can be mapped.
+
+    Examples:
+    >>> locations = {'Place1': {'Lat': 0, 'Lon': 0}, 'Place2': 'New York, USA'}
+    >>> result = task_func(locations)
+    >>> isinstance(result, folium.Map)
+    True
+    >>> [0.0, 0.0] == result.location
+    True
+    """
+    geolocator = Photon(user_agent="geoapiExercises")
+    map_center_lat = 0.0
+    map_center_lon = 0.0
+    num_locations = len(dic)
+
+    if num_locations > 0:
+        map_center_lat = sum([entry.get('Lat', 0) for entry in dic.values()]) / num_locations
+        map_center_lon = sum([entry.get('Lon', 0) for entry in dic.values()]) / num_locations
+
+    m = folium.Map(location=[map_center_lat, map_center_lon], zoom_start=5)
+
+    for name, details in dic.items():
+        if isinstance(details, dict):
+            lat, lon = details['Lat'], details['Lon']
+        else:
+            location = geolocator.geocode(details)
+            if location:
+                lat, lon = location.latitude, location.longitude
+            else:
+                continue
+
+        folium.Marker([lat, lon], popup=name).add_to(m)
+
+    return m

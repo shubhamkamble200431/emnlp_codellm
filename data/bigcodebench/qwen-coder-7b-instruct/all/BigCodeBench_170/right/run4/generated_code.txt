@@ -1,0 +1,44 @@
+import pandas as pd
+import requests
+from io import StringIO
+
+def task_func(csv_url, sort_by_column="title"):
+    """
+    Fetches data from a given CSV URL and returns a pandas DataFrame sorted based on the specified column.
+
+    Parameters:
+    - csv_url (str): The URL to fetch the CSV data from.
+    - sort_by_column (str): The column name based on which the data needs to be sorted. Default is "title".
+
+    Returns:
+    DataFrame: The pandas DataFrame that sorted based on the specified column.
+
+    Requirements:
+    - pandas
+    - requests
+    - io.StringIO
+
+    Raises:
+    Exception: If the response status code is not 200.
+
+    Example:
+    >>> task_func("http://example.com/data.csv", sort_by_column="title")
+       id   title  price
+    0   1   Apple    0.3
+    1   2  Banana    0.5
+    2   3  Cherry    0.2
+
+    >>> task_func("http://example.com/data.csv", sort_by_column="price")
+       id   title  price
+    2   3  Cherry    0.2
+    0   1   Apple    0.3
+    1   2  Banana    0.5
+    
+    """
+    response = requests.get(csv_url)
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch data: {response.status_code}")
+    
+    csv_data = StringIO(response.text)
+    df = pd.read_csv(csv_data)
+    return df.sort_values(by=sort_by_column)

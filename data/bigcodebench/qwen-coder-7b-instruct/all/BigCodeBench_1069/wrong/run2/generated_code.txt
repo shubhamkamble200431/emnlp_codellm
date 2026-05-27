@@ -1,0 +1,38 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def task_func(data_dict):
+    """
+    Generates histograms for each column in the given DataFrame and checks if the value distributions
+    are uniform. It prints a message for each non-uniform distribution.
+
+    Parameters:
+    df (pd.DataFrame): The DataFrame to be analyzed.
+
+    Returns:
+    List[plt.Axes]: A list of matplotlib Axes objects, each representing the histogram for a column.
+    
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> data = {'Category1': ['A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'D', 'E', 'E'],
+    ...                    'Category2': ['X', 'Y', 'Y', 'Z', 'Z', 'Z', 'Z', 'W', 'W', 'W', 'W', 'W']}
+    >>> axes = task_func(data)
+    The distribution of values in column 'Category1' is not uniform.
+    The distribution of values in column 'Category2' is not uniform.
+    >>> [ax.get_title() for ax in axes]
+    ['Category1', 'Category2']
+    """
+    df = pd.DataFrame(data_dict)
+    axes = []
+    for column in df.columns:
+        ax = df[column].hist(bins=50, figsize=(8, 6))
+        ax.set_title(column)
+        ax.set_xlabel('Values')
+        ax.set_ylabel('Frequency')
+        if not df[column].value_counts().nunique() == len(df[column]):
+            print(f"The distribution of values in column '{column}' is not uniform.")
+        axes.append(ax)
+    return axes

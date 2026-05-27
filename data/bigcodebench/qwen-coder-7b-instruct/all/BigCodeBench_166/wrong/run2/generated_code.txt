@@ -1,0 +1,43 @@
+import pandas as pd
+from datetime import datetime
+import holidays
+
+def task_func(start_date=datetime(2023, 1, 1), end_date=datetime(2023, 12, 31), country='US'):
+    """
+    Create a list of business days between two dates, excluding weekends and specified country's public holidays.
+
+    Parameters:
+    start_date (datetime): The start date. Default is January 1, 2023.
+    end_date (datetime): The end date. Default is December 31, 2023. 
+    country (str): ISO country code to determine public holidays. Default is 'US'.
+
+    Returns:
+    list[datetime]: A list of business days (as datetime objects). The start date and end date is included to process. 
+
+    Raises:
+    ValueError: If start_date is not a datetime object or is after end_date.
+    ValueError: If end_date is not a datetime object or is before start_date.
+
+    Requirements:
+    - pandas
+    - datetime
+    - holidays
+
+    Note:
+    - The function depends on the 'holidays' package for fetching public holidays.
+    - Ensure 'pandas' and 'holidays' packages are installed.
+
+    Example:
+    >>> business_days = task_func()
+    >>> print(business_days[0])
+    2023-01-03 00:00:00
+    """
+    if not isinstance(start_date, datetime) or not isinstance(end_date, datetime):
+        raise ValueError("start_date and end_date must be datetime objects")
+    if start_date > end_date:
+        raise ValueError("start_date cannot be after end_date")
+
+    country_name = countryCodeToName(country)
+    hol = HolidayBase(country=country)
+
+    return [d for d in pd.date_range(start=start_date, end=end_date) if d.weekday() < 5 and d not in hol]

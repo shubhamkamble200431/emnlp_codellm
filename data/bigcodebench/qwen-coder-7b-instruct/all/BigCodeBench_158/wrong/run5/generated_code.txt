@@ -1,0 +1,44 @@
+import json
+import urllib.request
+import urllib.parse
+import gzip
+
+def task_func(url_str, file_path):
+    """
+    Fetches JSON data from a given URL, decodes the json-formatted data, and compresses it into a gzip file.
+
+    Parameters:
+        url_str (str): The URL string pointing to the JSON data.
+        file_path (str): The path where the compressed gzip file should be saved.
+
+    Returns:
+        str: The path to the compressed gzip file containing the JSON data.
+
+    Requirements:
+    - json
+    - urllib.request
+    - urllib.parse
+    - gzip
+
+    Examples:
+    >>> isinstance(task_func('http://example.com/data.json', '/path/to/file.json.gz'), str)
+    True
+    >>> task_func('http://example.com/data.json', '/path/to/file.json.gz').endswith('.gz')
+    True
+    """
+    try:
+        # Fetching the JSON data from the URL
+        response = urllib.request.urlopen(url_str)
+        data = response.read()
+        
+        # Decoding the JSON data
+        json_data = json.loads(data.decode('utf-8'))
+        
+        # Compressing the JSON data using gzip
+        with open(file_path, 'wb') as f_out:
+            with gzip.GzipFile(fileobj=f_out, mode='w') as f_gz:
+                f_gz.write(json.dumps(json_data).encode('utf-8'))
+        
+        return file_path
+    except Exception as e:
+        raise IOError(f"Failed to fetch or process the JSON data: {e}")

@@ -1,0 +1,29 @@
+import bisect
+import random
+
+def task_func(num, list_length = 5, min_value = 0, max_value = 0):
+    """
+    Insert a number into a randomly generated sorted list and return the new sorted list.
+
+    Parameters:
+    num (int): The integer number to insert.
+    list_length (int): The length of the randomly generated list of integers.
+    min_value (int): The minimum value for randomly generated integers.
+    max_value (int): The maximum value for randomly generated integers.
+
+    Returns:
+    tuple: A tuple containing two lists: 
+        list[int]: The randomly generated list of integers with the specified length.
+        list[int]: A new sorted list containing the original elements and the inserted number.
+    
+    Requirements:
+    - bisect
+    - random
+
+    Example:
+    >>> random.seed(0)
+    >>> task_func(4, 5, 100, 100)
+    ([100, 100, 100, 100, 100], [4, 100, 100, 100, 100, 100])
+    >>> task_func(15, 0, 10, 20)
+    ([], [15])
+    """

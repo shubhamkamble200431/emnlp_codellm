@@ -1,0 +1,43 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+
+def task_func(x, y, labels):
+    """ 
+    Perform Principal Component Analysis (PCA) on "x" as x-values and "y" as y-values and record the results with labels.
+
+    Parameters:
+    x (list): List of numpy arrays representing the x-values of the data points.
+    y (list): List of numpy arrays representing the y-values of the data points.
+    labels (list): List of strings representing the labels for the chemical compounds.
+
+    Returns:
+    fig: Matplotlib figure object.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - sklearn.decomposition
+
+    Example:
+    >>> x = [np.array([1,2,3]), np.array([4,5,6]), np.array([7,8,9])]
+    >>> y = [np.array([4,5,6]), np.array([7,8,9]), np.array([10,11,12])]
+    >>> labels = ['H₂O', 'O₂', 'CO₂']
+    >>> fig = task_func(x, y, labels)
+    """
+    fig, axs = plt.subplots(len(x), figsize=(10, 2 * len(x)))
+
+    for i in range(len(x)):
+        data = np.column_stack((x[i], y[i]))
+        pca = PCA(n_components=2)
+        transformed_data = pca.fit_transform(data)
+
+        ax = axs[i]
+        ax.scatter(transformed_data[:, 0], transformed_data[:, 1], label=labels[i])
+        ax.set_xlabel('Principal Component 1')
+        ax.set_ylabel('Principal Component 2')
+        ax.legend()
+
+    plt.tight_layout()
+    return fig

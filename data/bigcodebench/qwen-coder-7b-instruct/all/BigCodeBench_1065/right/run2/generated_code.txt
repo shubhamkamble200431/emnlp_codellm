@@ -1,0 +1,38 @@
+from scipy import fftpack
+from matplotlib import pyplot as plt
+
+
+def task_func(arr):
+    """
+    Performs a Fast Fourier Transform (FFT) on the sum of each row in a 2D array and
+    plots the absolute values of the FFT coefficients.
+
+    Parameters:
+    arr (numpy.ndarray): A 2D numpy array.
+
+    Returns:
+    matplotlib.axes.Axes: An Axes object displaying the plot of the absolute values of the FFT coefficients.
+
+    Requirements:
+    - scipy.fftpack
+    - matplotlib.pyplot
+
+    Example:
+    >>> import numpy as np
+    >>> arr = np.array([[i + j for i in range(3)] for j in range(5)])
+    >>> ax = task_func(arr)
+    >>> ax.get_title()
+    'Absolute values of FFT coefficients'
+    """
+    sum_of_rows = np.sum(arr, axis=1)
+    fft_result = fftpack.fft(sum_of_rows)
+    freqs = fftpack.fftfreq(len(sum_of_rows))
+    abs_fft_values = np.abs(fft_result)
+
+    fig, ax = plt.subplots()
+    ax.stem(freqs, abs_fft_values, basefmt=" ")
+    ax.set_xlabel('Frequency')
+    ax.set_ylabel('Amplitude')
+    ax.set_title('Absolute values of FFT coefficients')
+    
+    return ax

@@ -1,0 +1,56 @@
+import numpy as np
+import itertools
+
+def task_func(data_list):
+    """
+    Unzips a list of tuples and calculates the mean of the numeric values for 
+    each position.
+
+    The function accepts a list of tuples, where each tuple consists of 
+    alphanumeric values. It unzips the tuples, and calculates the mean of 
+    numeric values at each position using numpy, where non numeric values are
+    ignores. If all values at a position are non numeric, the mean at this
+    position is set to be np.nan.
+    If the provided tuples have different number of entries, missing values are 
+    treated as zeros.
+
+    Parameters:
+    - data_list (list of tuples): The data to process, structured as a list of tuples. Each tuple can contain alphanumeric values.
+
+    Returns:
+    - list: A list of mean values for each numeric position across the tuples. Non-numeric positions are ignored.
+            An empty list is returned if the input list (data_list) is empty.
+
+    Requirements:
+    - numpy
+    - itertools
+
+    Example:
+    >>> task_func([('a', 1, 2), ('b', 2, 3), ('c', 3, 4), ('d', 4, 5), ('e', 5, 6)])
+    [nan, 3.0, 4.0]
+    >>> task_func([(1, 'a', 2), ('a', 3, 5), ('c', 1, -2)])
+    [1.0, 2.0, 1.6666666666666667]
+    """
+    if not data_list:
+        return []
+
+    # Determine the maximum length of the tuples
+    max_len = max(len(tup) for tup in data_list)
+
+    # Initialize a list to store the sum of numeric values at each position
+    sums = [0] * max_len
+    counts = [0] * max_len
+
+    for tup in data_list:
+        for i, value in enumerate(tup):
+            try:
+                num_value = float(value)
+                sums[i] += num_value
+                counts[i] += 1
+            except ValueError:
+                pass
+
+    # Calculate the mean values
+    means = [sums[i] / counts[i] if counts[i] > 0 else np.nan for i in range(max_len)]
+
+    return means

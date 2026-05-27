@@ -1,0 +1,28 @@
+import pandas as pd
+import numpy as np
+
+def task_func(data_size=1000, column_names=['A', 'B', 'C', 'D', 'E'], seed=0):
+    """
+    Generate a Pandas DataFrame with random numeric values between 1 and 100, inclusive, and replace all occurrences of values less than 10 with -1.
+    
+    Requirements:
+    - pandas
+    - numpy
+    
+    Parameters:
+    - data_size (int, optional): The number of rows in the DataFrame. Defaults to 1000.
+    - column_names (list of str, optional): Names of the DataFrame columns. Defaults to ['A', 'B', 'C', 'D', 'E'].
+
+    Returns:
+    - DataFrame: The modified Pandas DataFrame.
+    
+    Examples:
+    >>> df = task_func(data_size=100, column_names=['X', 'Y', 'Z'], seed=42)
+    >>> df.shape
+    (100, 3)
+    """
+np.random.seed(seed)
+data = np.random.randint(1, 101, size=(data_size, len(column_names)))
+df = pd.DataFrame(data, columns=column_names)
+df[df < 10] = -1
+return df

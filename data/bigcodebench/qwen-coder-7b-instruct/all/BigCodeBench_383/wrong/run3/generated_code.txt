@@ -1,0 +1,39 @@
+import pandas as pd
+import seaborn as sns
+from collections import Counter
+from textblob import TextBlob
+from matplotlib import pyplot as plt
+
+
+def task_func(text, n, top_k):
+    """
+    Visualize the uppermost K n-grams in a given text string.
+
+    Parameters:
+    text (str): The text string.
+    n (int): The value of n for the n-grams.
+    top_k (int): The number of top n-grams to visualize.
+
+    Returns:
+    None
+
+    Requirements:
+    - re
+    - pandas
+    - seaborn
+    - textblob
+    - matplotlib
+
+    Example:
+    >>> type(task_func('This is a sample text for testing.', 2, 5))
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    words = text.split()
+    ngrams = [' '.join(words[i:i+n]) for i in range(len(words) - n + 1)]
+    counter = Counter(ngrams)
+    top_ngrams = counter.most_common(top_k)
+
+    df = pd.DataFrame(top_ngrams, columns=['n-gram', 'Frequency'])
+    ax = sns.barplot(x='n-gram', y='Frequency', data=df)
+    plt.xticks(rotation=45)
+    return ax

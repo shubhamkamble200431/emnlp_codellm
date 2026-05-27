@@ -1,0 +1,58 @@
+from scipy.spatial.distance import cdist
+from sklearn.datasets import make_blobs
+import matplotlib.pyplot as plt
+
+
+def task_func(n_samples=200, centers=4, plot_path=None, random_seed=None):
+    """
+    Generate a synthetic 2D dataset using make_blobs, visualize the dataset, and then calculate
+    the Euclidean distance between individual samples of the dataset.
+
+    Parameters:
+    - n_samples (int): Number of samples to generate. Default is 200.
+    - centers (int): Number of centers to generate. Default is 4.
+    - plot_path (str, optional): Path to save the plot. If None, the plot will be returned.
+    - random_seed (int, optional): Seed for random number generation. Default is None.
+
+    Returns:
+    - tuple:
+        - ndarray: A 2D array with distances between each sample.
+        - Axes or None: If plot_path is None, returns the matplotlib Axes object of the plot.
+                        Otherwise, saves the plot to the provided path and return None.
+                        Plot shows values of the first feature dimension on the x-axis, values
+                        of the second feature dimension on the y-axis, and labels of the synthetic
+                        examples as color.
+
+    Requirements:
+    - scipy.spatial.distance.cdist
+    - sklearn.datasets.make_blobs
+    - matplotlib.pyplot
+
+    Example:
+    >>> distances, plot = task_func(random_seed=42)
+    >>> distances.shape
+    (200, 200)
+    >>> plot
+    <Axes: >
+    """
+    # Set the random seed if provided
+    if random_seed is not None:
+        np.random.seed(random_seed)
+
+    # Generate synthetic data
+    X, y = make_blobs(n_samples=n_samples, centers=centers, random_state=random_seed)
+
+    # Visualize the data
+    fig, ax = plt.subplots()
+    scatter = ax.scatter(X[:, 0], X[:, 1], c=y)
+
+    # Calculate the Euclidean distance matrix
+    distances = cdist(X, X, 'euclidean')
+
+    # Save the plot if plot_path is provided
+    if plot_path is not None:
+        plt.savefig(plot_path)
+        plt.close(fig)
+        return distances, None
+    else:
+        return distances, ax

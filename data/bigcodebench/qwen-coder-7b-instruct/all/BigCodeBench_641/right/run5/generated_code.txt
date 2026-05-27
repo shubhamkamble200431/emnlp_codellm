@@ -1,0 +1,39 @@
+import os
+import re
+import pandas as pd
+
+
+def task_func(pattern: str, directory: str, output_csv: str) -> pd.DataFrame:
+    """
+    Searches for files in the specified directory that match a given regex pattern.
+    This function walks through the directory, matches filenames against the pattern,
+    and saves the matched file paths to a CSV file. It returns a DataFrame of these paths
+    with colomn 'File Path'.
+
+    Parameters:
+    - pattern (str): Regex pattern to match filenames.
+    - directory (str): Directory to search for files.
+    - output_csv (str): CSV file path to save matched file paths.
+
+    Returns:
+    - pd.DataFrame: DataFrame with a single column 'File Path' of matched paths.
+
+    Requirements:
+    - re
+    - pandas
+    - os
+
+    Example:
+    >>> df = task_func(".*\.txt$", "/path/to/search", "matched_files.csv")
+    """
+    matched_paths = []
+    
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if re.match(pattern, file):
+                matched_paths.append(os.path.join(root, file))
+    
+    df = pd.DataFrame(matched_paths, columns=['File Path'])
+    df.to_csv(output_csv, index=False)
+    
+    return df

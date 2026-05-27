@@ -1,0 +1,50 @@
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+
+def task_func(P, T):
+    """
+    Calculate the product of matrix "P" and 3D tensor "T" then return dataframe of normalized results.
+
+    This function performs matrix-tensor multiplication between a matrix "P" and a 3D tensor "T" using numpy.
+    It checks if the shapes of P and T are compatible for multiplication, raising a ValueError if they are not.
+    The function then normalizes the resulting 2D array using sklearn's StandardScaler. The final output
+    is returned as a pandas DataFrame, with columns named feature_0, feature_1, ..., feature_n,
+    where n is the number of features in the flattened result of the matrix-tensor multiplication.
+
+    Parameters:
+    - P (numpy.ndarray): The input matrix. Must not be empty.
+    - T (numpy.ndarray): The input tensor. Must not be empty.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with the normalized result.
+
+    Requirements:
+    - numpy
+    - pandas
+    - sklearn.preprocessing
+
+    Example:
+    >>> np.random.seed(0)
+    >>> P = np.array([[6, 2, 7], [1, 1, 8], [8, 7, 1], [9, 6, 4], [2, 1, 1]])
+    >>> T = np.random.rand(3, 5, 5)
+    >>> result = task_func(P, T)
+    >>> type(result)
+    <class 'pandas.core.frame.DataFrame'>
+    >>> result.head(2)
+       feature_0  feature_1  feature_2  ...  feature_22  feature_23  feature_24
+    0   0.214791   0.220904   1.697850  ...    1.768847   -1.759510   -0.003527
+    1  -0.652336   1.064228  -0.707134  ...   -0.036116    1.002544   -0.813796
+    <BLANKLINE>
+    [2 rows x 25 columns]
+    """
+    if P.shape[1] != T.shape[0]:
+        raise ValueError("Incompatible dimensions for matrix and tensor multiplication.")
+
+    result = np.dot(P, T.reshape(T.shape[0], -1))
+    scaler = StandardScaler()
+    scaled_result = scaler.fit_transform(result)
+
+    df_columns = [f'feature_{i}' for i in range(scaled_result.shape[1])]
+    return pd.DataFrame(scaled_result, columns=df_columns)

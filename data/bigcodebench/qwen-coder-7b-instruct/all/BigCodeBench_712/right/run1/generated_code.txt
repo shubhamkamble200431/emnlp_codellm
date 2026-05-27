@@ -1,0 +1,32 @@
+import os
+import shutil
+import glob
+
+def task_func(source_dir, dest_dir, extension):
+    """
+    Move all files with a particular extension from one directory to another.
+    
+    Parameters:
+    - source_dir (str): The source directory.
+    - dest_dir (str): The destination directory.
+    - extension (str): The file extension.
+
+    Returns:
+    - result (int): The count of files that were moved. 
+
+    Requirements:
+    - os
+    - shutil
+    - glob
+        
+    Example:
+    >>> task_func('path_to_source_dir', 'path_to_dest_dir', '.txt')
+    10
+    """
+    pattern = os.path.join(source_dir, f'*{extension}')
+    files = glob.glob(pattern)
+    moved_count = 0
+    for file in files:
+        shutil.move(file, dest_dir)
+        moved_count += 1
+    return moved_count

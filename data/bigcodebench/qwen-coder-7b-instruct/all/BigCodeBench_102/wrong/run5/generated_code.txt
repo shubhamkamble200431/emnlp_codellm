@@ -1,0 +1,45 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+from sklearn.datasets import load_diabetes
+
+def task_func():
+    """
+    Draws a seaborn pairplot for the diabetes dataset obtained from sklearn.datasets. 
+    This function sets the font to Arial. It then loads the diabetes dataset into a
+    DataFrame and creates a pairplot using seaborn, which is useful for visual exploration 
+    of relationships between different features in the dataset.
+
+    Requirements:
+    - matplotlib.pyplot
+    - seaborn
+    - sklearn.datasets.load_diabetes
+    - pandas
+
+    Returns:
+        matplotlib.figure.Figure: A matplotlib Figure instance representing the created pairplot.
+        pd.DataFrame: a DataFrame representation of the diabetes dataset
+
+    Examples:
+    >>> fig, df = task_func()
+    >>> isinstance(fig, plt.Figure)
+    True
+    >>> isinstance(df, pd.DataFrame)
+    True
+    >>> type(fig).__name__
+    'Figure'
+    """
+    # Load the diabetes dataset
+    diabetes_data = load_diabetes()
+
+    # Convert the dataset to a pandas DataFrame
+    df = pd.DataFrame(data=diabetes_data.data, columns=diabetes_data.feature_names)
+    df['target'] = diabetes_data.target
+
+    # Set the font to Arial
+    plt.rcParams['font.family'] = 'Arial'
+
+    # Create a seaborn pairplot
+    fig = sns.pairplot(df)
+
+    return fig, df

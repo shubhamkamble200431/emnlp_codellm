@@ -1,0 +1,41 @@
+from datetime import datetime
+import pandas as pd
+from itertools import product
+
+# Constants
+EMPLOYEES = ["John", "Alice", "Bob", "Charlie", "Dave"]
+
+
+def task_func(date_str):
+    """
+    Generate a Pandas DataFrame containing a series of dates for a predefined list of employees.
+
+    Parameters:
+    - date_str (str): A date string in the "yyyy-mm-dd" format to define the starting date.
+
+    Returns:
+    - DataFrame: A pandas DataFrame with 'Employee' and 'Date' columns, listing the next 10 days for each employee.
+
+    Requirements:
+    - datetime.datetime
+    - pandas
+    - itertools
+
+    Example:
+    >>> df = task_func('2023-06-15')
+    >>> print(df)
+       Employee       Date
+    0      John 2023-06-15
+    1      John 2023-06-16
+    ...
+    49     Dave 2023-06-24
+    """
+    start_date = datetime.strptime(date_str, '%Y-%m-%d')
+    date_range = pd.date_range(start=start_date, periods=10)
+
+    data = {'Employee': [emp for emp, _ in product(EMPLOYEES, repeat=2)],
+            'Date': [date for _, date in product(range(len(EMPLOYEES)), repeat=2)]}
+
+    df = pd.DataFrame(data)
+    df['Date'] = pd.to_datetime(df['Date']).dt.date
+    return df

@@ -1,0 +1,47 @@
+import warnings
+import sqlite3
+import pandas as pd
+
+
+def task_func(db_path, query, warn_large_dataset=True):
+    """
+    Fetches data from an SQLite database using the provided database path and SQL query.
+    This function will issue a warning of "The data contains more than 10000 rows." when this condition is met.
+
+    Parameters:
+    - db_path (str): The file path to the SQLite database from which data needs to be fetched.
+    - query (str): The SQL query string used to retrieve data from the specified database.
+    - warn_large_dataset (bool, optional): A boolean flag that, when set to True, triggers a 
+      warning if the retrieved dataset has more than 10,000 rows. Default is True.
+
+    Returns:
+    - pandas.DataFrame: A DataFrame containing the data fetched from the database.
+
+    Requirements:
+    - sqlite3
+    - pandas
+    - warnings
+
+    Raises:
+    - Exception: If any error occurs during database connection, SQL query execution, or data 
+      fetching. The error message provides details about the issue, starting with "Error fetching data from the database: ".
+
+    Example:
+    >>> data = task_func('/path/to/sqlite.db', 'SELECT * FROM table_name')
+    >>> print(data)
+        column1  column2
+    0         1        4
+    1         2        5
+    2         3        6
+    """
+    try:
+        conn = sqlite3.connect(db_path)
+        df = pd.read_sql_query(query, conn)
+        conn.close()
+
+        if warn_large_dataset and len(df) > 10000:
+            warnings.warn("The data contains more than 10000 rows.")
+
+        return df
+    except Exception as e:
+        raise Exception(f"Error fetching data from the database: {e}") from None

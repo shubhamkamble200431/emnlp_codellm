@@ -1,0 +1,50 @@
+import random
+from collections import Counter
+from statistics import mode
+
+
+def task_func(list_length=1000, range_start=1, range_end=10, random_seed=None):
+    """
+    Generate a random list of integers within a specified range. Convert this
+    list to a generator object that yields tuples. Each tuple contains a number
+    from the list and its frequency. Additionally, find and return the mode of 
+    the list.
+
+    Parameters:
+    - list_length (int): The length of the random list to be generated. Default is 1000.
+    - range_start (int): The start of the range for random numbers. Default is 1.
+    - range_end (int): The end of the range for random numbers. Default is 10.
+    - random_seed (int): Seed for the rng. Default is None.
+
+    Returns:
+    tuple: A tuple containing:
+    - int: The mode of the generated list.
+    - generator: A generator object yielding tuples with each number from the list and its frequency.
+
+    Requirements:
+    - random
+    - collections
+    - statistics
+
+    Example:
+    >>> mode, numbers = task_func(100, 1, 5, random_seed=1)
+    >>> print(mode)  # prints the mode e.g. 3
+    4
+    >>> print(next(numbers))  # prints a tuple like (1, 25)
+    (2, 18)
+
+    >>> mode, numbers = task_func(20, -12, 334, random_seed=23)
+    >>> print(mode)
+    136
+    >>> print([_ for _ in numbers])
+    [(136, 1), (30, 1), (-4, 1), (291, 1), (145, 1), (204, 1), (182, 1), (259, 1), (171, 1), (54, 1), (86, 1), (124, 1), (215, 1), (-5, 1), (101, 1), (305, 1), (220, 1), (0, 1), (42, 1), (31, 1)]
+    """
+    if random_seed is not None:
+        random.seed(random_seed)
+
+    nums = [random.randint(range_start, range_end) for _ in range(list_length)]
+    freq_counter = Counter(nums)
+    gen = ((num, count) for num, count in freq_counter.items())
+    mode_value = mode(nums)
+
+    return mode_value, gen

@@ -1,0 +1,38 @@
+import json
+import os
+
+def task_func(file_path):
+    """
+    Check that the data in a JSON file is a list of dictionaries (objects in JavaScript).
+    
+    Parameters:
+    file_path (str): The path to the JSON file.
+    
+    Returns:
+    bool: True if the data is a list of dictionaries, False otherwise.
+    
+    Requirements:
+    - json
+    - os
+    
+    Example:
+    >>> import tempfile
+    >>> import json
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> file_path = os.path.join(temp_dir, 'data.json')
+    >>> with open(file_path, 'w') as f:
+    ...     json.dump([{'name': 'Alice', 'age': 30}, {'name': 'Bob', 'age': 25}], f)
+    >>> task_func(file_path)
+    True
+    >>> task_func('./invalid_data.json') # File does not exist
+    False
+    """
+    if not os.path.exists(file_path):
+        return False
+    
+    try:
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+            return isinstance(data, list) and all(isinstance(item, dict) for item in data)
+    except json.JSONDecodeError:
+        return False

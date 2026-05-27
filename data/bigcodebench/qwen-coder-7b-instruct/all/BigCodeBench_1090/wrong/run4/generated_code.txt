@@ -1,0 +1,60 @@
+import ast
+import json
+from collections import Counter
+
+
+def task_func(file_pointer):
+    """
+    Reads from a given file pointer to a JSON file, evaluates strings that represent dictionaries to actual dictionaries,
+    and counts the frequency of each key across all dictionary entries in the JSON data.
+
+    
+    Parameters:
+    file_pointer (file object): An open file object pointing to the JSON file containing the data. This file should
+                                already be opened in the correct mode (e.g., 'r' for reading).
+
+    Returns:
+    collections.Counter: A Counter object representing the frequency of each key found in the dictionaries.
+
+    Requirements:
+    - ast
+    - json
+    - collections.Counter
+    
+    Note:
+    This function assumes the input JSON data is a list of dictionaries or strings that can be evaluated as dictionaries.
+    
+    Example:
+    >>> with open("data.json", "r") as file:
+    >>>    key_frequency = task_func(file)
+    >>>    print(key_frequency)
+    Counter({'name': 5, 'age': 5, 'city': 3})
+    """
+    try:
+        data = json.load(file_pointer)
+    except json.JSONDecodeError:
+        raise ValueError("Invalid JSON format")
+    
+    def evaluate_dict(value):
+        if isinstance(value, str) and value.startswith("{"):
+            return ast.literal_eval(value)
+        return value
+
+    def flatten_dict(d, parent_key='', sep='_'):
+        items = []
+        for k, v in d.items():
+            new_key = f"{parent_key}{sep}{k}" if parent_key else k
+            if isinstance(v, dict):
+                items.extend(flatten_dict(v, new_key, sep=sep).items())
+            else:
+                items.append((new_key, v))
+        return dict(items)
+
+    counter = Counter()
+    for item in data:
+        evaluated_item = evaluate_dict(item)
+        if isinstance(evaluated_item, dict):
+            flattened_item = flatten_dict(evaluated_item)
+            counter.update(flattened_item.keys())
+
+    return counter

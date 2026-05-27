@@ -1,0 +1,43 @@
+import csv
+import re
+from collections import Counter
+
+
+def task_func(file_path, regex_pattern=r'\(.+?\)|\w+|[\W_]+'):
+    """
+    Counts matches from a CSV file based on a given regex pattern. 
+    By default, it captures content between parentheses as a single match and 
+    any word or sequence of non-alphanumeric characters outside as matches in a string.
+    
+    Parameters:
+    - file_path (str): The path to the CSV file.
+    - regex_pattern (str, optional): The regex pattern to find matches. Defaults to capturing content between parentheses or individual words or sequences of non-alphanumeric characters.
+    
+    Returns:
+    dict: A dictionary with counts of matches.
+
+    Requirements:
+    - re
+    - csv
+    - collections.Counter
+    
+    Example:
+    >>> import tempfile
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> file_path = os.path.join(temp_dir, 'data.csv')
+    >>> with open(file_path, 'w', newline='') as file:
+    ...     writer = csv.writer(file)
+    ...     _ = writer.writerow(['a'])
+    ...     _ = writer.writerow(['b'])
+    ...     _ = writer.writerow(['(abc)'])
+    >>> counts = task_func(file_path)
+    >>> print(counts)
+    {'a': 1, ' ': 1, 'b': 1, ' (': 1, 'abc': 1, ')': 1}
+    """
+    with open(file_path, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        matches = []
+        for row in reader:
+            for item in row:
+                matches.extend(re.findall(regex_pattern, item))
+        return dict(Counter(matches))

@@ -1,0 +1,58 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+COLORS = ['r', 'g', 'b']
+
+def task_func(df, group_col, value_col):
+    """
+    Create a bar chart of data in multiple groups with error bars.
+
+    Parameters:
+    - df (DataFrame): The input DataFrame containing the data.
+    - group_col (str): The name of the column to group the data by.
+    - value_col (str): The name of the column containing the values to plot.
+
+    Returns:
+    - Axes: A matplotlib axes object with the bar chart.
+
+    Requirements:
+    - matplotlib.pyplot
+    - numpy
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({'Group': ['A', 'B', 'A', 'B', 'A', 'B'], 'Value': [1, 2, 3, 4, 5, 6]})
+    >>> ax = task_func(df, 'Group', 'Value')
+    >>> len(ax.patches)
+    2
+    >>> plt.close()
+
+    Note:
+    - The function uses a predefined set of colors for the bars. If there are more groups than colors,
+      the colors will repeat from the beginning of the COLORS list.
+    - This function use "Bar chart of {value_col} by {group_col}" for the plot title.
+    - This function use value of variables group_col and value_col as the xlabel and ylabel respectively.
+
+    Raises:
+    -This function will raise TypeError if the 'Value' has non-numeric values.
+    """
+    if not all(isinstance(x, (int, float)) for x in df[value_col]):
+        raise TypeError("The 'Value' column must contain only numeric values.")
+
+    unique_groups = df[group_col].unique()
+    num_colors = len(COLORS)
+    color_map = {group: COLORS[i % num_colors] for i, group in enumerate(unique_groups)}
+
+    fig, ax = plt.subplots()
+    for i, group in enumerate(unique_groups):
+        group_data = df[df[group_col] == group]
+        ax.bar(group, group_data[value_col].mean(), yerr=group_data[value_col].std(), color=color_map[group], label=group)
+
+    ax.set_title(f"Bar chart of {value_col} by {group_col}")
+    ax.set_xlabel(group_col)
+    ax.set_ylabel(value_col)
+    ax.legend()
+
+    return ax

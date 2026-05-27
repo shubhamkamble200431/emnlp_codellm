@@ -1,0 +1,52 @@
+from datetime import datetime, timedelta
+import numpy as np
+import matplotlib.pyplot as plt
+
+def task_func(days_in_past=7, random_seed=0):
+    """
+    Draw a graph of temperature trends over the past week using randomly generated data.
+
+    This function generates random integer temperatures in Celcius with a low of 15 and high of 35.
+    To show temperature trend, it plots date on the x-axis and temperature on the y-axis.
+
+    Parameters:
+    days_in_past (int, optional): The number of days in the past for which to generate the graph.
+                                  Defaults to 7 days.
+    random_seed (int, optional): Seed for random number generation. Defaults to 0.
+
+    Returns:
+    ax (matplotlib.axes._axes.Axes): Generated plot showing 'Temperature Trend'
+                                     with 'Date' on the a-xis and 'Temperature (°C)' on the y-axis.
+
+
+    Raises:
+    ValueError: If days_in_past is less than 1.
+    
+    Requirements:
+    - datetime.datetime
+    - datetime.timedelta
+    - numpy
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax = task_func(random_seed=42)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(19810.0, 0, '2024-03-28'), Text(19811.0, 0, '2024-03-29'), Text(19812.0, 0, '2024-03-30'), Text(19813.0, 0, '2024-03-31'), Text(19814.0, 0, '2024-04-01'), Text(19815.0, 0, '2024-04-02'), Text(19816.0, 0, '2024-04-03')]
+    """
+    if days_in_past < 1:
+        raise ValueError("days_in_past must be at least 1")
+
+    random.seed(random_seed)
+
+    dates = [datetime.now() - timedelta(days=i) for i in range(days_in_past)]
+    temperatures = [random.randint(15, 35) for _ in range(days_in_past)]
+
+    fig, ax = plt.subplots()
+    ax.plot(dates, temperatures, marker='o')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Temperature (°C)')
+    ax.set_title('Temperature Trend')
+
+    return ax

@@ -1,0 +1,39 @@
+import numpy as np
+from operator import itemgetter
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Draw a scatter plot of dots and mark the point with the maximum y-value. Return the axes object as
+    well as the maximum y-value point. 
+    
+    Parameters:
+    data (list of tuples): A list where each tuple contains two floats representing x and y coordinates.
+    
+    Returns:
+    matplotlib.axes.Axes: Axes object with the scatter plot, with the x-axis labeled 'x', the y-axis labeled 'y', and the title 'Points with Max Y Point Highlighted'.
+    tuple: The point with the maximum y-value.
+    
+    Requirements:
+    - numpy
+    - operator
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax, point = task_func([(0.1, 0.2), (0.5, 0.6), (0.3, 0.9)])
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    x_vals, y_vals = zip(*data)
+    max_y_index = np.argmax(y_vals)
+    max_y_point = (x_vals[max_y_index], y_vals[max_y_index])
+    
+    fig, ax = plt.subplots()
+    ax.scatter(x_vals, y_vals)
+    ax.annotate(f'Max Y Point: {max_y_point}', xy=max_y_point, xytext=(np.mean(x_vals) + 0.1, np.max(y_vals) + 0.1))
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title('Points with Max Y Point Highlighted')
+    
+    return ax, max_y_point

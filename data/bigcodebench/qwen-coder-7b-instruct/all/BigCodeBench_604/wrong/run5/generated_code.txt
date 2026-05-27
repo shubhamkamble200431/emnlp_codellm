@@ -1,0 +1,42 @@
+import subprocess
+import logging
+
+def task_func(filepath):
+    """
+    Attempts to compile a existing C++ file specified by 'filepath'. The output of the compilation process
+    is logged, indicating whether the compilation was successful or not. This function is useful
+    for automating the compilation of C++ code and tracking compilation results.
+    The log should indicate whether the compilation was successful or if an error occurred.
+
+    Parameters:
+    filepath (str): The path of the C++ file to be compiled.
+
+    Returns:
+    None: This function does not return anything but logs the outcome of the compilation process.
+
+    Raises:
+    - subprocess.CalledProcessError: If the compilation process fails.
+    - FileNotFoundError: If the compiler is not found or the specified file does not exist.
+
+    Requirements:
+    - subprocess
+    - logging
+
+    Examples:
+    >>> import os
+    >>> with open('example.cpp', 'w') as f: \
+            _ = f.write("int main(){return 0;}")
+    >>> task_func('example.cpp')
+    >>> os.path.exists('example')
+    True
+    """
+    try:
+        result = subprocess.run(['g++', '-o', 'example', filepath], capture_output=True, text=True)
+        if result.returncode == 0:
+            logging.info(f"Compilation successful: {result.stdout}")
+        else:
+            logging.error(f"Compilation failed: {result.stderr}")
+    except FileNotFoundError as e:
+        logging.error(f"File not found or compiler not installed: {e}")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Subprocess error during compilation: {e}")

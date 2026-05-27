@@ -1,0 +1,71 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+# Constants
+PLOT_TITLE = "Value Distribution"
+
+
+def task_func(data_dict):
+    """
+    Processes a dictionary of numerical data to create a pandas DataFrame, removes None values, and generates a histogram 
+    of the data values using seaborn. The histogram's bins are dynamically calculated based on the range of the data. Specifically,
+    the number of bins is set to the minimum of 11 and half the number of data points, with a minimum of 2 bins.
+    If the DataFrame is empty or the data lacks variability (all values are the same after removing None values), 
+    the function does not generate a plot.
+
+    Parameters:
+    - data_dict (dict): A dictionary with keys as column names and values as lists of numerical data. 
+                      The data can include None values, which will be removed.
+
+    Returns:
+    - DataFrame: A pandas DataFrame created from the input dictionary, excluding None values.
+    - Axes or None: A seaborn histogram plot object if the DataFrame contains variable data; 
+                               None if the DataFrame is empty or if all values are identical.
+
+    Requirements:
+    - pandas
+    - numpy
+    - seaborn
+
+    Note:
+    - Calculates the minimum and maximum values in the DataFrame.
+    - Dynamically sets the number of bins for the histogram based on the number of data points, with a minimum of 2 
+         and a maximum of 11 bins.
+    - Create evenly spaced bin edges between the minimum and maximum values.
+    - KDE (Kernel Density Estimate) is turned off. 
+    - Sets the plot title to the predefined constant `PLOT_TITLE`.
+
+
+    Example:
+    >>> data = {'a': [1, 2, 3, None], 'b': [5, 6, None, 8]}
+    >>> df, plot = task_func(data)
+    >>> df
+         a    b
+    0  1.0  5.0
+    1  2.0  6.0
+    >>> plot.get_title() if plot is not None else 'No plot generated'
+    'Value Distribution'
+    """
+    # Convert the dictionary to a pandas DataFrame and remove None values
+    df = pd.DataFrame(data_dict).dropna()
+
+    # Check if the DataFrame is empty or has no variability
+    if df.empty or df.var().sum() == 0:
+        return df, None
+
+    # Calculate the minimum and maximum values in the DataFrame
+    min_val = df.min().min()
+    max_val = df.max().max()
+
+    # Determine the number of bins dynamically
+    num_bins = min(11, max(2, len(df) // 2))
+
+    # Create evenly spaced bin edges between the minimum and maximum values
+    bin_edges = np.linspace(min_val, max_val, num_bins + 1)
+
+    # Generate the histogram plot using seaborn
+    plot = sns.histplot(df.stack(), bin_edges=bin_edges, kde=False)
+    plot.set_title(PLOT_TITLE)
+
+    return df, plot

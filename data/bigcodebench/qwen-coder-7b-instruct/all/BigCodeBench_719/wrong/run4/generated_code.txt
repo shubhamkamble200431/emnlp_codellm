@@ -1,0 +1,34 @@
+import re
+import os
+import glob
+
+def task_func(directory, word):
+    """
+    Count the number of files in a directory that contain a specific word.
+    
+    Parameters:
+    - directory (str): The directory path.
+    - word (str): The word to search for.
+    
+    Returns:
+    - count (int): The number of files that contain the given word.
+    
+    Requirements:
+    - re
+    - os
+    - glob
+    
+    Example:
+    >>> task_func('./documents', 'word')
+    2
+    >>> task_func('./documents', 'apple')
+    3
+    """
+    count = 0
+    for file_path in glob.glob(os.path.join(directory, '*')):
+        if os.path.isfile(file_path):
+            with open(file_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+                if re.search(r'\b' + re.escape(word) + r'\b', content):
+                    count += 1
+    return count

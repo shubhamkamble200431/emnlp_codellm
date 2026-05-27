@@ -1,0 +1,59 @@
+import re
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+
+
+def task_func(df):
+    """
+    Analyzes a given DataFrame containing article titles and content to identify articles with titles that include
+    the words "how" or "what". It calculates the TF-IDF scores for the words in the content of these articles and
+    visualizes these scores in a bar plot.
+
+    Parameters:
+    df (DataFrame): A DataFrame containing at least two columns: 'Title' and 'Content'.
+
+    Returns:
+    Axes: A matplotlib Axes object displaying a bar plot of the TF-IDF scores.
+
+    Note:
+    - If the DataFrame does not contain 'Title' and 'Content' columns, the function returns an empty plot.
+    - If no articles have titles containing "how" or "what," the function also returns an empty plot.
+    - Set the name of the y-axis to 'TF-IDF Score'.
+    - Set xticks to display the feature names vertically.
+
+    Requirements:
+    - re
+    - matplotlib
+    - sklearn
+    - numpy
+
+    Example:
+    >>> import pandas as pd
+    >>> data = {'Title': ['How to make pancakes', 'News update'], 'Content': ['Pancakes are easy to make.', 'Today’s news is about politics.']}
+    >>> df = pd.DataFrame(data)
+    >>> ax = task_func(df)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    if 'Title' not in df.columns or 'Content' not in df.columns:
+        return plt.figure().gca()
+
+    how_articles = df[df['Title'].str.contains(r'\b(how|what)\b', case=False)]
+    if how_articles.empty:
+        return plt.figure().gca()
+
+    vectorizer = TfidfVectorizer()
+    X = vectorizer.fit_transform(how_articles['Content'])
+    tfidf_scores = np.mean(X.toarray(), axis=0)
+
+    features = vectorizer.get_feature_names_out()
+    sorted_indices = np.argsort(tfidf_scores)[::-1]
+    top_features = features[sorted_indices][:10]
+
+    fig, ax = plt.subplots()
+    ax.barh(top_features, tfidf_scores[sorted_indices][:10])
+    ax.set_xlabel('TF-IDF Score')
+    ax.set_yticklabels(top_features, rotation='vertical')
+
+    return ax

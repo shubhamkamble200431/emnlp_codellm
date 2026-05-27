@@ -1,0 +1,51 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+def task_func(df, test_size=0.2, random_state=42):
+    """
+    Predicts categories based on 'Age' and 'Score' in a given DataFrame using a Random Forest Classifier. 
+    Rows with duplicate 'Name' entries are dropped before the prediction. The function uses a Random Forest Classifier 
+    from sklearn to make predictions and evaluates the model using accuracy.
+
+    Parameters:
+    df (DataFrame): A pandas DataFrame with columns 'Name', 'Age', 'Score', and 'Category'.
+    test_size (float, optional): Proportion of the dataset to include in the test split. Default is 0.2.
+    random_state (int, optional): Controls the shuffling applied to the data before applying the split. Default is 42.
+
+    Returns:
+    float: The accuracy of the prediction as a float value.
+    
+    Raises:
+    - The function will raise a ValueError is input df is not a DataFrame.
+    
+    Requirements:
+    - pandas
+    - sklearn.model_selection.train_test_split
+    - sklearn.ensemble.RandomForestClassifier
+    - sklearn.metrics.accuracy_score
+
+    Example:
+    >>> data = pd.DataFrame([{'Name': 'James', 'Age': 30, 'Score': 85, 'Category': 'Electronics'}, {'Name': 'Lily', 'Age': 28, 'Score': 92, 'Category': 'Home'}])
+    >>> accuracy = task_func(data)
+    >>> accuracy <= 1.0
+    True
+    """
+    if not isinstance(df, pd.DataFrame):
+        raise ValueError("Input must be a pandas DataFrame.")
+
+    df = df.drop_duplicates(subset='Name')
+
+    X = df[['Age', 'Score']]
+    y = df['Category']
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+    clf = RandomForestClassifier(random_state=random_state)
+    clf.fit(X_train, y_train)
+
+    y_pred = clf.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+
+    return accuracy

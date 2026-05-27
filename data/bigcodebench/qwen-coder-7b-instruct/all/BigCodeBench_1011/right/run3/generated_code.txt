@@ -1,0 +1,52 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def task_func(csv_file_path, col1_name="column1", col2_name="column2"):
+    """
+    Reads data from a CSV file and generates a bar plot based on grouped mean values.
+
+    The DataFrame is grouped by the column named 'col1_name',
+    and the mean for each group is calculated for the column 'col2_name'.
+    A bar plot is created using matplotlib. Each bar in the plot represents a group,
+    and its height corresponds to the mean value of 'col2_name' for that group.
+    The plot is then configured with a title and axis labels:
+       - The title is set as "Mean of [col2_name] Grouped by [col1_name]".
+       This format dynamically inserts the names of the columns being analyzed into the title.
+       - The xlabel (label for the x-axis) is set to the name of the column used for grouping (col1_name).
+       - The ylabel (label for the y-axis) is set as "Mean of [col2_name]",
+       indicating that the y-axis represents the mean values of the specified column.
+
+    Parameters:
+    - csv_file_path (str): The file path to the CSV file.
+    This parameter is mandatory and specifies the location of the CSV file to be read.
+    - col1_name (str, optional): The name of the column used for grouping the data.
+    If not provided, defaults to 'column1'. This column should exist in the CSV file.
+    - col2_name (str, optional): The name of the column for which the mean is calculated for each group.
+    If not provided, defaults to 'column2'. This column should exist in the CSV file and contain numerical data.
+
+    Returns:
+    - matplotlib.axes.Axes: The Axes object of the generated bar plot.
+    This object can be used to further customize the plot, like adding labels or changing styles.
+
+    Requirements:
+    - pandas
+    - matplotlib
+
+    Example:
+    >>> ax = task_func("data.csv", "group_column", "value_column")
+    >>> ax.get_title()
+    'Mean of value_column Grouped by group_column'
+
+    Note:
+    - Ensure that the CSV file exists at the specified path and has the required columns.
+    - The function does not handle missing data. Ensure that the CSV file has clean and complete data for accurate results.
+    - The bar plot is customizable using matplotlib's functionality after the function returns the Axes object.
+    """
+    df = pd.read_csv(csv_file_path)
+    grouped_df = df.groupby(col1_name)[col2_name].mean().reset_index()
+    ax = grouped_df.plot(kind='bar', x=col1_name, y=col2_name)
+    ax.set_title(f"Mean of {col2_name} Grouped by {col1_name}")
+    ax.set_xlabel(col1_name)
+    ax.set_ylabel(f"Mean of {col2_name}")
+    return ax

@@ -1,0 +1,72 @@
+import numpy as np
+import base64
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+
+
+def task_func(num, from_base, to_base, private_key, alphabet):
+    """
+    Converts a number from one base to another, signs it with a private RSA key,
+    and encodes the signed number in base64 using a custom alphabet.
+
+    Parameters:
+    - num (str): The number to be converted, represented as a string.
+    - from_base (int): The base of the number to be converted.
+    - to_base (int): The base to convert the number to.
+    - private_key (Any): The private RSA key for signing. The type hint is `Any` due to the dynamic nature of key objects.
+    - alphabet (str): A string representing the custom alphabet for base64 encoding.
+
+    Returns:
+    - str: The base64-encoded signed number.
+
+    Example:
+    >>> from cryptography.hazmat.backends import default_backend
+    >>> from cryptography.hazmat.primitives.asymmetric import rsa
+    >>> private_key = rsa.generate_private_key( \
+            public_exponent=65537, \
+            key_size=2048, \
+            backend=default_backend() \
+        )
+    >>> alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/"
+    >>> encoded = task_func('A1', 16, 8, private_key, alphabet)
+    >>> print(encoded)
+        XMBRyV7pyHXbaojpPuA3iv42nL5AVNukWQjfG48OnojFHtklqZuEgYoOwUZiQAj/dUxXANzzHuKjGRoPcuN5An7J7Gs8pEfEnOmnJfJgGLeiBgAXUeBl5aUTDoMIzBt5exSJWnNC1h5KXp+dDCpB4Hz3qIqdHyqHGNBExXZcEDOW6bEvF+rQOoQpxUJ6Xh3M/46i0g+vSDVyxLxurZpfVNQjEkrV8IlQXXdHoy4ciUC4YrwM0FrdM1BIWdzrhL9k6NfJeI96rabT8xHLrnZDH57mJqWBhpywVFtB7BEnqND70T0fpauFKtuaiA3jc+IydFC+lvodTWe3LiqI2WBsQw==
+    >>> isinstance(encoded, str)
+    True
+    
+    Requirements:
+    - numpy
+    - cryptography.hazmat.primitives.hashes
+    - cryptography.hazmat.primitives.asymmetric.padding
+    - base64
+
+    Note:
+    - The function assumes that the provided number can be successfully converted from the specified source base to the target base.
+    - The RSA private key must be generated and provided to sign the converted number.
+    - The custom alphabet for base64 encoding allows for flexibility in encoding schemes.
+    """
+    # Convert the input number from the source base to a decimal integer
+    decimal_num = int(num, from_base)
+
+    # Sign the decimal number using the private RSA key
+    signature = private_key.sign(
+        decimal_num.to_bytes((decimal_num.bit_length() + 7) // 8, byteorder='big'),
+        padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH
+        ),
+        hashes.SHA256()
+    )
+
+    # Combine the decimal number and its signature
+    combined_data = decimal_num.to_bytes((decimal_num.bit_length() + 7) // 8, byteorder='big') + signature
+
+    # Encode the combined data in base64 using the custom alphabet
+    base64_encoded = base64.b64encode(combined_data).decode('utf-8')
+
+    # Replace standard base64 characters with the custom alphabet
+    table = bytes.maketrans(b'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+                           alphabet.encode('utf-8'))
+    final_encoded = base64_encoded.translate(table)
+
+    return final_encoded

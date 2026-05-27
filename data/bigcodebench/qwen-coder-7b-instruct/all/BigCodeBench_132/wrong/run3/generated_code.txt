@@ -1,0 +1,59 @@
+import binascii
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def task_func(hex_str):
+    """
+    Converts a hex string representation into actual bytes and records the frequency of each byte value.
+    The function supports hex strings with or without '\\x' prefix.
+
+    Parameters:
+    - hex_str (str): The hex string (e.g., 'F3BE8080' or '\\xF3\\xBE\\x80\\x80').
+
+    Returns:
+    - tuple: A tuple containing a pandas DataFrame of byte frequencies with columns ['Byte Value', 'Frequency']
+             and a matplotlib Axes object for the plot with 'Byte Value' as the X-axis and 'Frequency' as the Y-axis.
+
+    Raises:
+    - ValueError: If 'hex_str' is not a valid hex string.
+
+    Requirements:
+    - binascii
+    - numpy
+    - matplotlib.pyplot
+    - pandas
+
+    Example:
+    >>> df, ax = task_func('F3BE8080')
+    >>> print(df)
+       Byte Value  Frequency
+    0         128          2
+    1         190          1
+    2         243          1
+    >>> plt.show()
+    """
+    if hex_str.startswith('\\'):
+        hex_str = hex_str[2:]
+    
+    try:
+        bytes_data = binascii.unhexlify(hex_str)
+    except binascii.Error as e:
+        raise ValueError("Invalid hex string") from e
+    
+    freq_dict = {}
+    for byte in bytes_data:
+        if byte in freq_dict:
+            freq_dict[byte] += 1
+        else:
+            freq_dict[byte] = 1
+    
+    df = pd.DataFrame(list(freq_dict.items()), columns=['Byte Value', 'Frequency'])
+    df['Byte Value'] = df['Byte Value'].apply(lambda x: format(x, '02X'))
+    
+    fig, ax = plt.subplots()
+    df.plot(kind='bar', x='Byte Value', y='Frequency', ax=ax)
+    ax.set_xlabel('Byte Value')
+    ax.set_ylabel('Frequency')
+    
+    return df, ax

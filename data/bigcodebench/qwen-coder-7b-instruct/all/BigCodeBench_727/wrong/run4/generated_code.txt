@@ -1,0 +1,50 @@
+import re
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+
+# Constants
+SENTENCES = ['This is a sentence', 'Another sentence here', 'More sentences']
+
+def task_func(s: str) -> np.ndarray:
+    """
+    Vectorize a string using the Bag-of-Words model. The string is split into words and each word is treated as an attribute. The value of each attribute is the number of occurrences of the word in the string. The function also uses some predefined sentences (SENTENCES constant) for vectorization.
+
+    Parameters:
+    - s (str): The string to vectorize.
+
+    Returns:
+    - np.ndarray: A numpy array with the vectorized string.
+
+    Requirements:
+    - re
+    - sklearn.feature_extraction.text.CountVectorizer
+    - numpy
+
+    Example:
+    >>> s = 'This is a test string.'
+    >>> vec = task_func(s)
+    >>> print(vec)
+    [0 0 1 0 0 0 1 1 1]
+    """
+    # Preprocess the input string
+    processed_s = re.sub(r'[^\w\s]', '', s).lower()
+    
+    # Combine the preprocessed input string with the predefined sentences
+    all_sentences = [processed_s] + SENTENCES
+    
+    # Initialize the CountVectorizer
+    vectorizer = CountVectorizer()
+    
+    # Fit and transform the combined sentences
+    X = vectorizer.fit_transform(all_sentences)
+    
+    # Extract the feature names
+    feature_names = vectorizer.get_feature_names_out()
+    
+    # Find the index of the preprocessed input string in the feature names
+    input_index = np.where(feature_names == processed_s)[0][0]
+    
+    # Get the vector representation of the preprocessed input string
+    result_vector = X[input_index].toarray()[0]
+    
+    return result_vector

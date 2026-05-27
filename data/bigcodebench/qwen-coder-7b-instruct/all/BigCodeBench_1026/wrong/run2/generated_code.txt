@@ -1,0 +1,104 @@
+import numpy as np
+from scipy.stats import ttest_ind
+import matplotlib.pyplot as plt
+
+
+def task_func(kwargs):
+    """
+    Performs a two-sample t-test on numerical data from two groups to determine if there is a significant
+    difference in their means. The function handles NaN values, computes descriptive statistics for each group,
+    and generates a boxplot and histograms for data visualization.
+
+    Parameters:
+    - kwargs (dict): A dictionary with two keys, 'group1' and 'group2'. Each key maps to a list of numbers.
+                     Lists can contain NaN values, which will be excluded from analysis.
+
+    Returns:
+    - dict: A dictionary containing:
+        - 'significant': Boolean. True if the means of the two groups are significantly different (p < 0.05).
+        - 'group1_stats': Dictionary with mean and standard deviation of 'group1' (excluding NaNs).
+        - 'group2_stats': Dictionary with mean and standard deviation of 'group2' (excluding NaNs).
+        - 'ax_boxplot': A matplotlib Axes object with a boxplot comparing 'group1' and 'group2'.
+        - 'ax_histogram': A matplotlib Axes object with histograms of 'group1' and 'group2'.
+
+    Raises:
+    - ValueError: If either group is empty, contains only NaN values, has less than two non-NaN values,
+                  or if the variance in one or both groups is below a threshold (1e-8).
+
+    Requirements:
+    - numpy
+    - scipy
+    - matplotlib
+
+    Note:
+    - The function sets the significance level (alpha) at 0.05.
+    - It removes NaN values before performing any calculations or plotting.
+    - A t-test is performed with the 'nan_policy' set to 'omit' to ignore NaNs.
+    - The function checks for sufficient non-NaN data points and adequate variance in each group before conducting the t-test.
+    - The boxplot and histograms provide a visual comparison of the data distributions.
+    
+    Example:
+    >>> data = {'group1': [1, 2, 3, 4], 'group2': [5, 6, 7, 8]}
+    >>> results = task_func(data)
+    >>> results['significant']
+    True
+    """
+    alpha = 0.05
+    nan_policy = 'omit'
+    var_threshold = 1e-8
+
+    def remove_nans(group):
+        return np.array(group, dtype=float)
+
+    def check_data_validity(group):
+        valid_group = remove_nans(group)
+        if len(valid_group) < 2:
+            raise ValueError("Each group must have at least two non-NaN values.")
+        if np.var(valid_group) < var_threshold:
+            raise ValueError(f"The variance in group {valid_group} is too low.")
+
+    def compute_statistics(group):
+        valid_group = remove_nans(group)
+        stats = {
+            'mean': np.mean(valid_group),
+            'std_dev': np.std(valid_group, ddof=1)
+        }
+        return stats
+
+    def perform_t_test(group1, group2):
+        result = ttest_ind(remove_nans(group1), remove_nans(group2), equal_var=False, nan_policy=nan_policy)
+        return result.pvalue < alpha
+
+    def plot_data(ax_boxplot, ax_histogram, group1, group2):
+        ax_boxplot.boxplot([remove_nans(group1), remove_nans(group2)])
+        ax_boxplot.set_title('Boxplot Comparison')
+        ax_boxplot.set_xlabel('Groups')
+        ax_boxplot.set_ylabel('Values')
+
+        ax_histogram.hist([remove_nans(group1), remove_nans(group2)], bins='auto', label=['Group 1', 'Group 2'])
+        ax_histogram.legend()
+        ax_histogram.set_title('Histogram Comparison')
+        ax_histogram.set_xlabel('Values')
+        ax_histogram.set_ylabel('Frequency')
+
+    # Validate input
+    for group in ['group1', 'group2']:
+        check_data_validity(kwargs[group])
+
+    # Compute statistics
+    group1_stats = compute_statistics(kwargs['group1'])
+    group2_stats = compute_statistics(kwargs['group2'])
+
+    # Perform t-test
+    significant = perform_t_test(kwargs['group1'], kwargs['group2'])
+
+    # Plot data
+    fig, (ax_boxplot, ax_histogram) = plt.subplots(1, 2, figsize=(12, 6))
+    plot_data(ax_boxplot, ax_histogram, kwargs['group1'], kwargs['group2'])
+
+    return {
+        'significant': significant,
+        'group1_stats': group1_stats,
+        'group2_stats': group2_stats,
+        'ax_boxplot': ax_boxplot,
+        'ax_histogram': ax

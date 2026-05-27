@@ -1,0 +1,55 @@
+import random
+import string
+from django.http import HttpResponse
+
+
+def task_func(request, session_expire_time):
+    """
+    This function creates a random session key comprising letters and digits with a specific length of 20,
+    then sets this key in a cookie on an HttpResponse object with the specified expiration time.
+
+    Parameters:
+    request (django.http.HttpRequest): The incoming Django HttpRequest.
+    session_expire_time (int): The expiration time for the session cookie in seconds.
+
+    Returns:
+    django.http.HttpResponse: A Django HttpResponse with the session key set in a cookie.
+
+    Raises:
+    ValueError: If the session key does not contain both letters and digits or
+                the session key length is not equal to 20.
+
+    Note:
+    -   The function set the response content to "Session key generated successfully." if the session key
+        is valid.
+
+    Examples:
+    >>> from django.conf import settings
+    >>> from django.http import HttpRequest
+    >>> if not settings.configured:
+    ...     settings.configure()
+    >>> request = HttpRequest()
+    >>> response = task_func(request, 60)
+    >>> 'session_key' in response.cookies
+    True
+    >>> len(response.cookies['session_key'].value) == 20
+    True
+    >>> response.cookies['session_key']['max-age'] == 60
+    True
+
+    Requirements:
+    - django.http
+    - django.conf
+    - random
+    - string
+    """
+    def generate_session_key():
+        while True:
+            session_key = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
+            if any(c.isalpha() for c in session_key) and any(c.isdigit() for c in session_key):
+                return session_key
+
+    session_key = generate_session_key()
+    response = HttpResponse("Session key generated successfully.")
+    response.set_cookie('session_key', session_key, max_age=session_expire_time)
+    return response

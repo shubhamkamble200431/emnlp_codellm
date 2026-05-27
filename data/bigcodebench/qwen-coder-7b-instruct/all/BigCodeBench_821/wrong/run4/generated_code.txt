@@ -1,0 +1,29 @@
+import time
+import threading
+
+
+def task_func(delay_time: float = 1.0, num_threads: int = 5):
+    '''
+    Introduces a delay of 'delay_time' seconds in a specified number of separate threads and 
+    returns the thread completion messages.
+
+    Parameters:
+    - delay_time (float): Amounf of delay time in seconds. Defalut is 1.
+    - num_threads (int): Number of threads in which the delay should be introduced. Default is 5.
+
+    Returns:
+    - list: A list of strings containing the completion messages of the threads.
+            The completion message looks as follow:
+            'Delay in thread x completed'
+
+    Requirements:
+    - time
+    - threading
+
+    Example:
+    >>> task_func(0.1, 3)
+    ['Delay in thread 0 completed', 'Delay in thread 1 completed', 'Delay in thread 2 completed']
+
+    >>> task_func(1, 10)
+    ['Delay in thread 0 completed', 'Delay in thread 1 completed', 'Delay in thread 2 completed', 'Delay in thread 3 completed', 'Delay in thread 4 completed', 'Delay in thread 5 completed', 'Delay in thread 6 completed', 'Delay in thread 7 completed', 'Delay in thread 8 completed', 'Delay in thread 9 completed']
+    '''

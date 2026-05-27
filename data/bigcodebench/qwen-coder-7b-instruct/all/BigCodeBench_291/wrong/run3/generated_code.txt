@@ -1,0 +1,38 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+
+def task_func(mu, sigma, seed=0):
+    """
+    Draw a normal distribution using a 1000 samples, indicating the mean and standard deviation 
+    with a color bar.
+    
+    Parameters:
+    mu (float): The mean of the distribution.
+    sigma (float): The standard deviation of the distribution.
+    seed (int, Optional): The seed for the random number generator. Defaults to 0.
+    
+    Returns:
+    matplotlib.axes._axes.Axes: The Axes object of the plotted distribution.
+    
+    Requirements:
+    - matplotlib.pyplot
+    - numpy
+    - seaborn
+    
+    Example:
+    >>> plot = task_func(0, 1)
+    >>> type(plot)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+np.random.seed(seed)
+data = np.random.normal(mu, sigma, 1000)
+
+sns.set(style="whitegrid")
+plt.figure(figsize=(10, 6))
+ax = sns.kdeplot(data, shade=True)
+ax.axvline(mu, color='r', linestyle='--', label=f'Mean ({mu})')
+ax.fill_between(ax.get_xlim(), 0, ax.lines[0].get_ydata().max(), where=[x > mu for x in data], color='r', alpha=0.3, interpolate=True, label=f'Standard Deviation ({sigma})')
+ax.legend()
+return ax

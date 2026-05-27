@@ -1,0 +1,41 @@
+import itertools
+import math
+
+def task_func(x):
+    """
+    Find the sub-sequence of a dictionary, x, with the minimum total length, where the keys are letters and the values are their lengths.
+
+    Parameters:
+    - x (dict): The dictionary of letter lengths.
+
+    Returns:
+    - list: The subsequence with the minimum total length.
+
+    Requirements:
+    - itertools
+    - math
+
+    Example:
+    >>> task_func({'a': 1, 'b': 2, 'c': 3})
+    ['a']
+    >>> task_func({'a': 1, 'b': -2, 'c': -5, 'd': 4})
+    ['b', 'c']
+    """
+    # Filter out negative lengths
+    positive_x = {k: v for k, v in x.items() if v >= 0}
+
+    # Sort keys by their corresponding values in ascending order
+    sorted_keys = sorted(positive_x, key=lambda k: positive_x[k])
+
+    # Generate all possible subsequences
+    subsequences = []
+    for r in range(1, len(sorted_keys) + 1):
+        subsequences.extend(itertools.combinations(sorted_keys, r))
+
+    # Calculate the total length for each subsequence
+    subseq_lengths = [(sum(positive_x[key] for key in subseq), subseq) for subseq in subsequences]
+
+    # Find the subsequence with the minimum total length
+    min_length_subseq = min(subseq_lengths, key=lambda pair: pair[0])[1]
+
+    return list(min_length_subseq)

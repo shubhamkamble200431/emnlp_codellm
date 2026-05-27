@@ -1,0 +1,39 @@
+import subprocess
+import os
+import glob
+import time
+
+
+def task_func(test_dir):
+    """
+    Run all Python codes in a specific directory and return their execution times.
+
+    Parameters:
+    - script_path (str): Path to the directory for Python code(s) to be executed.
+    
+    Returns:
+    dict: A dictionary with the script names as keys and their execution times as values.
+
+    Requirements:
+    - subprocess
+    - os
+    - glob
+    - time
+
+    Example:
+    >>> task_func("/mnt/data/mix_files/")
+    {'script1.py': 0.04103803634643555, "script2.py": 5}
+    """
+    start_time = time.time()
+    python_scripts = glob.glob(os.path.join(test_dir, "*.py"))
+    results = {}
+    for script in python_scripts:
+        start_script = time.time()
+        result = subprocess.run(["python", script], capture_output=True, text=True)
+        end_script = time.time()
+        execution_time = end_script - start_script
+        results[os.path.basename(script)] = execution_time
+    end_time = time.time()
+    total_execution_time = end_time - start_time
+    print(f"Total execution time for all scripts: {total_execution_time:.6f} seconds")
+    return results

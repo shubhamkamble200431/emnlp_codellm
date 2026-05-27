@@ -1,0 +1,44 @@
+import subprocess
+import shutil
+import os
+
+def task_func(script_path: str, temp_dir: str) -> str:
+    """
+    Execute a given Python code in a temporary directory.
+    
+    Parameters:
+    - script_path (str): The path to the Python code that needs to be executed.
+    - temp_dir (str): The path for the code to copy the Python code
+    
+    Returns:
+    - str: String indicating the success or failure of the script execution.
+    
+    Requirements:
+    - subprocess
+    - shutil
+    - os
+    
+    Example:
+    >>> task_func('/path/to/example_script.py')
+    'Script executed successfully!'
+    
+    Note: 
+    - If the Python code can be run successfully return "Script executed successfully!", otherwise "Script execution failed!"
+    """
+    try:
+        # Copy the script to the temporary directory
+        shutil.copy2(script_path, temp_dir)
+        
+        # Construct the full path to the copied script
+        copied_script_path = os.path.join(temp_dir, os.path.basename(script_path))
+        
+        # Execute the copied script using subprocess
+        result = subprocess.run(['python', copied_script_path], capture_output=True, text=True)
+        
+        # Check if the script executed successfully
+        if result.returncode == 0:
+            return 'Script executed successfully!'
+        else:
+            return 'Script execution failed!'
+    except Exception as e:
+        return f'Script execution failed with error: {e}'

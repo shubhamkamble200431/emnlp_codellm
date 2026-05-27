@@ -1,0 +1,33 @@
+import random
+import string
+from collections import Counter
+
+def task_func(num_strings, string_length):
+    """
+    Creates a list of random strings, each of a specified length, and counts the frequency
+    of each character across all strings. The function then returns the characters
+    and their frequencies sorted by frequency in descending order.
+    The random strings are composed of ASCII lowercase characters.
+
+    Parameters:
+        num_strings (int): The number of random strings to generate.
+        string_length (int): The length of each random string.
+
+    Requirements:
+    - random
+    - string
+    - collections.Counter
+
+    Returns:
+        list of tuple: A list of tuples where each tuple contains a character and its count,
+                       sorted by count in descending order.
+
+    Examples:
+    >>> type(task_func(1000, 5)) == list
+    True
+    >>> all(isinstance(pair, tuple) and len(pair) == 2 for pair in task_func(1000, 5))
+    True
+    """
+        char_list = [random.choice(string.ascii_lowercase) for _ in range(num_strings * string_length)]
+        char_count = Counter(char_list)
+        return char_count.most_common()

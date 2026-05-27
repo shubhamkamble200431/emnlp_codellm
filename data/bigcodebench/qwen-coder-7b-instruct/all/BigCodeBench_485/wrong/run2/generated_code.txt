@@ -1,0 +1,76 @@
+from datetime import datetime, timedelta
+import pytz
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(start_time, end_time):
+    """
+    Plots the hourly difference between UTC and specified global time zones across a date range.
+
+    This function visualizes the time difference in hours between UTC and predefined time zones for each day
+    within the specified date range. Predefined time zones include UTC, America/Los_Angeles, Europe/Paris,
+    Asia/Kolkata, and Australia/Sydney. The differences are plotted on a graph, using a distinct color for
+    each time zone's time difference curve, selecting from ["b", "g", "r", "c", "m", "y", "k"].
+
+    Parameters:
+    - start_time (str): The start date in the format "yyyy-mm-dd".
+    - end_time (str): The end date in the format "yyyy-mm-dd".
+
+    Returns:
+    - matplotlib.axes.Axes: The Axes object with the plotted time differences in hours between UTC and 
+                            other time zones.
+
+    Requirements:
+    - datetime.datetime
+    - datetime.timedelta
+    - pytz
+    - numpy
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax = task_func('2021-01-01', '2021-01-10')
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(18628.0, 0, '2021-01-01'), Text(18629.0, 0, '2021-01-02'), Text(18630.0, 0, '2021-01-03'), Text(18631.0, 0, '2021-01-04'), Text(18632.0, 0, '2021-01-05'), Text(18633.0, 0, '2021-01-06'), Text(18634.0, 0, '2021-01-07'), Text(18635.0, 0, '2021-01-08'), Text(18636.0, 0, '2021-01-09')]
+    """
+    timezones = {
+        'UTC': pytz.utc,
+        'America/Los_Angeles': pytz.timezone('America/Los_Angeles'),
+        'Europe/Paris': pytz.timezone('Europe/Paris'),
+        'Asia/Kolkata': pytz.timezone('Asia/Kolkata'),
+        'Australia/Sydney': pytz.timezone('Australia/Sydney')
+    }
+
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+    fig, ax = plt.subplots()
+
+    start_date = datetime.strptime(start_time, "%Y-%m-%d")
+    end_date = datetime.strptime(end_time, "%Y-%m-%d")
+    delta = timedelta(days=1)
+
+    dates = []
+    utc_diffs = []
+
+    while start_date <= end_date:
+        dates.append(start_date.date())
+        utc_datetime = pytz.utc.localize(datetime.combine(start_date, datetime.min.time()))
+        utc_diffs.append([])
+        for tz_name, tz in timezones.items():
+            local_dt = utc_datetime.astimezone(tz)
+            diff = local_dt.hour + local_dt.minute / 60
+            utc_diffs[-1].append(diff)
+        start_date += delta
+
+    for i, (date, diffs) in enumerate(zip(dates, utc_diffs)):
+        ax.plot([date] * len(timezones), diffs, marker='o', linestyle='-', label=f'{timezones[list(timezones.keys())[i+1]].location}', color=colors[i])
+
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Hour Difference from UTC')
+    ax.set_title('Hourly Difference Between UTC and Specified Time Zones')
+    ax.legend()
+    ax.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%Y-%m-%d'))
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    return ax

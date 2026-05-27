@@ -1,0 +1,48 @@
+import os
+import shutil
+import glob
+import hashlib
+
+def task_func(ROOT_DIR, DEST_DIR, SPECIFIC_HASH):
+    """
+    Moves all files from a specified root directory (ROOT_DIR) to a target directory (DEST_DIR) if they match a specific hash value (SPECIFIC_HASH).
+    The function calculates the MD5 hash of each file in ROOT_DIR and moves it if the hash matches SPECIFIC_HASH.
+
+    Parameters:
+        ROOT_DIR (str): The path to the root directory from which files will be moved.
+        DEST_DIR (str): The path to the destination directory where files will be moved to.
+        SPECIFIC_HASH (str): The specific MD5 hash value files must match to be moved.
+
+    Returns:
+        int: The number of files moved to the target directory.
+
+    Note:
+        The function assumes the existence of the root directory. The existence of DEST_DIR is ensured by the function.
+
+    Requirements:
+    - os
+    - shutil
+    - glob
+    - hashlib
+
+    Examples:
+    >>> # Assuming the correct paths are given for ROOT_DIR, DEST_DIR,
+    >>> # and at least one file in ROOT_DIR matches SPECIFIC_HASH:
+    >>> type(task_func('/path/to/root', '/path/to/dest', 'd41d8cd98f00b204e9800998ecf8427e')) is int
+    True
+    >>> task_func('/path/to/root', '/path/to/dest', 'd41d8cd98f00b204e9800998ecf8427e') >= 0
+    True
+    """
+    if not os.path.exists(DEST_DIR):
+        os.makedirs(DEST_DIR)
+
+    moved_count = 0
+    for file_path in glob.glob(os.path.join(ROOT_DIR, '*')):
+        if os.path.isfile(file_path):
+            with open(file_path, 'rb') as f:
+                file_hash = hashlib.md5(f.read()).hexdigest()
+                if file_hash == SPECIFIC_HASH:
+                    shutil.move(file_path, DEST_DIR)
+                    moved_count += 1
+
+    return moved_count

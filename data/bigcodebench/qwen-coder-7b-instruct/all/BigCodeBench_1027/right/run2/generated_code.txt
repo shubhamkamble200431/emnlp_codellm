@@ -1,0 +1,38 @@
+import binascii
+import urllib.parse
+
+
+def task_func(url):
+    """
+    Decode a hexadecimal string from the 'q' query parameter of a URL.
+
+    This function extracts the 'q' query parameter from the given URL,
+    assumes it is a hexadecimal string, and decodes it into a UTF-8 string.
+    If the hexadecimal string is invalid or cannot be decoded into a valid UTF-8 string, None is returned.
+
+    Parameters:
+    url (str): The URL to extract the query parameter from.
+
+    Returns:
+    str or None: The decoded string if the 'q' parameter exists and is a valid hexadecimal, otherwise None.
+
+    Requirements:
+    - binascii
+    - urllib.parse
+    
+    Example:
+    >>> task_func('https://www.example.com?q=4a4b4c')
+    'JKL'
+    """
+    parsed_url = urllib.parse.urlparse(url)
+    query_params = urllib.parse.parse_qs(parsed_url.query)
+    
+    q_value = query_params.get('q', [None])[0]
+    if q_value is None:
+        return None
+    
+    try:
+        decoded_bytes = binascii.unhexlify(q_value)
+        return decoded_bytes.decode('utf-8')
+    except (binascii.Error, UnicodeDecodeError):
+        return None

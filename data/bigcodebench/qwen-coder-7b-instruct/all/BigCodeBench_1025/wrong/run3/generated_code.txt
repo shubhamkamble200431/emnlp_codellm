@@ -1,0 +1,55 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+
+# Constants
+PLOT_TITLE = "Scaled Values"
+
+
+def task_func(data_dict):
+    """
+    Scales the values in a given dictionary using MinMaxScaler and plots the scaled data.
+
+    Parameters:
+    - data_dict (dict): A dictionary where keys represent column names and values are lists of numerical data.
+                        The values may contain missing data (None), which are handled by dropping them before scaling.
+
+    Returns:
+    - pandas.DataFrame containing the scaled data.
+    - matplotlib Axes object that displays the plot of the scaled data.
+
+    Requirements:
+    - pandas
+    - scikit-learn
+    - matplotlib
+
+    Example:
+    >>> data = {'a': [1, 2, None, 4], 'b': [5, None, 7, 8]}
+    >>> scaled_df, plot_ax = task_func(data)
+    >>> scaled_df
+         a    b
+    0  0.0  0.0
+    1  1.0  1.0
+    >>> plot_ax.get_title()
+    'Scaled Values'
+    """
+    df = pd.DataFrame(data_dict)
+    scaler = MinMaxScaler()
+    
+    # Drop rows with any None values
+    df_cleaned = df.dropna()
+
+    # Scale the cleaned data
+    scaled_data = scaler.fit_transform(df_cleaned)
+
+    # Create a DataFrame from the scaled data
+    scaled_df = pd.DataFrame(scaled_data, columns=df_cleaned.columns, index=df_cleaned.index)
+
+    # Plot the scaled data
+    fig, ax = plt.subplots()
+    scaled_df.plot(ax=ax)
+
+    # Set the title of the plot
+    ax.set_title(PLOT_TITLE)
+
+    return scaled_df, ax

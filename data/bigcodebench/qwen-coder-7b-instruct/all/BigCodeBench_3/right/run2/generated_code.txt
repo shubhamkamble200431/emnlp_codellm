@@ -1,0 +1,36 @@
+import random
+import numpy as np
+
+def task_func(LETTERS):
+    """
+    Create a dictionary where keys are specified letters and values are lists of random integers.
+    Then calculate the mean of these integers for each key and return a dictionary of these means.
+
+    Parameters:
+        LETTERS (list of str): List of single-character strings to be used as keys in the output dictionary.
+    
+    Returns:
+        dict: A dictionary where each key is a letter from the input list and the value is the mean of 
+              a randomly generated list of integers (with each list having 1 to 10 integers ranging from 0 to 100).
+    
+    Requirements:
+    - random
+    - np (numpy)
+    
+    Example:
+    >>> LETTERS = ['a', 'b', 'c']
+    >>> mean_dict = task_func(LETTERS)
+    >>> isinstance(mean_dict, dict)
+    True
+    >>> 'a' in mean_dict.keys() and 'b' in mean_dict.keys() and 'c' in mean_dict.keys()
+    True
+    >>> all(isinstance(v, float) for v in mean_dict.values())  # Check if all values are floats
+    True
+    """
+    result = {}
+    for letter in LETTERS:
+        num_elements = random.randint(1, 10)
+        random_integers = np.random.randint(0, 101, num_elements)
+        mean_value = np.mean(random_integers)
+        result[letter] = mean_value
+    return result

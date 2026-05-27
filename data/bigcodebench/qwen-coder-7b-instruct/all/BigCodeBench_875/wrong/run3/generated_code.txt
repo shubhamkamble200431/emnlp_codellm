@@ -1,0 +1,72 @@
+import pandas as pd
+import random
+
+def task_func(data, columns=['Name', 'Age', 'Occupation'], fill_missing=False, num_range=(0, 100), seed=None):
+    """
+    Create a Pandas DataFrame from a list of tuples, each representing a row.
+    Tuples of unequal lengths are allowed, and missing elements are filled with None.
+    Optionally, missing numeric values can be filled with random data.
+
+    Parameters:
+    data (list of tuples): Each tuple contains the data for each row.
+                           Elements in tuples represent values corresponding to the columns parameter.
+    columns (list of str): List of column names for the DataFrame.
+                           Defaults to ['Name', 'Age', 'Occupation'].
+    fill_missing (bool): If True, fill missing numeric values with random data.
+                         Defaults to False.
+    num_range (tuple): Range (min, max) of random numbers for filling missing values.
+                       Defaults to (0, 100).
+    seed (int): Optional seed for random number generator for reproducibility.
+                Defaults to None.
+
+    Returns:
+    DataFrame: A pandas DataFrame with specified columns.
+               Missing elements are represented as None or filled with random data.
+
+    Requirements:
+    - pandas
+    - random
+
+    Example:
+    >>> data = [('John', 25, 'Engineer'), ('Alice', ), ('Bob', )]
+    >>> df = task_func(data, fill_missing=True, num_range=(0, 10), seed=42)
+    >>> print(df)
+        Name   Age Occupation
+    0   John  25.0   Engineer
+    1  Alice  10.0       None
+    2    Bob   1.0       None
+
+    >>> data = [('Mango', 20), ('Apple', ), ('Banana', )]
+    >>> df = task_func(data, columns=['Fruit', 'Quantity'], fill_missing=False, seed=42)
+    >>> print(df)
+        Fruit  Quantity
+    0   Mango      20.0
+    1   Apple       NaN
+    2  Banana       NaN
+    """
+    if seed is not None:
+        random.seed(seed)
+
+    # Determine the maximum length of the rows
+    max_len = max(len(row) for row in data)
+
+    # Initialize the DataFrame with the specified columns
+    df = pd.DataFrame(columns=columns)
+
+    for i, row in enumerate(data):
+        # Extend the row with None if it's shorter than the maximum length
+        extended_row = list(row) + [None] * (max_len - len(row))
+
+        # Convert all elements to floats to allow for easy conversion to numeric later
+        extended_row = [float(x) if isinstance(x, int) else x for x in extended_row]
+
+        # Fill missing numeric values with random data if required
+        if fill_missing:
+            for j in range(max_len):
+                if pd.isna(extended_row[j]) and isinstance(extended_row[j], float):
+                    extended_row[j] = random.uniform(num_range[0], num_range[1])
+
+        # Append the processed row to the DataFrame
+        df.loc[i] = extended_row
+
+    return df

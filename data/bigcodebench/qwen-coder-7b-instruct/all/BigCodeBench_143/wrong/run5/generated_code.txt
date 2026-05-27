@@ -1,0 +1,39 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def task_func():
+    """
+    Draws the linear equation y = 2x + 1 on a 2D plot for x values ranging from -10 to 10, and marks the solution for x = 2 with a green 'o' (circle) marker.
+
+    The plot includes:
+    - A red line representing the equation y = 2x + 1, labeled as 'y=2x+1', for x in [-10, 10].
+    - A green circle marker indicating the solution at x = 2, y = 5.
+    - Title: 'Solution of the equation y=2x+1 at x=2'
+    - X-axis labeled as 'x', with a range from -10 to 10.
+    - Y-axis labeled as 'y', with a range automatically adjusted based on the equation.
+    - A legend indicating labels for the equation and the solution point.
+
+    Returns:
+        matplotlib.axes.Axes: An object representing the plot with specified features and ranges.
+
+    Requirements:
+        - numpy
+        - matplotlib.pyplot
+    
+    Example:
+    >>> ax = task_func()
+    >>> ax.get_title()
+    'Solution of the equation y=2x+1 at x=2'
+    """
+    x = np.linspace(-10, 10, 400)
+    y = 2 * x + 1
+
+    fig, ax = plt.subplots()
+    ax.plot(x, y, label='y=2x+1')
+    ax.scatter(2, 5, color='green', label='solution at x=2')
+    ax.set_title('Solution of the equation y=2x+1 at x=2')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.legend()
+
+    return ax

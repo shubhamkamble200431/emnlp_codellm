@@ -1,0 +1,56 @@
+import os
+import csv
+from openpyxl import load_workbook
+
+def task_func(file_name, excel_file_path, csv_file_path) -> str:
+    """
+    Converts an Excel file (.xls or .xlsx) to a CSV file by reading the contents of the Excel file
+    and writing them to a new CSV file with the same name but a different extension. Allows specifying
+    separate paths for the Excel file source and the CSV file destination.
+
+    Parameters:
+        file_name (str): The name of the Excel file to be converted.
+        excel_file_path (str): The directory path where the Excel file is located.
+        csv_file_path (str): The directory path where the CSV file should be saved.
+
+    Returns:
+        str: The name of the created CSV file.
+
+    Requirements:
+    - openpyxl.load_workbook
+    - os
+    - csv
+
+    Example:
+    >>> task_func('test.xlsx', '/path/to/excel/files', '/path/to/csv/files')
+    'test.csv'
+    >>> task_func('nonexistent.xlsx', '/path/to/excel/files', '/path/to/csv/files')
+    Traceback (most recent call last):
+       ...
+    FileNotFoundError: [Errno 2] No such file or directory: '/path/to/excel/files/nonexistent.xlsx'
+
+    Note:
+    - This function assumes the active sheet is the one to be converted.
+    """
+    # Construct the full path to the Excel file
+    excel_file_full_path = os.path.join(excel_file_path, file_name)
+
+    # Check if the Excel file exists
+    if not os.path.isfile(excel_file_full_path):
+        raise FileNotFoundError(f"No such file or directory: '{excel_file_full_path}'")
+
+    # Load the workbook from the Excel file
+    workbook = load_workbook(filename=excel_file_full_path)
+    active_sheet = workbook.active
+
+    # Construct the full path to the CSV file
+    csv_file_full_path = os.path.join(csv_file_path, os.path.splitext(file_name)[0] + '.csv')
+
+    # Write the data from the active sheet to the CSV file
+    with open(csv_file_full_path, mode='w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        for row in active_sheet.iter_rows(values_only=True):
+            csvwriter.writerow(row)
+
+    # Return the name of the created CSV file
+    return os.path.basename(csv_file_full_path)

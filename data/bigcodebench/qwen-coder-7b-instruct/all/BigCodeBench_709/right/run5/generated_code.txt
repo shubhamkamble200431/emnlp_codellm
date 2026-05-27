@@ -1,0 +1,32 @@
+import base64
+import re
+from html import unescape
+import textwrap
+
+def task_func(raw_string, line_length):
+    """
+    Decode a raw string from base64, decouple HTML entities, replace multiple spaces with a single space, strip leading and subsequent spaces, and wrap text to a certain line length.
+
+    Parameters:
+    - raw_string (str): The base64 encoded string.
+    - line_length (int): The maximum length of a line.
+
+    Returns:
+    - wrapped_text (str): The cleaned and formatted string.
+
+    Requirements:
+    - base64
+    - re
+    - html
+    - textwrap
+
+    Example:
+    >>> task_func('SGVsbG8sICBXb3JsZCEgICAg', 5)
+    'Hello\\n, Wor\\nld!'
+    """
+    decoded_bytes = base64.b64decode(raw_string)
+    decoded_str = decoded_bytes.decode('utf-8')
+    decoded_str = unescape(decoded_str)
+    cleaned_str = re.sub(r'\s+', ' ', decoded_str).strip()
+    wrapped_text = textwrap.fill(cleaned_str, width=line_length)
+    return wrapped_text

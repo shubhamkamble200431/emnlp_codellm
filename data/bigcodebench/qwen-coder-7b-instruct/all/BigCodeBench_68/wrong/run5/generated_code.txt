@@ -1,0 +1,27 @@
+import pandas as pd
+import seaborn as sns
+
+def task_func(data='/path/to/data.csv', emp_prefix='EMP'):
+    """
+    Load a CSV file into a DataFrame, filter the lines in which the employee ID begins with a prefix, and draw a histogram of its age.
+
+    Parameters:
+    - data (str): The path to the data file. Default is '/path/to/data.csv'.
+    - emp_prefix (str): The prefix of the employee IDs. Default is 'EMP$$'.
+
+    Returns:
+    - DataFrame: A pandas DataFrame with the filtered data, containing the columns 'Employee ID' and 'Age'.
+    - Axes: A histogram plot of the 'Age' column of the filtered data.
+
+    Requirements:
+    - pandas
+    - seaborn
+
+    Example:
+    >>> df, ax = task_func()
+    >>> print(df)
+    """
+df = pd.read_csv(data)
+filtered_df = df[df['Employee ID'].str.startswith(emp_prefix)][['Employee ID', 'Age']]
+ax = sns.histplot(filtered_df['Age'], kde=True)
+return filtered_df, ax

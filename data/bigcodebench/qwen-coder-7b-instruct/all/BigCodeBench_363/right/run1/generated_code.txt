@@ -1,0 +1,35 @@
+from multiprocessing import Pool
+import math
+
+def calculate_factorial(number: int) -> tuple:
+    return number, math.factorial(number)
+    
+def task_func(numbers: list) -> dict:
+    """
+    Calculate factorials for a list of numbers in parallel using multiprocessing.
+
+    Parameters:
+    numbers (list[int]): List of numbers to calculate factorials.
+
+    Returns:
+    dict[int, int]: A dictionary with numbers as keys and their factorial as values.
+
+    Raises:
+    ValueError: If any element in the input list is not an integer or is negative.
+
+    Requirements:
+    - multiprocessing.Pool
+    - math.factorial
+
+    Example:
+    >>> factorials = task_func([5, 6, 7, 8, 9])
+    >>> factorials[5] == 120 and factorials[9] == 362880
+    True
+    """
+    if not all(isinstance(num, int) and num >= 0 for num in numbers):
+        raise ValueError("All elements in the input list must be non-negative integers.")
+
+    with Pool() as pool:
+        results = pool.map(calculate_factorial, numbers)
+
+    return dict(results)

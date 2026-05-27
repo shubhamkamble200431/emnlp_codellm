@@ -1,0 +1,55 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+
+
+# Constants
+FEATURES = ['feature1', 'feature2', 'feature3', 'feature4', 'feature5']
+TARGET = 'target'
+
+def task_func(df, dict_mapping, plot_histogram=False):
+    """
+    Pre-processes a DataFrame by replacing values according to a dictionary mapping, standardizing specified features, 
+    and optionally drawing a histogram of the target variable.
+
+    Parameters:
+    - df (DataFrame): The input DataFrame to be preprocessed. It should contain columns named as in FEATURES and TARGET.
+    - dict_mapping (dict): A dictionary for replacing values in df. The keys should correspond to existing values in df.
+    - plot_histogram (bool, optional): If True, a histogram of the target variable is displayed. Default is False.
+
+    Returns:
+    - DataFrame: The preprocessed DataFrame with standardized features and values replaced as per dict_mapping.
+    - Axes: The histogram of the target variable if plot_histogram is True, otherwise None.
+
+    Raises:
+    - The function will raise ValueError if the FEATURES and TARGET columns not in the input DataFrame.
+    - The function will raise ValueError if the input df is not a DataFrame.
+
+    Requirements:
+    - pandas
+    - sklearn.preprocessing.StandardScaler
+
+    Example:
+    >>> df = pd.DataFrame({'feature1': [1, 2, 3], 'feature2': [4, 5, 6], 'feature3': [7, 8, 9],'feature4': [10, 11, 12], 'feature5': [13, 14, 15], 'target': [0, 1, 1]})
+    >>> dict_mapping = {1: 11, 0: 22}
+    >>> isinstance(task_func(df, dict_mapping, plot_histogram=True)[1], plt.Axes)
+    True
+    >>> plt.close()
+    """
+    if not isinstance(df, pd.DataFrame):
+        raise ValueError("The input df is not a DataFrame.")
+
+    if not all(feature in df.columns for feature in FEATURES) or TARGET not in df.columns:
+        raise ValueError("The FEATURES and TARGET columns must be present in the input DataFrame.")
+
+    # Replace values in df according to dict_mapping
+    for old_value, new_value in dict_mapping.items():
+        df[TARGET] = df[TARGET].replace(old_value, new_value)
+
+    # Standardize specified features
+    scaler = StandardScaler()
+    df[FEATURES] = scaler.fit_transform(df[FEATURES])
+
+    if plot_histogram:
+        ax = df[TARGET].hist()
+        return df, ax

@@ -1,0 +1,36 @@
+import pandas as pd
+import regex as re
+from sklearn.feature_extraction.text import CountVectorizer
+
+
+def task_func(text):
+    """
+    Analyze a text by creating a document term matrix with CountVectorizer. The text contains several sentences, each separated by a period.
+    Ignore empty sentences.
+
+    Parameters:
+    text (str): The text to analyze.
+
+    Returns:
+    DataFrame: A pandas DataFrame with the document-term matrix. Its column names should be adapted from the vectorizer feature names.
+
+    Requirements:
+    - pandas
+    - regex
+    - sklearn.feature_extraction.text.CountVectorizer
+
+    Example:
+    >>> text = "This is a sample sentence. This sentence contains sample words."
+    >>> dtm = task_func(text)
+    >>> print(dtm)
+       contains  is  sample  sentence  this  words
+    0         0   1       1         1     1      0
+    1         1   0       1         1     1      1
+    """
+    sentences = re.split(r'\.\s*', text.strip())
+    non_empty_sentences = [sentence for sentence in sentences if sentence]
+    
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(non_empty_sentences)
+    
+    return pd.DataFrame(X.toarray(), columns=vectorizer.get_feature_names_out())

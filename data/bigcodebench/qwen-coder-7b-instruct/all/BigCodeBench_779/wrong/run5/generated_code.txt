@@ -1,0 +1,54 @@
+import os
+import shutil
+
+# Constants
+BACKUP_DIR = '/tmp/backup'
+
+def get_unique_backup_dir():
+    return "/fake/backup/path"
+
+def task_func(directory):
+    """
+    Create a backup of a directory and clean the directory afterwards.
+    
+    Parameters:
+    - directory (str): The directory path to be backed up and cleaned.
+    
+    Returns:
+    tuple: A tuple containing:
+        - str: The backup directory path.
+        - list: A list of any errors encountered during the operation (empty list if no errors).
+    
+    Requirements:
+    - os
+    - shutil
+    - time
+    
+    Example:
+    >>> task_func('/tmp/my_data')
+    ('/tmp/backup/backup_20230827010101', [])
+    
+    Note: The function will return the backup directory path and a list of errors (if any).
+    """
+    backup_dir = get_unique_backup_dir()
+    errors = []
+    try:
+        # Create backup directory
+        os.makedirs(backup_dir)
+        # Copy files from the original directory to the backup directory
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                src_file = os.path.join(root, file)
+                dst_file = os.path.join(backup_dir, os.path.relpath(src_file, start=directory))
+                os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+                shutil.copy2(src_file, dst_file)
+        # Clean the original directory
+        for root, dirs, files in os.walk(directory, topdown=False):
+            for name in files:
+                os.remove(os.path.join(root, name))
+            for name in dirs:
+                os.rmdir(os.path.join(root, name))
+        os.rmdir(directory)
+    except Exception as e:
+        errors.append(str(e))
+    return backup_dir, errors

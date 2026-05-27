@@ -1,0 +1,33 @@
+import re
+from nltk.stem import PorterStemmer
+
+def task_func(text_series):
+    """
+    Process a pandas Series of text data by lowercasing all letters, removing non-alphanumeric 
+    characters (except spaces), removing punctuation, and stemming each word to its root form.
+    
+    Stemming is done using the NLTK's PorterStemmer, which applies a series of rules to find the stem of each word.
+    
+    Parameters:
+    - text_series (pandas.Series): A Series object containing string entries representing text data.
+
+    Requirements:
+    - re
+    - nltk
+
+    Returns:
+    - pandas.Series: A Series where each string has been processed to remove non-alphanumeric characters,
+      punctuation, converted to lowercase, and where each word has been stemmed.
+    
+    Examples:
+    >>> input_series = pd.Series(["This is a sample text.", "Another example!"])
+    >>> output_series = task_func(input_series)
+    >>> print(output_series.iloc[0])
+    thi is a sampl text
+    >>> print(output_series.iloc[1])
+    anoth exampl
+
+    """
+    ps = PorterStemmer()
+    cleaned_series = text_series.str.lower().str.replace(r'\W+', ' ', regex=True).apply(lambda x: ' '.join([ps.stem(word) for word in x.split()]))
+    return cleaned_series

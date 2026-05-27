@@ -1,0 +1,35 @@
+import pandas as pd
+import seaborn as sns
+import numpy as np
+
+# Constants
+LABELS = ['H\u2082O', 'O\u2082', 'CO\u2082', 'N\u2082', 'Ar']
+
+
+def task_func(x, y, labels):
+    """
+    Create a heatmap using the seaborn library for "x" as x-values and "y" as y-values with labels.
+
+    Parameters:
+    x (list): List of numpy arrays representing the x-values of the data points.
+    y (list): List of numpy arrays representing the y-values of the data points.
+    labels (list): List of strings representing the labels for the chemical compounds.
+
+    Returns:
+    ax (Axes): A seaborn heatmap object.
+    df (DataFrame): The dataframe used to create the heatmap.
+
+    Requirements:
+    - numpy
+    - pandas
+    - seaborn
+
+    Example:
+    >>> x = [np.array([1,2,3]), np.array([4,5,6]), np.array([7,8,9])]
+    >>> y = [np.array([4,5,6]), np.array([7,8,9]), np.array([10,11,12])]
+    >>> labels = ['H\u2082O', 'O\u2082', 'CO\u2082']
+    >>> ax = task_func(x, y, labels)
+    """
+    df = pd.DataFrame(np.array(x).T, columns=labels)
+    ax = sns.heatmap(df, annot=True, fmt='g')
+    return ax, df

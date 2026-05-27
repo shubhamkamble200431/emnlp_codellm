@@ -1,0 +1,20 @@
+
+def is_equal_to_sum_even(n):
+    """Evaluate whether the given number n can be written as the sum of exactly 4 positive even numbers
+    Example
+    is_equal_to_sum_even(4) == False
+    is_equal_to_sum_even(6) == False
+    is_equal_to_sum_even(8) == True
+    """
+    # Since each of the four even numbers must be at least 2,
+    # their minimum sum is 2 + 2 + 2 + 2 = 8.
+    # Therefore, any number less than 8 cannot be written as such a sum.
+    if n < 8:
+        return False
+
+    # Check if n is divisible by 4. If it is, we need to divide n by 4 to get two even numbers.
+    # The remaining number will be used as the fourth number in the sum.
+    if n % 4 == 0:
+        return True
+    else:
+        return False

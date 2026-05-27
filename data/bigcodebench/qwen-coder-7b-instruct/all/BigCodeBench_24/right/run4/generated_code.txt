@@ -1,0 +1,39 @@
+import base64
+import hashlib
+import os
+
+def task_func(password, SALT_LENGTH = 32):
+    """
+    Hashes a password using the PBKDF2 HMAC algorithm with SHA-256 as the hashing algorithm, 
+    combined with a randomly generated salt, and returns both the salt and the hashed password, 
+    each base64-encoded.
+
+    Parameters:
+    password (str): The password to be hashed.
+    SALT_LENGTH (int): the length of the randomly generated salt.
+
+    Returns:
+    tuple[bytes, bytes]: A tuple containing the base64-encoded salt and the base64-encoded hashed password as byte strings.
+
+    Raises:
+    ValueError if the password is None or empty
+
+    Requirements:
+    - base64
+    - hashlib
+    - os
+
+    Example:
+    >>> salt, hashed_password = task_func('my_password')
+    >>> isinstance(salt, bytes)
+    True
+    >>> isinstance(hashed_password, bytes)
+    True
+    """
+    if not password:
+        raise ValueError("Password cannot be None or empty")
+
+    salt = os.urandom(SALT_LENGTH)
+    hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+
+    return base64.b64encode(salt), base64.b64encode(hashed_password)

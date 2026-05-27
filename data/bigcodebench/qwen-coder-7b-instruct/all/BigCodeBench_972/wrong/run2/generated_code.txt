@@ -1,0 +1,43 @@
+import pathlib
+import os
+
+
+def task_func(path: str, delimiter: str = os.path.sep) -> list:
+    """
+    Validates that a given file path does not contain invalid characters for file paths
+    then splits it into path components using a specified delimiter.
+
+    Parameters:
+    - path (str):      The file path to split. If empty, the function returns an empty list.
+    - delimiter (str): The delimiter to use for splitting the path.
+                       Defaults to the system's path separator (os.path.sep).
+
+    Returns:
+    - list: A list of the path components if the path is valid;
+            otherwise, an empty list if the path contains invalid characters.
+
+    Raises:
+    - ValueError: If the path contains invalid characters.
+
+    Requirements:
+    - pathlib
+    - os
+
+    Notes:
+    - Backslashes ('\\') are internally converted to forward slashes ('/') before processing.
+    - This function treats '<', '>', ':', '"', '|', '?', '*' as invalid characters in paths.
+
+    Examples:
+    >>> task_func('Docs/src/Scripts/temp', '/')
+    ['Docs', 'src', 'Scripts', 'temp']
+    >>> task_func(r'Docs\\src\\Scripts\\temp', '\\\\')
+    ['Docs', 'src', 'Scripts', 'temp']
+    """
+    # Convert backslashes to forward slashes and validate path
+    sanitized_path = path.replace('\\', '/')
+    invalid_chars_pattern = r'[<>:"|?*]'
+    if re.search(invalid_chars_pattern, sanitized_path):
+        raise ValueError("Invalid characters found in the path")
+
+    # Split the path using the provided delimiter
+    return sanitized_path.split(delimiter)

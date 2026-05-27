@@ -1,0 +1,24 @@
+import itertools
+import random
+
+def task_func(t, n):
+    """
+    Generate all combinations from a tuple with length n and return a random combination of length n.
+    
+    Parameters:
+    - t (tuple): The tuple.
+    - n (int): The length of the combinations.
+    
+    Returns:
+    - tuple: A combination of the input tuple.
+
+    Requirements:
+    - itertools
+    - random
+    
+    Example:
+    >>> random.seed(42)
+    >>> task_func((1, 2, 3, 4), 2)
+    (3, 4)
+    """
+return random.choice(list(itertools.combinations(t, n)))

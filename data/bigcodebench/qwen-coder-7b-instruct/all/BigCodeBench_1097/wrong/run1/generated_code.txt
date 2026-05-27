@@ -1,0 +1,53 @@
+import re
+from string import punctuation
+
+# Predefined list of common stopwords
+PREDEFINED_STOPWORDS = {
+    "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", 
+    "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", 
+    "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", 
+    "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", 
+    "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", 
+    "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", 
+    "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", 
+    "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", 
+    "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "more"
+}
+
+def task_func(text):
+    """
+    Clean the specified text by removing URLs, stopwords, and punctuation.
+
+    Parameters:
+    text (str): The text to be cleaned.
+
+    Returns:
+    str: The cleaned text with URLs, predefined stopwords, and punctuation removed.
+
+    Requirements:
+    - re
+    - string.punctuation
+
+    Example:
+    >>> task_func('Visit https://www.python.org for more info. I love to eat apples.')
+    'Visit info love eat apples'
+    """
+    # Remove URLs
+    text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', text)
+
+    # Remove punctuation
+    text = ''.join(char for char in text if char not in punctuation)
+
+    # Convert to lowercase
+    text = text.lower()
+
+    # Split into words
+    words = text.split()
+
+    # Filter out stopwords
+    words = [word for word in words if word not in PREDEFINED_STOPWORDS]
+
+    # Join words back into a single string
+    cleaned_text = ' '.join(words)
+
+    return cleaned_text

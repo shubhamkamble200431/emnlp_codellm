@@ -1,0 +1,40 @@
+import matplotlib.pyplot as plt
+from collections import Counter
+
+
+FRUITS = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape', 'Honeydew', 'Indian Prune', 'Jackfruit']
+
+def task_func(fruit_dict):
+    """
+    Given a constant list of fruits in FRUITS, and a dictionary 'fruit_dict' with keys as people's names and values 
+    as their favorite fruit names, record the frequency of each fruits' occurence. Return a bar chart of the number 
+    of fruits for each fruit type and return the dictionary with fruit names as keys and their counts as values. 
+
+    Parameters:
+    fruit_dict (dict): The dictionary with keys as people's names and values as fruit names.
+
+    Returns:
+    dict: A dictionary with fruit names as keys and their counts as values.
+    matplotlib.axes.Axes: The axes object of the plot.
+
+    Requirements:
+    - collections
+    - random
+    - matplotlib
+
+    Example:
+    >>> fruit_dict = {'John': 'Apple', 'Alice': 'Banana', 'Bob': 'Cherry', 'Charlie': 'Date', 'David': 'Apple'}
+    >>> freq, ax = task_func(fruit_dict)
+    >>> dict(freq)
+    {'Apple': 2, 'Banana': 1, 'Cherry': 1, 'Date': 1}
+    """
+    fruit_counter = Counter(fruit_dict.values())
+    labels, counts = zip(*fruit_counter.items())
+
+    fig, ax = plt.subplots()
+    ax.bar(labels, counts)
+    ax.set_xlabel('Fruits')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Favorite Fruits Frequency')
+
+    return fruit_counter, ax

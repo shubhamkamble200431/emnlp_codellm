@@ -1,0 +1,36 @@
+import pandas as pd
+import random
+
+def task_func(df):
+    """
+    Generate a DataFrame that contains savegames for a number of games between different teams.
+    Each row of the input DataFrame represents a match, and contains two teams and their respective scores.
+    The function adds a 'winner' column to the DataFrame, which is the team with the highest score in each match.
+    If the scores are equal, the winner is should be randomly decided.
+    
+    Parameters:
+    - df (pandas.DataFrame): The input DataFrame with columns 'team1', 'team2', 'score1', 'score2'.
+
+    Requirements:
+    - pandas
+    - random
+    
+    Returns:
+    - df (pandas.DataFrame): The DataFrame with the added 'winner' column.
+    
+    Example:
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({'team1': np.random.choice(['Team A', 'Team B', 'Team C', 'Team D', 'Team E'], 20),
+    ...                    'team2': np.random.choice(['Team A', 'Team B', 'Team C', 'Team D', 'Team E'], 20),
+    ...                    'score1': np.random.randint(0, 10, 20),
+    ...                    'score2': np.random.randint(0, 10, 20)})
+    >>> df = task_func(df)
+    >>> assert 'winner' in df.columns
+    >>> assert df['winner'].dtype == object
+    >>> assert all(winner in ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'] for winner in df['winner'])
+    """
+df['winner'] = df.apply(lambda x: x['team1'] if x['score1'] > x['score2'] else 
+                              ('team2' if x['score2'] > x['score1'] else 
+                               random.choice([x['team1'], x['team2']])), axis=1)
+return df

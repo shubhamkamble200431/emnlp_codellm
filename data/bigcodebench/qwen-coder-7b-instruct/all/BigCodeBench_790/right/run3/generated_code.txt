@@ -1,0 +1,51 @@
+import heapq
+from sklearn.preprocessing import StandardScaler
+
+def task_func(df, col1, col2, N=10):
+    """
+    Standardize two columns ('col1' and 'col2') in the DataFrame, find the biggest differences between the individual 
+    elements of the standardized columns, and return the indices of the N largest differences.
+    
+    Parameters:
+    df (pandas.DataFrame): A DataFrame with at least two numerical columns.
+    col1, col2 (str): Names of the columns to compare.
+    N (int, optional): Number of indices to return. Default is 10.
+    
+    Returns:
+    list[int]: The indices of the N largest differences.
+    
+    Raises:
+    ValueError: If specified columns are not in the provided DataFrame.
+
+    Requirements:
+    - heapq
+    - sklearn.preprocessing
+    
+    Example:
+    >>> df = pd.DataFrame({
+    ...     'col1': [99, 86, 90, 70, 86, 95, 56, 98, 80, 81, 1, 2],
+    ...     'col2': [21, 11, 21, 1, 26, 40, 4, 50, 34, 37, 3, 4]
+    ... })
+    >>> indices = task_func(df, 'col1', 'col2', N=6)
+    >>> print(indices)     
+    [3, 1, 11, 10, 7, 0]
+
+    >>> df = pd.DataFrame({
+    ...     'a': [1, 2, 3, 4],
+    ...     'b': [1, 2, 3, 5]
+    ... })
+    >>> indices = task_func(df, 'a', 'b')
+    >>> print(indices)   
+    [2, 3, 0, 1]
+    """
+    if col1 not in df.columns or col2 not in df.columns:
+        raise ValueError("Specified columns are not in the provided DataFrame.")
+
+    scaler = StandardScaler()
+    scaled_col1 = scaler.fit_transform(df[[col1]]).flatten()
+    scaled_col2 = scaler.fit_transform(df[[col2]]).flatten()
+
+    diff = abs(scaled_col1 - scaled_col2)
+    indices = heapq.nlargest(N, range(len(diff)), key=diff.__getitem__)
+
+    return indices

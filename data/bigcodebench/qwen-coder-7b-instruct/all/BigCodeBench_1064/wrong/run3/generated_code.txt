@@ -1,0 +1,38 @@
+import numpy as np
+import seaborn as sns
+
+
+def task_func(arr):
+    """
+    Plots a heatmap of a given 2D numerical array and prints the sum of each row.
+    The heatmap's color range is set based on the minimum and maximum values in the array.
+
+    Parameters:
+    arr (numpy.array): A 2D numpy array of numerical values.
+
+    Returns:
+    ax (matplotlib.axes.Axes): The Axes object with the plotted heatmap.
+
+    Requirements:
+    - numpy
+    - seaborn
+
+    Note:
+    The function calculates the sum of each row and prints these values.
+    The heatmap is plotted based on the original array with its color range set from the minimum to the maximum value in the array.
+
+    Example:
+    >>> arr = np.array([[i + j for i in range(3)] for j in range(5)])
+    >>> ax = task_func(arr)
+    >>> ax.get_title()
+    'Heatmap of the 2D Array'
+    """
+    fig, ax = plt.subplots()
+    cax = ax.matshow(arr, cmap='viridis', vmin=arr.min(), vmax=arr.max())
+    fig.colorbar(cax)
+    ax.set_title('Heatmap of the 2D Array')
+    
+    for i in range(arr.shape[0]):
+        print(f"Row {i+1} sum: {np.sum(arr[i])}")
+    
+    return ax

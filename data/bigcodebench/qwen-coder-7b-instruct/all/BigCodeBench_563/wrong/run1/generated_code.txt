@@ -1,0 +1,45 @@
+import ctypes
+import os
+import shutil
+import glob
+
+
+
+def task_func(filepath, destination_dir):
+    """
+    Loads a DLL file specified by the given filepath and moves all DLL files in the same directory
+    to another specified directory. This function demonstrates file operations including DLL loading,
+    file path manipulation, and file moving using ctypes, os, shutil, and glob modules.
+
+    Parameters:
+    filepath (str): The path of the DLL file to be loaded.
+    destination_dir (str): The path of the destination directory where DLL files will be moved.
+
+    Returns:
+    str: The name of the loaded DLL file.
+
+    Requirements:
+    - ctypes
+    - os
+    - shutil
+    - glob
+
+    Examples:
+    >>> destination = 'destination_dir'
+    >>> task_func('libc.so.6', destination) # Doctest will vary based on system and file availability.
+    'libc.so.6'
+    >>> isinstance(task_func('libc.so.6', destination), str)
+    True
+    """
+    dll_name = os.path.basename(filepath)
+
+    if not os.path.exists(destination_dir):
+        os.makedirs(destination_dir)
+
+    source_dir = os.path.dirname(filepath)
+    dll_files = glob.glob(os.path.join(source_dir, '*.dll'))
+
+    for dll in dll_files:
+        shutil.move(dll, destination_dir)
+
+    return dll_name

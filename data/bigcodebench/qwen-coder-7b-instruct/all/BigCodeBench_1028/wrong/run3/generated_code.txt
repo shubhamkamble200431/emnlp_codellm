@@ -1,0 +1,77 @@
+import subprocess
+import time
+import json
+import platform
+
+LOGFILE_PATH = "logfile.log"
+
+
+def task_func(interval, duration):
+    """
+    Monitors and logs CPU usage at specified intervals over a given duration.
+
+    Parameters:
+    interval (int): The frequency, in seconds, at which CPU usage data is captured. Must be greater than zero.
+    duration (int): The total duration, in seconds, for which CPU usage is monitored. Must be greater than zero.
+
+    Returns:
+    str: Path to the log file where CPU usage data is saved. Returns None if an IOError occurs during file operations.
+
+    Raises:
+    ValueError: If either 'interval' or 'duration' is less than or equal to zero.
+
+    Requirements:
+    - subprocess
+    - time
+    - json
+    - platform
+
+    Note: 
+    Actual run time of the function may slightly exceed the specified 'duration' due to processing time and system response delay.
+    The function records the CPU usage percentage at regular intervals for a specified duration.
+    The data is captured every 'interval' seconds until the 'duration' is reached or exceeded.
+    Each record includes a timestamp and the CPU usage percentage at that moment.
+    The data is saved in JSON format in a log file named 'logfile.log'.
+    The function supports different commands for CPU usage monitoring on Windows and Unix/Linux platforms.
+    
+    Example:
+    >>> task_func(5, 60)
+    'logfile.log'
+    """
+    if interval <= 0 or duration <= 0:
+        raise ValueError("Interval and duration must be greater than zero.")
+
+    cpu_usage_data = []
+    end_time = time.time() + duration
+
+    while time.time() < end_time:
+        current_time = time.time()
+        try:
+            if platform.system().lower() == "windows":
+                result = subprocess.run(['wmic', 'cpu', 'get', 'loadpercentage'], capture_output=True, text=True, check=True)
+                cpu_usage = int(result.stdout.split('\n')[1].strip())
+            else:
+                with open('/proc/stat', 'r') as f:
+                    lines = f.readlines()
+                    user = sum(int(line.split()[2]) for line in lines[2:] if line.startswith('cpu '))
+                    nice = sum(int(line.split()[3]) for line in lines[2:] if line.startswith('cpu '))
+                    sys = sum(int(line.split()[4]) for line in lines[2:] if line.startswith('cpu '))
+                    idle = sum(int(line.split()[5]) for line in lines[2:] if line.startswith('cpu '))
+                    iowait = sum(int(line.split()[6]) for line in lines[2:] if line.startswith('cpu '))
+                    irq = sum(int(line.split()[7]) for line in lines[2:] if line.startswith('cpu '))
+                    softirq = sum(int(line.split()[8]) for line in lines[2:] if line.startswith('cpu '))
+                    steal = sum(int(line.split()[9]) for line in lines[2:] if line.startswith('cpu '))
+                    total = user + nice + sys + idle + iowait + irq + softirq + steal
+                    cpu_usage = 100 * (total - (idle + iowait)) / total
+            cpu_usage_data.append({'timestamp': current_time, 'cpu_usage': cpu_usage})
+        except Exception as e:
+            print(f"Error occurred while capturing CPU usage: {e}")
+        time.sleep(interval)
+
+    try:
+        with open(LOGFILE_PATH, 'w') as f:
+            json.dump(cpu_usage_data, f)
+        return LOGFILE_PATH
+    except IOError as e:
+        print(f"IOError occurred while writing to log file: {e}")
+        return None

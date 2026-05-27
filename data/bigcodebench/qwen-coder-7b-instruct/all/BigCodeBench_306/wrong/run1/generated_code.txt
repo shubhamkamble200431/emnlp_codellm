@@ -1,0 +1,50 @@
+import os
+import logging
+
+def task_func(directory):
+    """
+    Removes all jQuery files (JavaScript files containing 'jquery' in their name) from a specified directory.
+
+    Parameters:
+    directory (str): The directory path.
+
+    Returns:
+    tuple: A tuple containing two elements:
+        - int: The number of files removed.
+        - list: The names of the removed files.
+
+    Raises:
+    - If the specified directory does not exist the code would raise FileNotFoundError.
+    
+    Note:
+    - Removed files are logged in 'jquery_removal.log' file.
+
+    Requirements:
+    - os
+    - logging
+
+
+    Example:
+    >>> task_func("/path/to/directory")
+    (3, ['jquery-1.js', 'jquery-2.js', 'jquery-ui.js'])  # Assuming 3 jQuery files were removed
+    """
+
+    if not os.path.exists(directory):
+        raise FileNotFoundError(f"The directory {directory} does not exist.")
+
+    removed_files = []
+    num_removed = 0
+
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if "jquery" in file.lower() and file.endswith(".js"):
+                file_path = os.path.join(root, file)
+                try:
+                    os.remove(file_path)
+                    removed_files.append(file)
+                    num_removed += 1
+                    logging.info(f"Removed file: {file_path}")
+                except Exception as e:
+                    logging.error(f"Failed to remove file {file_path}: {e}")
+
+    return num_removed, removed_files

@@ -1,0 +1,30 @@
+import os
+from datetime import datetime
+
+def task_func(filepath: str) -> dict:
+    """
+    Determine the size and date of the last modification of a file.
+
+    Parameters:
+    - filepath (str): The path to the file.
+
+    Returns:
+    - dict: A dictionary containing the size (in bytes) and last modification 
+          date of the file in the format '%Y-%m-%d %H:%M:%S'.
+
+    Requirements:
+    - os
+    - datetime
+
+    Example:
+    >>> task_func('/path/to/file.txt')
+    {'size': '1024 bytes', 'last_modified': '2022-01-01 12:30:45'}
+    """
+    if not os.path.isfile(filepath):
+        raise FileNotFoundError(f"No such file: '{filepath}'")
+    
+    size = os.path.getsize(filepath)
+    last_modified_timestamp = os.path.getmtime(filepath)
+    last_modified_date = datetime.fromtimestamp(last_modified_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+    return {'size': f'{size} bytes', 'last_modified': last_modified_date}

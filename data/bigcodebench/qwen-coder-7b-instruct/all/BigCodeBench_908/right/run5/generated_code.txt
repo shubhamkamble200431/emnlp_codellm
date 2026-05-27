@@ -1,0 +1,43 @@
+import os
+import pandas as pd
+import re
+import matplotlib.pyplot as plt
+
+def task_func(directory: str, pattern: str) -> list:
+    """
+    Searches a directory for CSV files matching a given regular expression pattern,
+    reads sales data from these files, and plots the sales data with month on the x-axis and sales on the y-axis.
+    
+    Note:
+    - Each CSV file contains two columns: 'Month' and 'Sales'.
+
+    Parameters:
+    - directory (str): The directory path where the CSV files are located.
+    - pattern (str): The regular expression pattern to match the filenames.
+
+    Returns:
+    - A list of matplotlib.axes._axes.Axes objects, each representing a plot of sales data from a matched CSV file.
+
+    Requirements:
+    - os
+    - pandas
+    - re
+    - matplotlib.pyplot
+    
+    Examples:
+    >>> axes = task_func('/path/to/data/', r'^sales_data_\d{4}.csv')
+    >>> len(axes)
+    2
+    >>> axes[0].get_title()
+    'sales_data_2021.csv'
+    """
+    axes = []
+    for filename in os.listdir(directory):
+        if re.match(pattern, filename):
+            filepath = os.path.join(directory, filename)
+            df = pd.read_csv(filepath)
+            fig, ax = plt.subplots()
+            ax.plot(df['Month'], df['Sales'])
+            ax.set_title(filename)
+            axes.append(ax)
+    return axes

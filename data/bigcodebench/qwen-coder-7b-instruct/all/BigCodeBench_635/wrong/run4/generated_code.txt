@@ -1,0 +1,69 @@
+# Importing the required libraries
+import re
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+
+
+def task_func(text, n=2):
+    """
+    Analyzes a text string, removing duplicate consecutive words and stopwords defined by nltk.corpus,
+    generates a square co-occurrence matrix of words, and plots this matrix.
+
+    Parameters:
+    - text (str): Input text to be analyzed.
+    - n (int, optional): Size of n-grams for the co-occurrence matrix. Defaults to 2.
+
+    Returns:
+    - tuple:
+        - pd.DataFrame: Square co-occurrence matrix of words.
+        - matplotlib.axes.Axes: Plot object of the co-occurrence matrix.
+
+    Requirements:
+        - re
+        - pandas
+        - matplotlib.pyplot
+        - numpy
+        - sklearn.feature_extraction.text
+        - nltk.corpus
+
+    Example:
+    >>> import matplotlib
+    >>> text = "hello hello world world"
+    >>> df, ax = task_func(text, n=2)
+    >>> df.columns.tolist()
+    ['hello world']
+    >>> df.index.tolist()
+    ['hello world']
+    >>> df.iloc[0, 0]
+    0
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    # Tokenizing the input text and removing stopwords
+    tokens = re.findall(r'\b\w+\b', text.lower())
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [token for token in tokens if token not in stop_words]
+
+    # Creating n-grams
+    n_grams = [' '.join(filtered_tokens[i:i+n]) for i in range(len(filtered_tokens)-n+1)]
+
+    # Generating the co-occurrence matrix
+    vectorizer = CountVectorizer(vocabulary=n_grams)
+    X = vectorizer.fit_transform(n_grams + [' '.join(filtered_tokens[-n:])])
+    co_occurrence_matrix = (X.T @ X).toarray()
+
+    # Creating a DataFrame from the co-occurrence matrix
+    df = pd.DataFrame(co_occurrence_matrix, index=n_grams, columns=n_grams)
+
+    # Plotting the co-occurrence matrix
+    fig, ax = plt.subplots(figsize=(8, 6))
+    cax = ax.matshow(df, cmap='hot', interpolation='nearest')
+    ax.set_title(f'{n}-gram Co-Occurrence Matrix')
+    ax.xaxis.tick_bottom()
+    plt.colorbar(cax)
+    plt.show()
+
+    return df, ax

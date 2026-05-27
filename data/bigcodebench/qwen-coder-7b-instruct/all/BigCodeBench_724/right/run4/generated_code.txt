@@ -1,0 +1,31 @@
+import os
+import json
+
+def task_func(config_path: str) -> dict:
+    """
+    Load a JSON configuration file and return the configuration dictionary.
+    
+    Parameters:
+    - config_path (str): Path to the configuration file.
+    
+    Returns:
+    - config (dict): Configuration dictionary loaded from the file.
+    
+    Requirements:
+    - os
+    - json
+    
+    Raises:
+    - FileNotFoundError: If the provided configuration file does not exist.
+    
+    Example:
+    >>> task_func("config.json")
+    {'key': 'value', 'setting': True}
+    """
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"The configuration file at {config_path} does not exist.")
+
+    with open(config_path, 'r') as file:
+        config = json.load(file)
+
+    return config

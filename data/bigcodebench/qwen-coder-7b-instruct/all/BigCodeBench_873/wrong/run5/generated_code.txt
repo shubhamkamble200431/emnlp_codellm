@@ -1,0 +1,54 @@
+import csv
+import os
+
+def task_func(data, file_path, headers):
+    """
+    Writes a list of tuples to a CSV file.
+
+    Each tuple in the 'data' list represents a row in the CSV file, with each 
+    element of the tuple corresponding to a cell in the row. If a tuple contains
+    fewer elements than there are headers, the missing elements are filled with None.
+
+    Parameters:
+        data (list of tuples): A list of tuples with each tuple representing a row of data.
+        file_path (str): The complete file path where the CSV file will be saved. If the file already exists, it will be overwritten.
+        headers (list of str): A list of strings representing the headers (column names) in the CSV file.
+
+    Returns:
+        str: The absolute path of the saved CSV file.
+
+    Raises:
+        ValueError: If 'file_path' is None.
+
+    Requirements:
+    - csv
+    - os
+
+    
+    Examples:
+    >>> full_path = task_func([(1, 'a', 2), ('a', 3, 5), ('c', 1, -2)], 'test.csv', ['a', 'b', 'c'])
+    >>> print(full_path)
+    '/user/data/test.csv' #full path depends on os and individual folder structure
+    >>> with open('test.csv', 'r', newline='') as csvfile:
+    >>>     reader = csv.reader(csvfile)
+    >>>     for row in reader: 
+    >>>         print(row)
+    ['a', 'b', 'c']
+    ['1', 'a', '2']
+    ['a', '3', '5']
+    ['c', '1', '-2']
+
+    >>> task_func([('test', 123, 2), (3, -3, -15), ('hallo', 1, -2)], 'data.csv', ['test1', 'test2', 'test3'])
+    '/user/data/data.csv' #full path depends on os and individual folder structure
+    >>> with open('data.csv', 'r', newline='') as csvfile:
+    >>>     reader = csv.reader(csvfile)
+    >>>     for row in reader: 
+    >>>         print(row)
+    ['test1', 'test2', 'test3']
+    ['test', '123', '2']
+    ['3', '-3', '-15']
+    ['hallo', '1', '-2']
+    ['1', 'hi', 'hello']
+    """
+import csv
+import os

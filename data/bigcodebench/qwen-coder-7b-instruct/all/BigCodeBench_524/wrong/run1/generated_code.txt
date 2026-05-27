@@ -1,0 +1,63 @@
+from collections import defaultdict
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Calculate statistical measurements (mean and standard deviation) of the values associated with
+    each key in a list of dictionaries, and visualize mean and standard deviation with bar charts.
+
+    Parameters:
+    data (list): The list of dictionaries. Must not be empty. Each dictionary must have numeric values.
+
+    Returns:
+    tuple:
+        - dict: A dictionary with keys and their corresponding mean and standard deviation.
+        - list: A list of matplotlib Axes objects for each key's visualization.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - collections.defaultdict
+    
+    Raises:
+    - ValueError: If the input data is empty.
+    - TypeError: If the input is not a list of dictionaries or if any value in the dictionaries is not numeric.
+    
+    Example:
+    >>> stats, axes = task_func([{'cat': 1, 'dog': 3}, {'cat' : 2, 'dog': 5}, {'cat' : 3, 'dog': 7}])
+    >>> stats
+    {'cat': {'mean': 2.0, 'std': 0.816496580927726}, 'dog': {'mean': 5.0, 'std': 1.632993161855452}}
+    >>> axes
+    [<Axes: title={'center': 'Statistics of cat'}, ylabel='Value'>, <Axes: title={'center': 'Statistics of dog'}, ylabel='Value'>]
+    """
+            if not data:
+                raise ValueError("Input data cannot be empty.")
+            
+            if not all(isinstance(item, dict) for item in data):
+                raise TypeError("All elements in the input list must be dictionaries.")
+            
+            if not all(all(isinstance(value, (int, float)) for value in item.values()) for item in data):
+                raise TypeError("All values in the dictionaries must be numeric.")
+            
+            stats = defaultdict(dict)
+            for item in data:
+                for key, value in item.items():
+                    if key not in stats:
+                        stats[key]['values'] = []
+                    stats[key]['values'].append(value)
+            
+            fig, axes = plt.subplots(len(stats), figsize=(8, len(stats)*4))
+            if len(stats) == 1:
+                axes = [axes]
+            
+            for ax, (key, value) in zip(axes, stats.items()):
+                ax.bar(['Mean', 'Standard Deviation'], [np.mean(value['values']), np.std(value['values'])], color=['blue', 'green'])
+                ax.set_title(f'Statistics of {key}')
+                ax.set_ylabel('Value')
+            
+            plt.tight_layout()
+            plt.show()
+            
+            return dict(stats), axes.tolist()

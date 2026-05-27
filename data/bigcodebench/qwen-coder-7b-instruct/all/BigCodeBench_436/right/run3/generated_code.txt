@@ -1,0 +1,48 @@
+import string
+import matplotlib.pyplot as plt
+
+
+def task_func(s):
+    """
+    Calculate the frequency of each letter in a string and return a bar chart of frequencies.
+    Results are case-insensitive. If non-string input is provided, function will throw an error.
+
+    Parameters:
+    s (str): The string to calculate letter frequencies.
+
+    Returns:
+    tuple: A tuple containing:
+        - dict: A dictionary with the frequency of each letter.
+        - Axes: The bar subplot of 'Letter Frequencies' with 'Letters' on the x-axis and 'Frequency'
+                on the y-axis.
+
+    Requirements:
+    - string
+    - matplotlib.pyplot
+
+    Example:
+    >>> s = 'This is a test string.'
+    >>> freqs, ax = task_func(s)
+    >>> freqs
+    {'a': 1, 'b': 0, 'c': 0, 'd': 0, 'e': 1, 'f': 0, 'g': 1, 'h': 1, 'i': 3, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 1, 'o': 0, 'p': 0, 'q': 0, 'r': 1, 's': 4, 't': 4, 'u': 0, 'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0}
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    if not isinstance(s, str):
+        raise ValueError("Input must be a string.")
+
+    freqs = {letter: 0 for letter in string.ascii_lowercase}
+    for char in s.lower():
+        if char in string.ascii_lowercase:
+            freqs[char] += 1
+
+    letters = list(freqs.keys())
+    frequencies = list(freqs.values())
+
+    fig, ax = plt.subplots()
+    ax.bar(letters, frequencies)
+    ax.set_xlabel('Letters')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Letter Frequencies')
+
+    return freqs, ax

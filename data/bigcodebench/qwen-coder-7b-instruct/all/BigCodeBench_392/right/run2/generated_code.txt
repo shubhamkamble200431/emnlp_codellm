@@ -1,0 +1,56 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+COLORS = ['r', 'g', 'b']
+
+def task_func(df, group_col, value_col, group_name):
+    """
+    Create a bar subplot of a specific group from the input dataframe.
+
+    Parameters:
+    - df (DataFrame): The input DataFrame containing the data.
+    - group_col (str): The name of the column to group the data by.
+    - value_col (str): The name of the column containing the values to plot.
+    - group_name (str): The name of the group to plot.
+
+    Returns:
+    - Axes: A matplotlib axes object with the bar chart.
+
+    Requirements:
+    - matplotlib.pyplot
+    - numpy
+
+    Note:
+    - The title of the plot will be 'Bar chart of [value_col] for [group_name]'.
+    - The x-axis label will be the name of the grouping column [group_col].
+    - The y-axis label will be the name of the value column [value_col].
+
+    Raises:
+    - Raise ValueError if the group_name does not exist in df.
+
+    Example:
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({'Group': ['A', 'B', 'C'], 'Value': [10, 20, 30]})
+    >>> ax = task_func(df, 'Group', 'Value', 'B')
+    >>> num_bars = len(ax.containers[0])  # Number of bars in the plot
+    >>> num_bars == 1  # There should be 1 bar in the plot for group 'B'
+    True
+    >>> ax.containers[0][0].get_height() == 20 # The bar height of Group B should be 20
+    True
+    >>> plt.close()
+    """
+    if group_name not in df[group_col].values:
+        raise ValueError(f"Group '{group_name}' does not exist in the dataframe.")
+
+    filtered_df = df[df[group_col] == group_name]
+    bars = filtered_df[value_col]
+
+    fig, ax = plt.subplots()
+    ax.bar(filtered_df[group_col], bars, color=COLORS[0])
+
+    ax.set_title(f'Bar chart of {value_col} for {group_name}')
+    ax.set_xlabel(group_col)
+    ax.set_ylabel(value_col)
+
+    return ax

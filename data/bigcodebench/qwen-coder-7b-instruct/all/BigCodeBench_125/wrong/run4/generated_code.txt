@@ -1,0 +1,41 @@
+from collections import defaultdict
+import itertools
+import json
+import random
+
+def task_func(LETTERS, n):
+    """
+    Generates all possible combinations of a given set of letters of length 'n'.
+    Counts the occurrences of each letter in these combinations and saves the results
+    in a JSON file. The name of the file is prefix_<random-number-here>.json. The value of
+    <random-number-here> is between 0 and 100. 
+
+    Parameters:
+        LETTERS (list): The list of letters to generate combinations from.
+        n (int): The length of the combinations.
+
+    Returns:
+        str: The name of the generated JSON file containing letter counts.
+
+    Requirements:
+    - collections.defaultdict
+    - itertools
+    - json
+    - random
+
+    Examples:
+    >>> isinstance(task_func(['a', 'b', 'c', 'd', 'e'], 3), str)
+    True
+    >>> 'letter_combinations_' in task_func(['a', 'b', 'c', 'd', 'e'], 2)
+    True
+    """
+    letter_counts = defaultdict(int)
+    for combination in itertools.product(LETTERS, repeat=n):
+        for letter in combination:
+            letter_counts[letter] += 1
+
+    filename = f'prefix_{random.randint(0, 100)}.json'
+    with open(filename, 'w') as f:
+        json.dump(dict(letter_counts), f)
+
+    return filename

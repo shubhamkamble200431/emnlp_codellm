@@ -1,0 +1,41 @@
+import sys
+import subprocess
+
+# Constants
+PYTHON_VERSION = '3.8'
+PATH_TO_APPEND = '/path/to/whatever'
+
+def task_func(python_version=PYTHON_VERSION, path_to_append=PATH_TO_APPEND):
+    """
+    Switch to a specific version of Python and add a specific path to sys.path.
+    
+    Note: This function changes the global Python version and should be used carefully.
+    
+    Parameters:
+    - python_version (str): The Python version to switch to. Default is '3.8'.
+    - path_to_append (str): The path to append to sys.path. Default is '/path/to/whatever'.
+
+    Returns:
+    - python_version (str): The Python version that was switched to.
+
+    Requirements:
+    - sys
+    - subprocess
+
+    Example:
+    >>> task_func('3.7', '/path/to/new_directory')
+    '3.7'
+    """
+    import os
+
+    # Set the Python version using subprocess
+    subprocess.run([f'py{python_version}', '-m', 'pip', 'install', '--upgrade', 'virtualenv'], check=True)
+    venv_path = f'/tmp/python{python_version}'
+    subprocess.run(['virtualenv', venv_path], check=True)
+    activate_script = os.path.join(venv_path, 'bin', 'activate_this.py')
+    exec(open(activate_script).read(), {'__file__': activate_script})
+
+    # Append the specified path to sys.path
+    sys.path.append(path_to_append)
+
+    return python_version

@@ -1,0 +1,54 @@
+import pandas as pd
+import numpy as np
+import folium
+
+def task_func(dic={'Lon': (-180, 180), 'Lat': (-90, 90)}, cities=['New York', 'London', 'Beijing', 'Tokyo', 'Sydney']):
+    """
+    Create a map with markers for a list of cities, where the coordinates are randomly generated within given ranges.
+
+    Parameters:
+    dic (dict): Dictionary with 'Lon' and 'Lat' keys, each a tuple (min, max) for coordinate range. 
+                Default: {'Lon': (-180, 180), 'Lat': (-90, 90)}
+    cities (list): List of city names. Default: ['New York', 'London', 'Beijing', 'Tokyo', 'Sydney']
+
+    Returns:
+    tuple: A tuple containing (folium.Map, pandas.DataFrame).
+           The DataFrame contains 'City', 'Longitude', and 'Latitude' columns.
+
+    Raises:
+    ValueError: If 'Lon' or 'Lat' keys are missing in the dictionary, or if their values are not tuples.
+
+    Requirements:
+    - pandas
+    - numpy
+    - folium
+
+    Example:
+    >>> dic = {'Lon': (-180, 180), 'Lat': (-90, 90)}
+    >>> map_obj, city_data = task_func(dic)
+    """
+    # Validate input dictionary
+    if 'Lon' not in dic or 'Lat' not in dic:
+        raise ValueError("'Lon' and 'Lat' keys must be present in the dictionary.")
+    if not isinstance(dic['Lon'], tuple) or not isinstance(dic['Lat'], tuple):
+        raise ValueError("Values for 'Lon' and 'Lat' must be tuples.")
+
+    # Generate random coordinates within the specified ranges
+    lon_min, lon_max = dic['Lon']
+    lat_min, lat_max = dic['Lat']
+    city_coords = {
+        city: (np.random.uniform(lon_min, lon_max), np.random.uniform(lat_min, lat_max))
+        for city in cities
+    }
+
+    # Create Folium Map
+    map_obj = folium.Map(location=[(lat_min + lat_max) / 2, (lon_min + lon_max) / 2], zoom_start=2)
+
+    # Add markers to the map
+    for city, (lon, lat) in city_coords.items():
+        folium.Marker([lat, lon], popup=city).add_to(map_obj)
+
+    # Create DataFrame
+    city_data = pd.DataFrame(list(city_coords.items()), columns=['City', ('Longitude', 'Latitude')])
+
+    return map_obj, city_data

@@ -1,0 +1,26 @@
+import pandas as pd
+import os
+
+def task_func(filename):
+    """
+    Read a CSV file of pandas, reverse the order of the lines and write the inverted lines back into the file. Then move the cursor back to the beginning of the file. 
+    The header should not be inverted and the file may be empty.
+
+    Parameters:
+    - filename (str): The name of the CSV file.
+
+    Returns:
+    - filename (str): The name of the CSV file.
+
+    Requirements:
+    - os
+    - pandas
+
+    Example:
+    >>> task_func('file.csv')
+    'file.csv'
+    """
+    df = pd.read_csv(filename)
+    if not df.empty:
+        df.iloc[::-1].to_csv(filename, index=False, header=True)
+    return filename

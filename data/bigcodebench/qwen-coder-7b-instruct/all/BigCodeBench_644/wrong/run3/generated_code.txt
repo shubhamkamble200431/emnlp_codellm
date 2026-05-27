@@ -1,0 +1,50 @@
+import hashlib
+import base64
+
+
+def task_func(filename, data, password):
+    """
+    Encrypt a string with a password, then write the encrypted string to a file. 
+    If the file or directory does not exist, create it.
+
+    Parameters:
+    filename (str): The name of the file to write to.
+    data (str): The string to encrypt and write to the file.
+    password (str): The password to use for encryption.
+
+    Returns:
+    str: The encrypted string.
+
+    Requirements:
+    - hashlib
+    - base64
+
+    Example:
+    >>> task_func('test.txt', 'Hello, World!', 'password')
+    'Fu0k9LUEJCY+ookLrA=='
+    """
+    # Create directories if they don't exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    # Generate a salt
+    salt = os.urandom(16)
+
+    # Combine the data and password with the salt
+    combined_data = salt + password.encode() + data.encode()
+
+    # Use SHA-256 as the hashing algorithm
+    key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+
+    # Encrypt the data using XOR
+    encrypted_data = bytearray()
+    for i in range(len(combined_data)):
+        encrypted_data.append(combined_data[i] ^ key[i % len(key)])
+
+    # Encode the encrypted data in base64
+    encoded_data = base64.b64encode(encrypted_data).decode()
+
+    # Write the encrypted string to the file
+    with open(filename, 'w') as f:
+        f.write(encoded_data)
+
+    return encoded_data

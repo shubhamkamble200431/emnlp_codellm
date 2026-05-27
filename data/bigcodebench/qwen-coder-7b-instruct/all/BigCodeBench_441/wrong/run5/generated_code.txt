@@ -1,0 +1,44 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(P, T):
+    """
+    Calculate the product of a matrix "P" and a 3D tensor "T" with numpy and then visualize the
+    result in 3D with matplotlib. The product of the matrix and tensor is based on the Einstein summation.
+    
+    Note:
+    This function only accepts numpy matrices/arrays.
+
+    Parameters:
+    P (numpy.ndarray): The input matrix with shape (N, 3), where N is the number of rows.
+    T (numpy.ndarray): The input tensor with shape (3, 3, 3).
+
+    Returns:
+    tuple:
+        - result (numpy.ndarray): The product of matrix P and tensor T with shape (N, 3).
+        - ax (mpl_toolkits.mplot3d.axes3d.Axes3D): The 3D visualization of the result.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+
+    Example:
+    >>> P = np.array([[6, 2, 7], [1, 1, 8], [8, 7, 1]])
+    >>> T = np.random.rand(3, 3, 3)
+    >>> result, ax = task_func(P, T)
+    >>> type(result)
+    <class 'numpy.ndarray'>
+    >>> type(ax)
+    <class 'mpl_toolkits.mplot3d.axes3d.Axes3D'>
+    """
+result = np.einsum('ij,jkl->ikl', P, T)
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+for i in range(result.shape[0]):
+    x = np.arange(result.shape[1])
+    y = np.arange(result.shape[2])
+    x, y = np.meshgrid(x, y)
+    ax.scatter(x, y, result[i, :, :], c=result[i, :, :].flatten())
+plt.show()
+return result, ax

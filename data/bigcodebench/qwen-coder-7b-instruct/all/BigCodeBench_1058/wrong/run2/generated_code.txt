@@ -1,0 +1,100 @@
+import itertools
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Constants
+SHAPES = [
+    "Circle",
+    "Square",
+    "Triangle",
+    "Rectangle",
+    "Pentagon",
+    "Hexagon",
+    "Heptagon",
+    "Octagon",
+    "Nonagon",
+    "Decagon",
+]
+COLORS = [
+    "Red",
+    "Blue",
+    "Green",
+    "Yellow",
+    "Black",
+    "White",
+    "Purple",
+    "Orange",
+    "Pink",
+    "Brown",
+]
+
+
+def task_func(num_pairs=10):
+    """
+    Generate and display a countplot of predefined shape-color pairs.
+
+    This function creates a visual representation of a specified number of unique shape-color combinations,
+    each displayed as a bar in the countplot. The shape-color pairs are selected from a predefined list.
+
+    Parameters:
+    - num_pairs (int): The number of unique shape-color pairs to be displayed in the countplot.
+                       Default is 10. If the requested number is less than 1 or greater than the total
+                       possible unique combinations (100), it is adjusted to the valid range (1 to 100).
+
+    Returns:
+    - ax (matplotlib.axes._axes.Axes): The Axes object of the countplot, which can be used for
+                                                  further customizations or to retrieve information about the plot.
+
+    Requirements:
+    - itertools
+    - seaborn
+    - matplotlib
+
+    Example:
+    >>> ax = task_func(10)
+    >>> [tick.get_text() for tick in ax.get_xticklabels()]
+    ['Circle:Red', 'Circle:Blue', 'Circle:Green', 'Circle:Yellow', 'Circle:Black', 'Circle:White', 'Circle:Purple', 'Circle:Orange', 'Circle:Pink', 'Circle:Brown']
+    >>> ax = task_func(9)
+    >>> [tick.get_text() for tick in ax.get_xticklabels()]
+    ['Circle:Red', 'Circle:Blue', 'Circle:Green', 'Circle:Yellow', 'Circle:Black', 'Circle:White', 'Circle:Purple', 'Circle:Orange', 'Circle:Pink', 'Circle:Brown']
+    >>> ax = task_func(8)
+    >>> [tick.get_text() for tick in ax.get_xticklabels()]
+    ['Circle:Red', 'Circle:Blue', 'Circle:Green', 'Circle:Yellow', 'Circle:Black', 'Circle:White', 'Circle:Purple', 'Circle:Orange', 'Circle:Pink', 'Circle:Brown']
+    >>> ax = task_func(7)
+    >>> [tick.get_text() for tick in ax.get_xticklabels()]
+    ['Circle:Red', 'Circle:Blue', 'Circle:Green', 'Circle:Yellow', 'Circle:Black', 'Circle:White', 'Circle:Purple', 'Circle:Orange', 'Circle:Pink', 'Circle:Brown']
+    >>> ax = task_func(6)
+    >>> [tick.get_text() for tick in ax.get_xticklabels()]
+    ['Circle:Red', 'Circle:Blue', 'Circle:Green', 'Circle:Yellow', 'Circle:Black', 'Circle:White', 'Circle:Purple', 'Circle:Orange', 'Circle:Pink', 'Circle:Brown']
+    """
+from collections import Counter
+
+    # Validate input
+    if num_pairs < 1:
+        num_pairs = 1
+    elif num_pairs > len(SHAPES) * len(COLORS):
+        num_pairs = len(SHAPES) * len(COLORS)
+
+    # Create all possible shape-color pairs
+    pairs = [f"{shape}:{color}" for shape in SHAPES for color in COLORS]
+
+    # Count the first `num_pairs` unique pairs
+    counted_pairs = Counter(pairs[:num_pairs])
+
+    # Create a DataFrame for plotting
+    df = pd.DataFrame(list(counted_pairs.items()), columns=["Shape-Color", "Count"])
+
+    # Create a countplot
+    ax = sns.countplot(data=df, x="Shape-Color")
+
+    # Set labels
+    ax.set_xlabel("Shape-Color")
+    ax.set_ylabel("Count")
+
+    # Rotate x-axis labels for better readability
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+
+    # Display the plot
+    plt.show()
+
+    return ax

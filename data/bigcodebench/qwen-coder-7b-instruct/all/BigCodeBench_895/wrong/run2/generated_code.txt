@@ -1,0 +1,52 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+ARRAY_SIZE = 10000
+
+def task_func():
+    """
+    Create a numeric array of random integers, calculate the mean and standard deviation, and draw a histogram of the distribution.
+
+    Returns:
+    Tuple: A tuple containing the array, mean, standard deviation, and the histogram plot (Axes).
+
+    Note:
+        The random integers are generated between 1 and 100. The title of the histogram is "Histogram of Random Values". 
+        The x-axis is labeled "Val" and the y-axis is labeled "Freq". 
+        The mean is plotted as a red dashed line, and the standard deviation is plotted as purple dashed lines.
+        
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    
+    Example:
+    >>> import numpy as np
+    >>> np.random.seed(0)
+    >>> array, mean, std, ax = task_func()
+    >>> print(mean, std)
+    250.7154 142.85617453522966
+    >>> plt.show()
+    """
+    # Generate random integers
+    data_array = np.random.randint(1, 101, size=ARRAY_SIZE)
+
+    # Calculate mean and standard deviation
+    mean_value = np.mean(data_array)
+    std_deviation = np.std(data_array)
+
+    # Plotting
+    fig, ax = plt.subplots()
+    ax.hist(data_array, bins=30, edgecolor='black')
+    ax.set_title('Histogram of Random Values')
+    ax.set_xlabel('Val')
+    ax.set_ylabel('Freq')
+
+    # Plot mean and standard deviations
+    ax.axvline(mean_value, color='red', linestyle='--', label=f'Mean: {mean_value:.2f}')
+    ax.axvline(mean_value - std_deviation, color='purple', linestyle='--', label=f'Std Dev (-{std_deviation:.2f})')
+    ax.axvline(mean_value + std_deviation, color='purple', linestyle='--', label=f'Std Dev (+{std_deviation:.2f})')
+
+    ax.legend()
+
+    return data_array, mean_value, std_deviation, ax

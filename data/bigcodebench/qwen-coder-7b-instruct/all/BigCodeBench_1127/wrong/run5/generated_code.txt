@@ -1,0 +1,39 @@
+import os
+import re
+import hashlib
+
+def task_func(path, delimiter):
+    """
+    Splits a file path by a specified delimiter, retaining the delimiter in the output, and computes the hash of each component if it is a file.
+    
+    Parameters:
+    path (str): The file path to split.
+    delimiter (str): The delimiter to use for splitting the path.
+
+    Returns:
+    list[tuple]: A list of tuples, where each tuple contains a path component and its hash (if it's a file).
+                 If the component is not a file, its hash will be None.
+
+    Requirements:
+    - os
+    - re
+    - hashlib
+
+    Example:
+    >>> task_func("Docs/src/file.txt", "/")
+    [('Docs', None), ('/', None), ('src', None), ('/', None), ('file.txt', 'hash_value')]
+    """
+    components = re.split(f'({re.escape(delimiter)})', path)
+    result = []
+    for component in components:
+        if component == delimiter:
+            result.append((component, None))
+        else:
+            if os.path.isfile(component):
+                with open(component, 'rb') as f:
+                    content = f.read()
+                    file_hash = hashlib.md5(content).hexdigest()
+                result.append((component, file_hash))
+            else:
+                result.append((component, None))
+    return result

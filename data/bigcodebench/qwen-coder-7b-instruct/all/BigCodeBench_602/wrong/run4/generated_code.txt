@@ -1,0 +1,30 @@
+import numpy as np
+import pandas as pd
+
+# Constants
+LETTERS = list('abcdefghijklmnopqrstuvwxyz')
+OUTPUT_DIR = './output'
+
+
+def task_func(file_path, output_dir=OUTPUT_DIR):
+    """
+    Create a CSV file containing a 2D matrix populated exclusively with random lowercase letters.
+    
+    Parameters:
+    - file_path (str): The path of the CSV file to be created.
+    - output_dir (str, optional): The dir of the CSV file to be created.
+    
+    Returns:
+    None: Writes a CSV file to the specified path.
+    
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> task_func(os.path.join(OUTPUT_DIR, 'random_matrix.csv'))
+    """
+    rows, cols = 10, 10  # Define the number of rows and columns in the matrix
+    matrix = np.random.choice(LETTERS, size=(rows, cols))
+    df = pd.DataFrame(matrix)
+    df.to_csv(file_path, index=False, header=False)

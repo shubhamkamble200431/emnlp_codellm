@@ -1,0 +1,52 @@
+import pandas as pd
+import sqlite3
+import numpy as np
+import matplotlib.pyplot as plt
+import ast
+
+def task_func(db_file):
+    """
+    Load e-mail data from an SQLite database and convert it into a Pandas DataFrame. 
+    Calculate the sum, mean, and variance of the list associated with each e-mail and then record these values.
+
+    - The function expects the SQLite database to have a table named "EmailData" with columns 'email' and 'list'.
+    - The column 'list' contains a string representation of the list. It should be converted before usage.
+    - The function will return a DataFrame with additional columns 'sum', 'mean', and 'var' representing the calculated sum, mean, and variance respectively for each e-mail.
+
+    Parameters:
+    - db_file (str): The path to the SQLite database file.
+
+    Returns:
+    - tuple: A tuple containing:
+      - DataFrame: A pandas DataFrame with email data including the calculated sum, mean, and variance.
+      - Axes: A matplotlib Axes object representing the plotted bar chart of sum, mean, and variance.
+
+    Requirements:
+    - pandas
+    - sqlite3
+    - numpy
+    - matplotlib.pyplot
+    - ast
+
+    Example:
+    >>> df, ax = task_func('data/task_func/db_1.db')
+    >>> print(df)
+    """
+    conn = sqlite3.connect(db_file)
+    query = "SELECT email, list FROM EmailData"
+    df = pd.read_sql_query(query, conn)
+    
+    def calculate_stats(lst):
+        lst = ast.literal_eval(lst)
+        total = sum(lst)
+        avg = np.mean(lst)
+        var = np.var(lst)
+        return total, avg, var
+    
+    df[['sum', 'mean', 'var']] = df['list'].apply(pd.Series, result_type='expand').apply(calculate_stats, axis=1).rename(columns={0: 'sum', 1: 'mean', 2: 'var'})
+    
+    conn.close()
+    
+    fig, ax = plt.subplots()
+    df.plot(kind='bar', x='email', y=['sum', 'mean', 'var'], ax=ax)
+    return df, ax

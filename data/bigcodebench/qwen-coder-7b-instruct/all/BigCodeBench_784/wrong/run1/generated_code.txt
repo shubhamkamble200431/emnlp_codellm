@@ -1,0 +1,74 @@
+import pandas as pd
+import random
+import csv
+
+def task_func(n, 
+           categories=['Sports', 'Technology', 'Business', 'Politics', 'Entertainment'],
+           news_sites=['New York Times', 'USA Today', 'Apple News', 'CNN', 'BBC'],
+           likert_scale=['Strongly Disagree', 'Disagree', 'Neither Agree nor Disagree', 'Agree', 'Strongly Agree'],
+           file_path='news_survey_data.csv',
+           random_seed=None):
+    """
+    Generate a DataFrame with random survey data based on given categories, 
+    news sites, and Likert scale responses. The function writes the generated
+    data to a CSV file and then reads it into a Pandas DataFrame.
+    
+    Parameters:
+    n (int): The number of survey responses to generate.
+    categories (list, optional): Categories of news to choose from. Defaults to ['Sports', 'Technology', 'Business', 'Politics', 'Entertainment'].
+    news_sites (list, optional): News sites to choose from. Defaults to ['New York Times', 'USA Today', 'Apple News', 'CNN', 'BBC'].
+    likert_scale (list, optional): Likert scale responses to choose from. Defaults to ['Strongly Disagree', 'Disagree', 'Neither Agree nor Disagree', 'Agree', 'Strongly Agree'].
+    file_path (str, optional): Path to save the generated CSV file. Defaults to 'news_survey_data.csv'.
+    random_seed (int): Seed for rng. Used for generating datapoints. Defaults to None.
+
+    Returns:
+    DataFrame: A pandas DataFrame with columns ['Site', 'Category', 'Response', 'Value']. 
+               The 'Value' column assigns a numerical value to the Likert scale response (starting from 1).
+    
+    Requirements:
+    - pandas
+    - random
+    - csv
+    
+    Example:
+    >>> df = task_func(5, random_seed=1)
+    >>> print(df)
+                 Site       Category           Response  Value
+    0       USA Today  Entertainment  Strongly Disagree      1
+    1      Apple News         Sports              Agree      4
+    2             CNN       Politics              Agree      4
+    3       USA Today         Sports              Agree      4
+    4  New York Times       Politics              Agree      4
+    
+    >>> df = task_func(8, ['test', 'fun'], likert_scale=['true', 'false'], news_sites=['cat', 'dog'], random_seed=12)
+    >>> print(df)
+      Site Category  Response  Value
+    0  dog      fun     False      2
+    1  cat      fun      True      1
+    2  dog      fun     False      2
+    3  dog     test      True      1
+    4  cat      fun     False      2
+    5  cat      fun      True      1
+    6  cat     test      True      1
+    7  dog      fun      True      1
+    """
+           categories=['Sports', 'Technology', 'Business', 'Politics', 'Entertainment'],
+           news_sites=['New York Times', 'USA Today', 'Apple News', 'CNN', 'BBC'],
+           likert_scale=['Strongly Disagree', 'Disagree', 'Neither Agree nor Disagree', 'Agree', 'Strongly Agree'],
+           file_path='news_survey_data.csv',
+           random_seed=None):
+    if random_seed is not None:
+        random.seed(random_seed)
+
+    data = []
+    for _ in range(n):
+        site = random.choice(news_sites)
+        category = random.choice(categories)
+        response = random.choice(likert_scale)
+        value = likert_scale.index(response) + 1
+        data.append([site, category, response, value])
+
+    df = pd.DataFrame(data, columns=['Site', 'Category', 'Response', 'Value'])
+
+    df.to_csv(file_path, index=False)
+    return pd.read_csv(file_path)

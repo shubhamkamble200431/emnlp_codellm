@@ -1,0 +1,23 @@
+import re
+import string
+
+def task_func(content):
+    """Count the non-stop words in a sentence without the last word.
+
+    Parameters:
+    - content (str): The sentence to count non-stopwords from.
+
+    Returns:
+    - count (int): The count of non-stopwords.
+
+    Requirements:
+    - re
+    - string
+
+    Example:
+    >>> task_func('this is an example content')
+    1
+    """
+    stopwords = set(string.punctuation.split()) | {'and', 'or', 'but', 'so', 'for'}
+    words = re.findall(r'\b\w+\b', content[:-len(content.split()[-1])])
+    return len([word for word in words if word.lower() not in stopwords])

@@ -1,0 +1,47 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+DATA = {
+    "Area_String": ["1,000", "2,000", "3,000", "4,000", "5,000"],
+    "Price": [100, 200, 300, 400, 500],
+}
+
+
+def task_func(area_string, data=DATA):
+    """
+    Predicts the price based on a given area after training a linear regression model.
+
+    Parameters:
+    - area_string (str): A string representing the area (in square units) for
+    which the price needs to be predicted. The string may contain commas.
+    - data (dict): Optional. A dictionary with keys 'Area_String' and 'Price'
+    representing area values (as strings) and their corresponding prices. Defaults to a predefined dataset.
+
+    Returns:
+    - float: The predicted price for the given area.
+
+    Requirements:
+    - pandas
+    - sklearn.linear_model
+
+    Example:
+    >>> task_func('6,000')
+    600.0
+    """
+    # Convert the input area string to a numerical value
+    area_numeric = float(area_string.replace(',', ''))
+
+    # Create a DataFrame from the provided data
+    df = pd.DataFrame(data)
+
+    # Replace comma in Area_String with empty string and convert it to numeric type
+    df['Area_String'] = df['Area_String'].str.replace(',', '').astype(float)
+
+    # Initialize and train the linear regression model
+    model = LinearRegression()
+    model.fit(df[['Area_String']], df['Price'])
+
+    # Predict the price for the given area
+    predicted_price = model.predict([[area_numeric]])
+
+    return predicted_price[0]

@@ -1,0 +1,57 @@
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import random
+from matplotlib.axes import Axes
+
+
+class ValueObject:
+    value = 0
+
+    def __init__(self, mu=0, std=1, seed=77):
+        random.seed(seed)
+        self.value = random.gauss(mu, std)
+
+
+def task_func(obj_list) -> Axes:
+    '''
+    Draw the histogram and the custom normal distribution curve from the mean and standard deviation
+    derived from the values of a list of ValueObjects and return the plotted Axes. For an empty list,
+    the mean and the standard deviation is 0.
+    
+    Parameters:
+    obj_list (list): The list of objects.
+    attr (str): The attribute to plot.
+
+    Returns:
+    Axes: The plotted Axes.
+
+    Requirements:
+    - numpy
+    - scipy.stats
+    - matplotlib
+    - random
+
+    Example:
+    >>> obj_list = [ValueObject(mu=23, std=77), ValueObject(mu=23, std=77, seed=222), ValueObject(mu=23, std=77, seed=333)]
+    >>> ax = task_func(obj_list)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    '''
+    if not obj_list:
+        mu = 0
+        std = 0
+    else:
+        values = [obj.value for obj in obj_list]
+        mu = np.mean(values)
+        std = np.std(values)
+
+    fig, ax = plt.subplots()
+    ax.hist(values, bins=30, density=True, alpha=0.6, color='g')
+
+    xmin, xmax = ax.get_xlim()
+    x = np.linspace(xmin, xmax, 100)
+    p = stats.norm.pdf(x, mu, std)
+    ax.plot(x, p, 'k', linewidth=2)
+
+    return ax

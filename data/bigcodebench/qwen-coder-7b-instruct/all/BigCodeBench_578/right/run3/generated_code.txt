@@ -1,0 +1,48 @@
+import unicodedata
+import requests
+
+URL = 'https://api.github.com/users/'
+
+def task_func(username):
+    """
+    Retrieves user information from the GitHub API for a given username, normalizes all string data to ASCII,
+    and returns a dictionary of the normalized data. This function demonstrates data retrieval from a web API
+    and handling of Unicode data normalization.
+
+    Parameters:
+    username (str): The GitHub username.
+
+    Returns:
+    dict: A dictionary with the user's data, where all string values are normalized to ASCII.
+
+    Raises:
+    requests.exceptions.HTTPError: For any HTTP response indicating an error.
+
+    Requirements:
+    - unicodedata
+    - requests
+
+    Examples:
+    >>> result = task_func('torvalds')
+    >>> isinstance(result, dict)
+    True
+    >>> 'login' in result
+    True
+    """
+    url = URL + username
+    response = requests.get(url)
+    response.raise_for_status()
+    user_data = response.json()
+
+    def normalize_string(value):
+        if isinstance(value, str):
+            return ''.join(unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii'))
+        elif isinstance(value, list):
+            return [normalize_string(item) for item in value]
+        elif isinstance(value, dict):
+            return {key: normalize_string(val) for key, val in value.items()}
+        else:
+            return value
+
+    normalized_data = normalize_string(user_data)
+    return normalized_data

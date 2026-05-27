@@ -1,0 +1,51 @@
+from flask import Flask
+from flask_mail import Mail, Message
+
+def task_func(smtp_server, smtp_port, smtp_user, smtp_password, template_folder):
+    """
+    Creates a Flask application configured to send emails using Flask-Mail.
+    It sets up the necessary SMTP configuration dynamically based on provided parameters
+    and defines a route to send a test email.
+
+    Parameters:
+        smtp_server (str): The SMTP server address.
+        smtp_port (int): The SMTP server port.
+        smtp_user (str): The SMTP username.
+        smtp_password (str): The SMTP password.
+        template_folder (str): The folder path for email templates.
+
+    Requirements:
+    - flask.Flask
+    - flask_mail.Mail
+    - flask_mail.Message
+
+    Returns:
+        Flask: A Flask application instance configured for sending emails.
+
+    Examples:
+    >>> app = task_func('smtp.example.com', 587, 'user@example.com', 'password', 'templates')
+    >>> type(app).__name__
+    'Flask'
+    >>> app.config['MAIL_USERNAME'] == 'user@example.com'
+    True
+    """
+    app = Flask(__name__)
+    mail = Mail(app)
+
+    app.config.update(
+        MAIL_SERVER=smtp_server,
+        MAIL_PORT=smtp_port,
+        MAIL_USE_TLS=True,
+        MAIL_USERNAME=smtp_user,
+        MAIL_PASSWORD=smtp_password,
+        MAIL_DEFAULT_SENDER=(app.name, smtp_user)
+    )
+
+    @app.route('/send_test_email')
+    def send_test_email():
+        msg = Message("Test Email", sender=app.config['MAIL_USERNAME'], recipients=[smtp_user])
+        msg.body = "This is a test email sent from your Flask application."
+        mail.send(msg)
+        return "Test email sent!"
+
+    return app

@@ -1,0 +1,56 @@
+from random import randint, seed
+import matplotlib.pyplot as plt
+import pandas as pd
+import re
+
+# Constants
+TEAMS = ['Team A', 'Team B', 'Team C', 'Team D', 'Team E']
+PENALTY_COST = 1000  # in dollars
+
+
+def task_func(goals, penalties, rng_seed=None, teams=TEAMS):
+    """
+    Generate and analyze a Pandas DataFrame of football match results for multiple teams,
+    incorporating random goals and penalties, then visualize the analyzed data with colomns 'Team', 'Goals',
+    and 'Penalty Cost'. Penalties are converted into fines based on a predetermined penalty cost.
+
+    Parameters:
+    - goals (int): The maximum number of goals a team can score in a match.
+    - penalties (int): The maximum number of penalties a team can receive in a match.
+    - rng_seed (int, optional): Seed for the random number generator to ensure reproducibility. Defaults to None.
+    - teams (list of str, optional): List of team names to assign players
+
+    Returns:
+    - DataFrame: A pandas DataFrame containing teams, their goals, and penalty costs, along with the original match results.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+    - random
+    - re
+
+    Example:
+    >>> analyzed_data = task_func(5, 3, rng_seed=42)
+    >>> print(analyzed_data[['Team', 'Goals', 'Penalty Cost']])
+         Team  Goals  Penalty Cost
+    0  Team A      5             0
+    1  Team B      0          2000
+    2  Team C      1          1000
+    3  Team D      1             0
+    4  Team E      5             0
+    """
+    if rng_seed is not None:
+        seed(rng_seed)
+
+    matches = {team: {'goals': 0, 'penalties': 0} for team in teams}
+
+    for _ in range(len(teams)):
+        for team in teams:
+            matches[team]['goals'] += randint(0, goals)
+            matches[team]['penalties'] += randint(0, penalties)
+
+    df = pd.DataFrame(matches).T.reset_index()
+    df.columns = ['Team', 'Goals', 'Penalties']
+    df['Penalty Cost'] = df['Penalties'] * PENALTY_COST
+
+    return df

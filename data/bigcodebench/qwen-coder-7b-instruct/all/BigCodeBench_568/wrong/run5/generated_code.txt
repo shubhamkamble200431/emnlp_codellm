@@ -1,0 +1,57 @@
+import inspect
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def task_func(f_list):
+    """
+    Analyzes a list of functions and draws a bar chart showing the number of arguments for each function.
+    The function names are listed along the x-axis, and the number of arguments are represented as bars.
+    This method showcases the integration of function introspection, data frame creation, and data visualization.
+
+    Parameters:
+    f_list (list): List of functions to inspect.
+
+    Returns:
+    pandas.DataFrame: Returns a DataFrame containing the function names and their respective number of arguments.
+
+    Raises:
+    ValueError: if the input contains lambda function
+
+    Requirements:
+    - inspect
+    - matplotlib.pyplot
+    - pandas
+
+    Examples:
+    >>> def f(x): x*x
+    >>> def g(x, y=2): return x*y
+    >>> task_func([f, g])
+                   Number of Arguments
+    Function Name                     
+    f                                1
+    g                                2
+    >>> lambda_func = lambda x: x * 2
+    >>> task_func([f, lambda_func])
+    Traceback (most recent call last):
+    ...
+    ValueError: The function should not be a lambda function.
+    """
+    df = pd.DataFrame(columns=['Function Name', 'Number of Arguments'])
+
+    for func in f_list:
+        if inspect.islambda(func):
+            raise ValueError("The function should not be a lambda function.")
+
+        argspec = inspect.getfullargspec(func)
+        num_args = len(argspec.args) + len(argspec.defaults) if argspec.defaults else len(argspec.args)
+
+        df = df.append({'Function Name': func.__name__, 'Number of Arguments': num_args}, ignore_index=True)
+
+    df.set_index('Function Name', inplace=True)
+    df.plot(kind='bar')
+    plt.xlabel('Function Name')
+    plt.ylabel('Number of Arguments')
+    plt.title('Number of Arguments per Function')
+    plt.show()
+
+    return df

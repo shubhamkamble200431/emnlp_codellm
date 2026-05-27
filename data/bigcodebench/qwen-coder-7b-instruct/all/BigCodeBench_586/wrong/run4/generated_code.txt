@@ -1,0 +1,60 @@
+import rsa
+from cryptography.fernet import Fernet
+from base64 import b64encode
+
+def task_func(file_path):
+    """
+    Generates RSA public and private keys and uses Fernet symmetric encryption to encrypt the contents
+    of a specified file. The Fernet key is then encrypted with the public RSA key. The encrypted file
+    contents and the encrypted Fernet key are saved in separate files.
+
+    This method demonstrates a hybrid encryption approach where symmetric encryption is used for the file
+    contents and asymmetric encryption for the encryption key.
+
+    Parameters:
+    file_path (str): The path to the file to be encrypted.
+
+    Returns:
+    PublicKey: The RSA public key.
+    str: The filename of the encrypted file.
+    str: The filename of the file containing the encrypted Fernet key.
+
+    Requirements:
+    - rsa
+    - cryptography.fernet.Fernet
+    - base64.b64encode
+
+    Examples:
+    >>> pub_key, encrypted_file, encrypted_key_file = task_func('my_file.txt')
+    >>> len(pub_key.save_pkcs1()) > 100
+    True
+    >>> encrypted_file.endswith('.encrypted')
+    True
+    >>> encrypted_key_file.endswith('.encrypted')
+    True
+    """
+    with open(file_path, 'rb') as f:
+        file_data = f.read()
+
+    # Generate RSA keys
+    public_key, private_key = rsa.newkeys(2048)
+
+    # Encrypt file data using Fernet
+    fernet = Fernet(Fernet.generate_key())
+    encrypted_file_data = fernet.encrypt(file_data)
+    encrypted_fernet_key = fernet.encrypt(fernet.key)
+
+    # Save encrypted file
+    encrypted_file_name = file_path + '.encrypted'
+    with open(encrypted_file_name, 'wb') as ef:
+        ef.write(encrypted_file_data)
+
+    # Encrypt Fernet key with RSA public key
+    encrypted_rsa_fernet_key = rsa.encrypt(encrypted_fernet_key, public_key)
+
+    # Save encrypted Fernet key
+    encrypted_rsa_fernet_key_name = file_path + '_key.encrypted'
+    with open(encrypted_rsa_fernet_key_name, 'wb') as efk:
+        efk.write(encrypted_rsa_fernet_key)
+
+    return public_key, encrypted_file_name, encrypted_rsa_fernet_key_name

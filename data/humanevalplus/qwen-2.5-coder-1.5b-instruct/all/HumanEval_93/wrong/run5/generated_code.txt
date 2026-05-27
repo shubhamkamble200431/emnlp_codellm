@@ -1,0 +1,37 @@
+
+def encode(message):
+    """
+    Write a function that takes a message, and encodes in such a 
+    way that it swaps case of all letters, replaces all vowels in 
+    the message with the letter that appears 2 places ahead of that 
+    vowel in the english alphabet. 
+    Assume only letters. 
+    
+    Examples:
+    >>> encode('test')
+    'TGST'
+    >>> encode('This is a message')
+    'tHKS KS C MGSSCGG'
+    """
+    vowels = "aeiouAEIOU"
+    result = ""
+    for char in message:
+        if char.isalpha():
+            # Swap case
+            if char.isupper():
+                char = char.lower()
+            else:
+                char = char.upper()
+
+            # Replace vowels with the next one in the alphabet
+            if char in vowels:
+                index = vowels.index(char)
+                if index + 2 < len(vowels):
+                    result += vowels[index + 2]
+                else:
+                    result += vowels[0]  # Wrap around to the beginning
+            else:
+                result += char
+        else:
+            result += char
+    return result

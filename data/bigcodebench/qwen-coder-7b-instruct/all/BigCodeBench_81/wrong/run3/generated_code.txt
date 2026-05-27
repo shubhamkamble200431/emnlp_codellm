@@ -1,0 +1,32 @@
+from flask import Flask
+from flask_restful import Resource, Api
+import requests
+
+def task_func(api_url, template_folder):
+    """
+    Creates a Flask application with a RESTful API endpoint. The endpoint, when accessed,
+    fetches data from an external API and returns the response as JSON. It is configured
+    to use a specified templates folder, which must be provided when calling this function.
+    The URL for the external API must also be provided when initializing the app.
+
+    Parameters:
+    - api_url (str): The URL of the external API from which data is fetched.
+    - template_folder (str): The path to the folder containing Flask templates.
+
+    Returns:
+    - app (Flask): A Flask application instance with a configured RESTful API endpoint.
+    
+    Requirements:
+    - flask.Flask
+    - flask_restful.Resource
+    - flask_restful.Api
+    - requests
+
+    Example:
+    >>> app = task_func('https://api.example.com/data', 'templates')
+    >>> 'data' in [str(route) for route in app.url_map.iter_rules()]
+    True
+    >>> api = Api(app)
+    >>> type(api).__name__
+    'Api'
+    """

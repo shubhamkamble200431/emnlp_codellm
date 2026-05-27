@@ -1,0 +1,55 @@
+import json
+from glob import glob
+
+
+def task_func(directory, string):
+    """
+    Search for a specific string within the JSON data of files in a given directory and its subdirectories.
+
+    This function recursively scans the specified directory for JSON files, then checks each file to see if 
+    the given string is present within the JSON data structure.
+
+    Parameters:
+    directory (str): The directory path where the search should be performed.
+    string (str): The string to search for within the JSON data of the files.
+
+    Returns:
+    list: A list of file paths (str) containing the string within their JSON data.
+
+    Requirements:
+    - json
+    - pathlib
+    - glob
+
+    Note:
+    - The string search is case-sensitive and looks for a match within the structure of the JSON data, not 
+    just as a substring in the file content.
+    - If the directory does not contain any JSON files or if no JSON files contain the string, an empty list 
+    is returned.
+
+    Example:
+    >>> import tempfile
+    >>> import json
+    >>> directory = tempfile.mkdtemp()
+    >>> with open(directory + "/file1.json", "w") as file:
+    ...     json.dump({"name": "John", "age": 30, "city": "New York"}, file)
+    >>> with open(directory + "/file2.json", "w") as file:
+    ...     json.dump({"book": "Harry Potter", "author": "J.K. Rowling", "quote": "Magic is everywhere!"}, file)
+    >>> files = task_func(directory, "book")
+    >>> len(files)
+    1
+    """
+        import os
+        from pathlib import Path
+
+        result = []
+        for file_path in glob(os.path.join(directory, '**', '*.json'), recursive=True):
+            with open(file_path, 'r') as file:
+                try:
+                    data = json.load(file)
+                    if isinstance(data, dict) or isinstance(data, list):
+                        if any(string in str(value) for value in data.values()):
+                            result.append(file_path)
+                except json.JSONDecodeError:
+                    continue
+        return result

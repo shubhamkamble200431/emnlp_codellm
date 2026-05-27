@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+
+
+def task_func(days, random_seed=0):
+    """
+    Generates a spending report DataFrame for the given number of days.
+
+    This function takes a number of days as input and populates a pandas DataFrame
+    with fake expenditure data indexed by date. Each day on or after '2023-01-01'
+    has its own row. The DataFrame has five columns: Groceries, Entertainment, Rent,
+    Utilities, and Miscellaneous, with their integer values independently randomly
+    sampled from 0 to 100.
+
+    Parameters:
+    - days (int): Number of days for which the report is to be generated.
+                  This is used to generate dates starting from '2023-01-01'.
+                  For example, a 'days' of 2 will generate data for '2023-01-01',
+                  '2023-01-02'.
+                  If 0, this function will return a DataFrame with the expected
+                  columns that is otherwise empty.
+    - random_seed (int): Numpy random seed for reproducibility. Defaults to 0.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing spending details for specified days,
+                    with shape (num_days, 5).
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> df = task_func(5, random_seed=42)
+    >>> type(df)
+    <class 'pandas.core.frame.DataFrame'>
+    >>> df.head(2)
+                Groceries  Entertainment  Rent  Utilities  Miscellaneous
+    date                                                                
+    2023-01-01         51             20    87         52              1
+    2023-01-02         92             82    99          1             63
+    """
+np.random.seed(random_seed)
+dates = pd.date_range(start='2023-01-01', periods=days)
+data = {
+    'Groceries': np.random.randint(0, 101, size=days),
+    'Entertainment': np.random.randint(0, 101, size=days),
+    'Rent': np.random.randint(0, 101, size=days),
+    'Utilities': np.random.randint(0, 101, size=days),
+    'Miscellaneous': np.random.randint(0, 101, size=days)
+}
+return pd.DataFrame(data, index=dates)

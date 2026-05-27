@@ -1,0 +1,49 @@
+import collections
+from queue import PriorityQueue
+import random
+
+# Constants
+LETTERS = ['a', 'b', 'c', 'd', 'e']
+
+def task_func(string_length=100):
+    """
+    Create a random string of a given length from a predefined list of letters and count the frequency 
+    of each letter, returning an ordered dictionary sorted by frequency in descending order.
+
+    Parameters:
+    - string_length (int, optional): The length of the random string to be generated. Default is 100.
+
+    Returns:
+    - collections.OrderedDict: An ordered dictionary where keys are letters and values are 
+      their frequencies in the generated string, sorted in descending order of frequency.
+
+    Requirements:
+    - collections
+    - queue.PriorityQueue
+    - random
+
+    Example:
+    >>> random.seed(0)
+    >>> freq = task_func(50)
+    >>> freq  # Example output: OrderedDict([('e', 15), ('a', 12), ('b', 10), ('d', 8), ('c', 5)])
+    OrderedDict(...)
+    """
+    def generate_string(length):
+        return ''.join(random.choice(LETTERS) for _ in range(length))
+
+    def count_frequencies(s):
+        counter = collections.Counter(s)
+        priority_queue = PriorityQueue()
+        
+        for char, freq in counter.items():
+            priority_queue.put((-freq, char))
+        
+        ordered_dict = collections.OrderedDict()
+        while not priority_queue.empty():
+            _, char = priority_queue.get()
+            ordered_dict[char] = abs(priority_queue.queue[0][0])
+        
+        return ordered_dict
+
+    random_string = generate_string(string_length)
+    return count_frequencies(random_string)

@@ -1,0 +1,82 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+def task_func(data, n_components=2):
+    """
+    Perform PCA (Principal Component Analysis) on the provided DataFrame.
+
+    This function takes a pandas DataFrame, scales the data using sklearn 
+    StandardScaler, and then applies PCA to reduce 
+    the number of dimensions of the data to the number specified by n_components, 
+    maintaining as much information as possible.
+
+    Parameters:
+    data (DataFrame): A pandas DataFrame containing numerical data. Each column represents a 
+                      different variable, and each row represents a different observation.
+    n_components (int): The number of principal components to retain after transformation. 
+                        Default is 2.
+
+    Returns:
+    DataFrame: A new DataFrame with the original data transformed into 'n_components' principal 
+               components.
+
+    Raises:
+    ValueError: If input data is not a DataFrame or contains non-numeric data.
+    ValueError: If n_components is greater than the number of columns in the data.
+    ValueError: If input data is empty.
+
+    Requirements:
+    pandas
+    sklearn.preprocessing
+    sklearn.decomposition
+
+    Example:
+    >>> data = pd.DataFrame({
+    ...     'A': [1, 2, 3, 4, 5],
+    ...     'B': [6, 7, 8, 9, 10],
+    ...     'C': [11, 12, 13, 14, 15],
+    ...     'D': [16, 17, 18, 19, 20]
+    ... })
+    >>> result = task_func(data, n_components=2)
+    >>> print(result)
+              0             1
+    0  2.828427  3.648565e-16
+    1  1.414214 -1.216188e-16
+    2 -0.000000  0.000000e+00
+    3 -1.414214  1.216188e-16
+    4 -2.828427  2.432377e-16
+
+    >>> data = pd.DataFrame({
+    ...         'A': [-43, 212, 1, -12, 5],
+    ...         'B': [-1, 0, 0, 9.76, 12.34],
+    ...         'C': [1, 42, -13.2, 31, 1.23],
+    ... })
+    >>> res = task_func(data, n_components=1)
+    >>> print(res)        
+              0
+    0 -0.793152
+    1  2.511947
+    2 -0.940253
+    3  0.069179
+    4 -0.847722
+    """
+    if not isinstance(data, pd.DataFrame):
+        raise ValueError("Input data must be a pandas DataFrame")
+    
+    if not all(data.dtypes.apply(lambda x: np.issubdtype(x, np.number))):
+        raise ValueError("Data must contain only numeric values")
+    
+    if data.empty:
+        raise ValueError("Input data cannot be empty")
+    
+    if n_components > data.shape[1]:
+        raise ValueError("Number of components cannot be greater than the number of columns")
+    
+    scaler = StandardScaler()
+    scaled_data = scaler.fit_transform(data)
+    
+    pca = PCA(n_components=n_components)
+    principal_components = pca.fit_transform(scaled_data)
+    
+    return pd.DataFrame(principal_components, columns=[f"PC{i+1}" for i in range(n_components)])

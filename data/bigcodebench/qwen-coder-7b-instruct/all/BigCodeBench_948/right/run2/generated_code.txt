@@ -1,0 +1,33 @@
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+
+def task_func(rows=3, columns=2, seed=42):
+    """
+    Generate a matrix of random values with specified dimensions and scale it between 0 and 1.
+    
+    Parameters:
+    rows (int): The number of rows for the matrix. Default is 3.
+    columns (int): The number of columns for the matrix. Default is 2.
+    
+    Returns:
+    ndarray: A numpy ndarray with scaled values between 0 and 1.
+    
+    Requirements:
+    - numpy
+    - sklearn.preprocessing.MinMaxScaler
+    
+    Example:
+    >>> task_func(3, 2)
+    array([[0.37939383, 1.        ],
+           [1.        , 0.55700635],
+           [0.        , 0.        ]])
+    
+    >>> task_func(2, 2)
+    array([[0., 1.],
+           [1., 0.]])
+    """
+    np.random.seed(seed)
+    data = np.random.rand(rows, columns)
+    scaler = MinMaxScaler()
+    scaled_data = scaler.fit_transform(data)
+    return scaled_data

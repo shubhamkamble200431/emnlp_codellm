@@ -1,0 +1,49 @@
+import os
+import shutil
+
+
+def task_func(path, delimiter="/"):
+    """
+    Splits a given file path by a specific delimiter and computes disk usage for each directory component.
+
+    Parameters:
+    - path (str): The file path to split.
+    - delimiter (str, optional): The delimiter to use for splitting the path. Default is '/'.
+
+    Returns:
+    list: A list of tuples where each tuple contains a path component and its disk usage as a dictionary.
+          The disk usage dictionary contains keys 'total', 'used', and 'free'.
+
+    Raises:
+    - ValueError: If the 'path' is empty, not a string, or contain invalid components.
+    - FileNotFoundError: If the 'path' does not exist in the filesystem.
+
+    Requirements:
+    - os
+    - shutil
+
+    Examples:
+    >>> task_func('Docs/src', '/')
+    [('Docs', {'total': 100, 'used': 50, 'free': 50}), ('src', {'total': 200, 'used': 100, 'free': 100})]
+
+    >>> task_func('a/b', '/')
+    [('a', {'total': 300, 'used': 150, 'free': 150}), ('b', {'total': 400, 'used': 200, 'free': 200})]
+    """
+    if not isinstance(path, str) or not path:
+        raise ValueError("Invalid path provided")
+
+    if delimiter not in path:
+        raise ValueError("Delimiter not found in path")
+
+    if not os.path.exists(path):
+        raise FileNotFoundError("Path does not exist")
+
+    components = path.split(delimiter)
+    result = []
+
+    for i in range(len(components)):
+        current_path = delimiter.join(components[:i+1])
+        total, used, free = shutil.disk_usage(current_path)
+        result.append((components[i], {'total': total, 'used': used, 'free': free}))
+
+    return result

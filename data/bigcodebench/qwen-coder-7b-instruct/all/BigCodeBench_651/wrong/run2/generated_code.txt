@@ -1,0 +1,44 @@
+import pandas as pd
+import time
+
+
+def task_func(df, target_value):
+    '''
+    Convert the input dic of list to DataFrame and searcher in this DataFrame for rows with cells equal to the
+    provided target_value. It then plots the count of such rows per column.
+
+    Parameters:
+    - df (dic of list): The input dict. It should have a 'Name' key.
+    - target_value (str): The target value to be searched in the DataFrame.
+
+    Returns:
+    tuple: A tuple containing:
+        - A pandas Series with counts of the target value per column.
+        - A matplotlib Axes object representing the plot (None if dataframe is empty).
+
+    Requirements:
+    - pandas
+    - time
+
+    Example:
+    >>> df = {'Column1': ['0', 'a', '332', '33']}
+    >>> series, ax = task_func(df, '332')
+    '''
+    # Convert the dictionary to a DataFrame
+    df = pd.DataFrame(df)
+
+    # Check if the DataFrame is empty
+    if df.empty:
+        return None, None
+
+    # Count occurrences of the target value per column
+    count_series = df.apply(lambda col: (col == target_value).sum())
+
+    # Plotting the count of target value per column
+    fig, ax = plt.subplots()
+    count_series.plot(kind='bar', ax=ax)
+    ax.set_xlabel('Columns')
+    ax.set_ylabel('Count of Target Value')
+    ax.set_title(f'Count of "{target_value}" per Column')
+
+    return count_series, ax

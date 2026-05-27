@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+from sklearn.decomposition import PCA
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def task_func(df: pd.DataFrame):
+    """
+    Perform PCA on a DataFrame (excluding non-numeric columns) and draw a scatter plot of the first two main components. The principal columns should be name 'Component 1' and 'Component 2'.
+    Missing values are replaced by column's average.
+
+    Parameters:
+    df (DataFrame): The pandas DataFrame.
+
+    Returns:
+    DataFrame: A pandas DataFrame with the first two principal components. The columns should be 'principal component 1' and 'principal component 2'.
+    Axes: A matplotlib Axes object representing the scatter plot. The xlabel should be 'principal component' and the ylabel 'principal component 2'.
+
+    Requirements:
+    - pandas
+    - numpy
+    - sklearn.decomposition.PCA
+    - seaborn
+    - matplotlib
+
+    Example:
+    >>> df = pd.DataFrame([[1,2,3],[4,5,6],[7.0,np.nan,9.0]], columns=["c1","c2","c3"])
+    >>> principalDf, ax = task_func(df)
+    >>> print(principalDf)
+       Component 1  Component 2
+    0     4.450915    -0.662840
+    1    -0.286236     1.472436
+    2    -4.164679    -0.809596
+    """
+    # Replace missing values with column means
+    df.fillna(df.mean(), inplace=True)
+
+    # Select only numeric columns
+    numeric_df = df.select_dtypes(include=[np.number])
+
+    # Initialize PCA and fit to data
+    pca = PCA(n_components=2)
+    principalComponents = pca.fit_transform(numeric_df)
+
+    # Create DataFrame with principal components
+    principalDf = pd.DataFrame(data=principalComponents, columns=['Component 1', 'Component 2'])
+
+    # Plotting the results
+    ax = sns.scatterplot(x='Component 1', y='Component 2', data=principalDf)
+    ax.set_xlabel('Principal Component 1')
+    ax.set_ylabel('Principal Component 2')
+
+    return principalDf, ax

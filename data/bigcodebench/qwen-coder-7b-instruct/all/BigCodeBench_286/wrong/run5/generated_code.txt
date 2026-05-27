@@ -1,0 +1,50 @@
+from collections import Counter
+import os
+import csv
+
+# Constants
+FILE_DIR = './yourdictfiles/'
+
+def task_func(output_file, test_directory):
+    """
+    Count the number of words in multiple dictionary files (.txt) in a specific directory,
+    export the counts to a CSV file, and then return the total number of words.
+
+    Parameters:
+    filename (str): The name of the output CSV file.
+    test_directory (str): The directory containing the dictionary files (.txt).
+
+    Returns:
+    int: total number of words in .txt files
+
+    Note:
+    - Header for the csv output file is "Word", "Count"
+    - Return 0 if the input invalid or error raised
+
+    Requirements:
+    - collections.Counter
+    - os
+    - csv
+
+    Example:
+    >>> task_func('word_counts.csv')
+    10
+    """
+try:
+    word_counts = Counter()
+    for filename in os.listdir(test_directory):
+        if filename.endswith('.txt'):
+            with open(os.path.join(test_directory, filename), 'r') as file:
+                content = file.read().lower().split()
+                word_counts.update(content)
+    
+    with open(output_file, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Word', 'Count'])
+        for word, count in word_counts.items():
+            writer.writerow([word, count])
+    
+    return sum(word_counts.values())
+except Exception as e:
+    print(f"An error occurred: {e}")
+    return 0

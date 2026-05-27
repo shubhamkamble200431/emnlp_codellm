@@ -1,0 +1,37 @@
+import base64
+import binascii
+import os
+import hashlib
+
+def task_func(hex_str, salt_size):
+    """
+    Converts a hex string to bytes, salts it with a random value of specified size, and computes its SHA256 hash.
+    The function generates a random salt of the specified size, appends it to the byte representation of the hex string,
+    and then computes the SHA256 hash of the salted data. The salt and hash are returned as a tuple.
+
+    Parameters:
+        hex_str (str): The hex string to be hashed.
+        salt_size (int): The size of the salt in bytes to generate.
+
+    Returns:
+        tuple: A tuple containing the base64-encoded salt and the SHA256 hash.
+
+    Requirements:
+    - base64
+    - binascii
+    - os
+    - hashlib
+
+    Examples:
+    >>> result = task_func("F3BE8080", 16)
+    >>> isinstance(result, tuple) and len(result) == 2
+    True
+    >>> isinstance(result[0], str) and isinstance(result[1], str)
+    True
+    """
+    salt = os.urandom(salt_size)
+    salted_data = salt + bytes.fromhex(hex_str)
+    sha256_hash = hashlib.sha256(salted_data).digest()
+    encoded_salt = base64.b64encode(salt).decode('utf-8')
+    encoded_hash = base64.b64encode(sha256_hash).decode('utf-8')
+    return encoded_salt, encoded_hash

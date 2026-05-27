@@ -1,0 +1,41 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.stats as stats
+
+
+def task_func(x, y, labels):
+    """
+    Draw normal distributions for multiple 'x' and 'y' arrays with labels.
+    Each pair (x, y) represents a different chemical compound in the 'labels' list.
+
+    Parameters:
+    x (list): List of numpy arrays representing the x-values of the data points.
+    y (list): List of numpy arrays representing the y-values of the data points.
+    labels (list): List of strings representing the labels for the chemical compounds.
+
+    Returns:
+    fig: Matplotlib figure object.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - scipy.stats
+
+    Example:
+    >>> x = [np.array([1,2,3]), np.array([4,5,6]), np.array([7,8,9])]
+    >>> y = [np.array([4,5,6]), np.array([7,8,9]), np.array([10,11,12])]
+    >>> labels = ['H₂O', 'O₂', 'CO₂']
+    >>> fig = task_func(x, y, labels)
+    """
+    fig, ax = plt.subplots()
+
+    for xi, yi, label in zip(x, y, labels):
+        mean = np.mean(xi)
+        std_dev = np.std(xi)
+        xmin, xmax = plt.xlim()
+        xs = np.linspace(xmin, xmax, 100)
+        ys = stats.norm.pdf(xs, mean, std_dev)
+        ax.plot(xs, ys, label=label)
+
+    ax.legend()
+    return fig

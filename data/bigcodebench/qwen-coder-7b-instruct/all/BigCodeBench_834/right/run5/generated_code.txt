@@ -1,0 +1,39 @@
+import binascii
+import io
+import gzip
+
+def task_func(compressed_hex):
+    """
+    Uncompress a gzip-compressed hexadecimal string and decrypt the result to UTF-8.
+    
+    Parameters:
+    - compressed_hex (str): The gzip-compressed hexadecimal string.
+    
+    Returns:
+    - decoded_string (str): The decoded and decompressed string in UTF-8 format, or an error message.
+    
+    Requirements:
+    - binascii
+    - io
+    - gzip
+    
+    Example:
+    >>> task_func('1f8b08000000000002ff0b49494e55560304000000ffff8b202d0b000000')
+    'Error during decompression: CRC check failed 0xff000000 != 0x41449975'
+    """
+    try:
+        # Convert the hex string to bytes
+        data = binascii.unhexlify(compressed_hex)
+
+        # Create a BytesIO object with the compressed data
+        compressed_data = io.BytesIO(data)
+
+        # Decompress the data using gzip
+        decompressed_data = gzip.decompress(compressed_data.read())
+
+        # Convert the decompressed bytes to a UTF-8 string
+        decoded_string = decompressed_data.decode('utf-8')
+
+        return decoded_string
+    except Exception as e:
+        return f'Error during decompression: {e}'

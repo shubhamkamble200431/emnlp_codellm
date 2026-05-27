@@ -1,0 +1,59 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from collections import Counter
+
+def task_func(student_grades, possible_grades=["A", "B", "C", "D", "F"]):
+    """
+    Create a report on students' grades in a class, including a count of each grade out of all possible grades
+    and a bar chart. Note: Grades are case-insensitive but whitespace-sensitive. Those not in possible grades
+    are ignored.
+
+    Parameters:
+    student_grades (list): List of student grades. Must not be empty.
+    possible_grades (list, optional): List of possible grade values. Defaults to ['A', 'B', 'C', 'D', 'F'].
+
+    Returns:
+    Tuple[DataFrame, Axes]:
+        - A pandas DataFrame with 'Grade' as the named index and their 'Count' as values.
+        - A bar chart plot (matplotlib's Axes object) visualizing 'Grade Distribution', with 'Grade' on the
+          x-axis and 'Number of Students' on the y-axis.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+    - collections.Counter
+
+    Example:
+    >>> student_grades = ['A', 'B', 'B', 'C', 'A', 'D', 'F', 'B', 'A', 'C']
+    >>> report_df, ax = task_func(student_grades)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> report_df
+           Count
+    Grade       
+    A          3
+    B          3
+    C          2
+    D          1
+    F          1
+    """
+    # Convert all grades to uppercase to ensure case-insensitivity
+    student_grades = [grade.upper() for grade in student_grades if grade.strip()]
+
+    # Filter out grades that are not in the possible grades list
+    filtered_grades = [grade for grade in student_grades if grade in possible_grades]
+
+    # Count the occurrences of each grade
+    grade_counts = Counter(filtered_grades)
+
+    # Create a DataFrame from the counts
+    report_df = pd.DataFrame(list(grade_counts.items()), columns=['Grade', 'Count']).set_index('Grade')
+
+    # Create a bar chart
+    fig, ax = plt.subplots()
+    report_df['Count'].plot(kind='bar', ax=ax)
+    ax.set_title('Grade Distribution')
+    ax.set_xlabel('Grade')
+    ax.set_ylabel('Number of Students')
+
+    return report_df, ax

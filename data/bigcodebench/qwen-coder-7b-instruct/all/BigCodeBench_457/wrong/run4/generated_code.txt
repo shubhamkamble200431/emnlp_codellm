@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+
+
+def task_func(L):
+    """
+    Draw a histogram of all elements in a nested list 'L' and return the Axes object of the plot.
+
+    The function first uses Numpy to handle array operations, checking for correct input type
+    while ignoring empty sublists. It then plots the histogram using pandas, assigning
+    each unique value its own bin and plotting the histogram with rwidth 0.8.
+
+    Parameters:
+    L (list of list of int): Nested list of integers.
+
+    Returns:
+    ax (matplotlib.axes._axes.Axes): The Axes object of the histogram plot.
+
+    Raises:
+    If the input is not a list of list of integers, a TypeError is raised.
+    
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> ax = task_func([[1,2,3],[4,5,6]])
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(0.0, 0, '0'), Text(1.0, 0, '1'), Text(2.0, 0, '2'), Text(3.0, 0, '3'), Text(4.0, 0, '4'), Text(5.0, 0, '5'), Text(6.0, 0, '6'), Text(7.0, 0, '7')]
+    """
+    if not isinstance(L, list) or not all(isinstance(sublist, list) and all(isinstance(x, int) for x in sublist) for sublist in L):
+        raise TypeError("Input must be a list of lists containing integers.")
+
+    flattened_list = [x for sublist in L if sublist for x in sublist]
+    df = pd.DataFrame(flattened_list, columns=['values'])
+
+    ax = df['values'].hist(bins=np.arange(min(df['values']), max(df['values']) + 2), rwidth=0.8)
+    return ax

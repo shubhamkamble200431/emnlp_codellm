@@ -1,0 +1,59 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+
+# Constants
+COLUMNS = ['Date', 'Value']
+
+def task_func(df, plot=False):
+    '''
+    Splits a list in the 'Value' column of a DataFrame into several columns, scales these columns using StandardScaler, 
+    and optionally returned the scaled data using a bar chart. The 'Date' column is converted to datetime and used as 
+    the index in the plot.
+
+    Parameters:
+    df (DataFrame): A pandas DataFrame with a 'Date' column and a 'Value' column where 'Value' contains lists of numbers.
+    plot (bool): If True, a bar chart of the scaled values is displayed. Defaults to False.
+
+    Returns:
+    DataFrame: A pandas DataFrame with the 'Date' column and additional columns for each element in the original 'Value' list,
+               where these columns contain the scaled values.
+    Axes (optional): A matplotlib Axes object containing the bar chart, returned if 'plot' is True.
+
+    Note:
+    - This function use "Scaled Values Over Time" for the plot title.
+    - This function use "Date" and "Scaled Value" as the xlabel and ylabel respectively.
+
+    Raises:
+    - This function will raise KeyError if the DataFrame does not have the 'Date' and 'Value' columns.
+
+    Requirements:
+    - pandas
+    - sklearn.preprocessing.StandardScaler
+    - matplotlib.pyplot
+
+    Example:
+    >>> df = pd.DataFrame([['2021-01-01', [8, 10, 12]], ['2021-01-02', [7, 9, 11]]], columns=COLUMNS)
+    >>> scaled_df, ax = task_func(df, plot=True)
+    >>> print(scaled_df.shape)
+    (2, 4)
+    >>> plt.close()
+    '''
+    if 'Date' not in df.columns or 'Value' not in df.columns:
+        raise KeyError("The DataFrame must contain 'Date' and 'Value' columns.")
+
+    df['Date'] = pd.to_datetime(df['Date'])
+    df.set_index('Date', inplace=True)
+
+    scaler = StandardScaler()
+
+    # Split the 'Value' column into multiple columns and scale them
+    value_columns = df['Value'].apply(pd.Series).stack().reset_index(level=1, drop=True).to_frame(name='Value')
+    scaled_values = scaler.fit_transform(value_columns['Value'].values.reshape(-1, 1))
+    scaled_df = pd.concat([df.drop(columns=['Value']), pd.DataFrame(scaled_values, index=value_columns.index)], axis=1)
+
+    if plot:
+        ax = scaled_df.plot(kind='bar', figsize=(10, 6), title='Scaled Values Over Time', xlabel='Date', ylabel='Scaled Value')
+        return scaled_df, ax
+    else:
+        return scaled_df

@@ -1,0 +1,51 @@
+import collections
+import random
+import itertools
+
+
+ANIMALS = ['Cat', 'Dog', 'Elephant', 'Lion', 'Tiger', 'Bear', 'Giraffe', 'Horse', 'Rabbit', 'Snake', 'Zebra']
+
+def task_func(animal_dict, max_count=10, seed=0):
+    """
+    Given a constant list of animals in ANIMALS, and a dictionary 'animal_dict' with keys as people's names and values
+    as their favorite animal names, reverse the keys and values in a given dictionary and count the occurrences of each
+    predefined animal name with a random count. Return the reversed dictionary and the counter with animal name
+    occurrences.
+
+    This function performs two tasks:
+    1. It reverses the given dictionary (animal_dict) such that the original values become keys and the original 
+    keys become lists of values.
+    2. It counts the occurrences of each animal name in a predefined list (ANIMALS). The count of each animal name
+    is a random integer between 1 and max_count (inclusive).
+
+    Parameters:
+    animal_dict (dict): A dictionary with keys as names and values as animal names.
+    max_count (int, Optional): A positive integer denoting the maximum count of each animal. Default is 10.
+    Must be greater than 0.
+    seed (int, Optional): An integer to seed the random number generator. Default is 0.
+
+    Returns:
+    tuple: A tuple where the first element is a reversed dictionary and the second element is a counter with animal 
+           name occurrences (with randomness in count).
+
+    Requirements:
+    - collections
+    - random
+    - itertools
+
+    Example:
+    >>> animal_dict = {'John': 'Cat', 'Alice': 'Dog', 'Bob': 'Elephant', 'Charlie': 'Lion', 'David': 'Tiger', 'Sue': 'Pangolin'}
+    >>> reversed_dict, animal_counter = task_func(animal_dict, 15, 77)
+    >>> reversed_dict
+    {'Cat': ['John'], 'Dog': ['Alice'], 'Elephant': ['Bob'], 'Lion': ['Charlie'], 'Tiger': ['David']}
+    >>> dict(animal_counter.most_common(5))
+    {'Giraffe': 14, 'Cat': 13, 'Zebra': 9, 'Snake': 8, 'Elephant': 6}
+    """
+    random.seed(seed)
+
+    reversed_dict = collections.defaultdict(list)
+    for person, animal in animal_dict.items():
+        reversed_dict[animal].append(person)
+
+    animal_counter = collections.Counter(random.randint(1, max_count) for _ in range(len(ANIMALS)))
+    return dict(reversed_dict), animal_counter

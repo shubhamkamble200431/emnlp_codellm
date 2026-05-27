@@ -1,0 +1,59 @@
+import sqlite3
+from random import choice, seed
+import os
+
+
+def task_func(db_name, table_name, num_entries, random_seed=None):
+    """
+    Create an SQLite3 table and fill it with random data using the provided database and table names.
+
+    The function populates the table with columns 'name', 'age', 'height' using random data from the
+    following constants:
+    - NAMES: List of names ['John', 'Jane', 'Steve', 'Emma', 'Liam', 'Olivia']
+    - AGES: Range of ages from 18 to 65.
+    - HEIGHTS: Range of heights from 150cm to 200cm.
+
+    Parameters:
+    db_name (str): The name of the SQLite3 database.
+    table_name (str): The name of the table to create and populate.
+    num_entries (int): The number of entries to insert. Must not be negative.
+    random_seed (int, optional): The seed for generating random values. Default is None.
+
+    Returns:
+    str: The absolute path of the SQLite3 database file.
+
+    Raises:
+    ValueError: If num_entries is negative.
+    
+    Requirements:
+    - sqlite3
+    - random.choice
+    - random.seed
+    - os
+
+    Example:
+    >>> db_path = task_func('test.db', 'People', 100, random_seed=42)
+    >>> print(db_path)
+    '/absolute/path/to/test.db'
+    """
+    if num_entries < 0:
+        raise ValueError("num_entries must not be negative")
+
+    if random_seed is not None:
+        seed(random_seed)
+
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+
+    cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER, height INTEGER)")
+
+    for _ in range(num_entries):
+        name = choice(NAMES)
+        age = choice(list(AGES))
+        height = choice(list(HEIGHTS))
+        cursor.execute(f"INSERT INTO {table_name} (name, age, height) VALUES (?, ?, ?)", (name, age, height))
+
+    conn.commit()
+    conn.close()
+
+    return os.path.abspath(db_name)

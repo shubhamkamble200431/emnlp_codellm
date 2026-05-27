@@ -1,0 +1,35 @@
+import codecs
+import os
+import glob
+
+# Constants
+DIRECTORY_PATH = './files/'
+
+def task_func(directory=DIRECTORY_PATH, from_encoding='cp1251', to_encoding='utf8'):
+    """
+    Convert the encoding of all text files in a specified directory from one encoding to another. 
+    The function modifies the files in-place.
+    
+    Parameters:
+    - directory (str): The directory where the text files are located. Default is './files/'.
+    - from_encoding (str): The original encoding of the text files. Default is 'cp1251'.
+    - to_encoding (str): The encoding to which the text files should be converted. Default is 'utf8'.
+    
+    Returns:
+    - None
+    
+    Requirements:
+    - codecs
+    - os
+    - glob
+    
+    Example:
+    >>> task_func('./files/', 'cp1251', 'utf8')  # Converts all .txt files in './files/' from 'cp1251' to 'utf8'
+    >>> task_func('./other_files/', 'utf8', 'ascii')  # Converts all .txt files in './other_files/' from 'utf8' to 'ascii'
+    """
+    files = glob.glob(os.path.join(directory, '*.txt'))
+    for file_path in files:
+        with codecs.open(file_path, 'r', from_encoding) as file:
+            content = file.read()
+        with codecs.open(file_path, 'w', to_encoding) as file:
+            file.write(content)

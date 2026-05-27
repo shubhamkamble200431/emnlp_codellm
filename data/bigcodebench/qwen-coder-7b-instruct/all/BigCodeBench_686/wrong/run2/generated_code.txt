@@ -1,0 +1,33 @@
+import numpy as np
+from sklearn.preprocessing import OneHotEncoder
+
+def task_func(list_of_lists):
+    """
+    Merges a predefined set of lists into a list and one-hot-encodes the elements of the list.
+
+    Parameters:
+    - list_of_lists (list): The list to be processed.
+
+    Returns:
+    - one_hot (numpy.array): The one-hot encoding of the merged list.
+
+    Requirements:
+    - numpy
+    - scikit-learn
+
+    Example:
+    >>> task_func([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    array([[1., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 1., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 1., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 1., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 1., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 1., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 1., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 1., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 1.]])
+    """
+    merged_list = [item for sublist in list_of_lists for item in sublist]
+    encoder = OneHotEncoder(sparse=False)
+    one_hot = encoder.fit_transform(np.array(merged_list).reshape(-1, 1))
+    return one_hot

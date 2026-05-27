@@ -1,0 +1,36 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def task_func(data_list):
+    """
+    Visualizes the scores of students over multiple tests using a line plot.
+
+    The function takes in a list of dictionaries. Each dictionary contains the name of a student (key)
+    and their score (value). It combines these dictionaries into a pandas DataFrame and plots a line graph
+    of student scores over tests, where the x-axis represents the test number and the y-axis represents the score.
+    Each student's scores are plotted as separate lines. Missing scores are handled by not plotting
+    those specific data points, allowing for discontinuous lines where data is missing.
+
+    Parameters:
+    - data_list (list of dict): A list of dictionaries with student names as keys and their scores as values.
+
+    Returns:
+    - ax (matplotlib.axes._axes.Axes): The Axes object with the plotted data.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> data = [{'John': 5, 'Jane': 10}, {'John': 6, 'Jane': 8}, {'John': 5, 'Jane': 9}]
+    >>> ax = task_func(data)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(-0.25, 0, '−0.25'), Text(0.0, 0, '0.00'), Text(0.25, 0, '0.25'), Text(0.5, 0, '0.50'), Text(0.75, 0, '0.75'), Text(1.0, 0, '1.00'), Text(1.25, 0, '1.25'), Text(1.5, 0, '1.50'), Text(1.75, 0, '1.75'), Text(2.0, 0, '2.00'), Text(2.25, 0, '2.25')]
+    """
+    df = pd.DataFrame(data_list)
+    df.set_index(df.index + 1, inplace=True)
+    ax = df.plot(kind='line', legend=False)
+    return ax

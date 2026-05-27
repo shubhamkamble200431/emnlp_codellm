@@ -1,0 +1,31 @@
+import os
+import random
+import json
+
+def task_func(directory, n):
+    """
+    Create n random files in a directory with json content with the key 'number' and a random integer value between 1 and 100, and then reset the cursor to the beginning of each file.
+
+    Parameters:
+    - directory (str): The directory in which to generate the files.
+    - n (int): The number of files to generate.
+
+    Returns:
+    - directory (str): The directory in which the files were generated.
+
+    Requirements:
+    - os
+    - random
+    - json
+
+    Example:
+    >>> task_func('/path/to/directory', 1)
+    '/path/to/directory'
+    """
+for i in range(n):
+    filename = f"file_{i}.json"
+    filepath = os.path.join(directory, filename)
+    data = {'number': random.randint(1, 100)}
+    with open(filepath, 'w') as file:
+        json.dump(data, file)
+return directory

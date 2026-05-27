@@ -1,0 +1,62 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Processes a dictionary containing product names and their corresponding prices in string format. 
+    The function converts these string prices (which may include commas as thousand separators) into float values. 
+    It then calculates statistical measures (mean, median, and standard deviation) of these prices and 
+    generates a histogram to visually represent the distribution of the prices.
+
+    Parameters:
+    - data (dict): A dictionary with two keys: 'Product' and 'Price_String'. 
+        'Product' is a list of product names, each name corresponding to a product.
+        'Price_String' is a list of prices in string format, associated with these products. 
+        The price strings can contain commas for thousand separators and a period for the decimal point (e.g., "1,234.56").
+
+    Returns:
+    - dict: Contains the calculated mean, median, and standard deviation (sample) of the prices. 
+        The keys are 'mean', 'median', and 'std_dev'.
+    - matplotlib.axes._axes.Axes: A subplot object that represents the histogram plot of the product prices. 
+        The histogram displays the frequency distribution of the prices.
+
+    Note:
+    - A histogram plot is generated using these prices, with automatic bin sizing ('auto'), a blue color, 
+      70% opacity (alpha=0.7), and a relative width (rwidth) of 0.85 for the bars. 
+    - The histogram's title is set to 'Histogram of Product Prices', and the x and y-axis are labeled 'Price' and 'Frequency', respectively.
+
+    Requirements:
+    - pandas
+    - numpy
+    - matplotlib
+
+    Example:
+    >>> results = task_func({'Product': ['Apple', 'Banana'], 'Price_String': ['1,234.00', '567.89']})
+    >>> print(results)
+    ({'mean': 900.9449999999999, 'median': 900.9449999999999, 'std_dev': 471.0108980161712}, (array([1., 1.]), array([ 567.89 ,  900.945, 1234.   ]), <BarContainer object of 2 artists>))
+
+    Note:
+    - The function assumes that each product name in the 'Product' list has a corresponding price in the 'Price_String' list.
+    - The histogram plot's appearance (like color, alpha, and rwidth) is pre-set but can be customized further if needed.
+    """
+    # Convert price strings to floats
+    prices = [float(price.replace(',', '')) for price in data['Price_String']]
+    
+    # Calculate statistics
+    mean = np.mean(prices)
+    median = np.median(prices)
+    std_dev = np.std(prices, ddof=1)
+    
+    # Create DataFrame for easier manipulation
+    df = pd.DataFrame(prices, columns=['Price'])
+    
+    # Plot histogram
+    fig, ax = plt.subplots()
+    n, bins, patches = ax.hist(df['Price'], bins='auto', color='blue', alpha=0.7, rwidth=0.85)
+    ax.set_title('Histogram of Product Prices')
+    ax.set_xlabel('Price')
+    ax.set_ylabel('Frequency')
+    
+    return {'mean': mean, 'median': median, 'std_dev': std_dev}, ax

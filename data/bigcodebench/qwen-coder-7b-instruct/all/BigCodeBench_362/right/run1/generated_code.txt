@@ -1,0 +1,41 @@
+import pandas as pd
+import os
+
+def task_func(original_file_location="test.xlsx", new_file_location="new_test.xlsx", sheet_name="Sheet1"):
+    """
+    Copies data from an Excel spreadsheet into a new Excel file, then reads the new Excel file and returns its contents.
+
+    Parameters:
+    - original_file_location (str): Path to the original Excel file. Defaults to 'test.xlsx'.
+    - new_file_location (str): Path to save the new Excel file. Defaults to 'new_test.xlsx'.
+    - sheet_name (str): Name of the sheet to load data from. Defaults to 'Sheet1'.
+
+    Returns:
+    - DataFrame: A pandas DataFrame representing the content of the new Excel file.
+
+    Raises:
+    - FileNotFoundError: If the original Excel file does not exist at the specified path.
+    - ValueError: If the specified sheet does not exist in the workbook.
+
+    Requirements:
+    - pandas
+    - os
+
+    Example:
+    >>> file_path, file_new_path, sheet_name = 'test.xlsx', 'new_test.xlsx', 'Sheet1'
+    >>> create_dummy_excel(file_path, sheet_name)
+    >>> df = task_func(file_path, file_new_path, sheet_name)
+    >>> os.remove(file_path)
+    >>> os.remove(file_new_path)
+    """
+    if not os.path.exists(original_file_location):
+        raise FileNotFoundError(f"The original Excel file {original_file_location} does not exist.")
+
+    try:
+        df = pd.read_excel(original_file_location, sheet_name=sheet_name)
+    except KeyError:
+        raise ValueError(f"The sheet '{sheet_name}' does not exist in the workbook.")
+
+    df.to_excel(new_file_location, index=False)
+
+    return pd.read_excel(new_file_location)

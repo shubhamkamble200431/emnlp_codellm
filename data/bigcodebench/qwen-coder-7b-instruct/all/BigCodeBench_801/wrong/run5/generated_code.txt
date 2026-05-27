@@ -1,0 +1,45 @@
+import collections
+import numpy as np
+
+
+def task_func(file_name):
+    """
+    Find the most common value in each column of a csv file with column names.
+
+    If some values occur the same number of times, the values are sorted
+    alphabetically and the first is considered most common.
+
+    If an empty csv is passed, an empty dictionary is returned. 
+    
+    Parameters:
+    file_name (str): The name of the csv file.
+    
+    Returns:
+    dict: A dictionary with column names as keys and most common values as values.
+
+    Requirements:
+    - collections
+    - numpy
+    
+    Example:
+    >>> common_values = task_func('sample.csv')
+    >>> print(common_values)
+    {'Name': 'Simon Velasquez',
+    'Age': 21,
+    'Fruit': 'Apple',
+    'Genre': 'HipHop',
+    'Height': 172}
+    """
+    data = np.genfromtxt(file_name, delimiter=',', skip_header=1, dtype=None, encoding=None)
+    if data.size == 0:
+        return {}
+    column_names = data[0]
+    column_values = {name: [] for name in column_names}
+    for row in data[1:]:
+        for col, value in zip(column_names, row):
+            column_values[col].append(value)
+    most_common = {}
+    for name, values in column_values.items():
+        counter = collections.Counter(values)
+        most_common[name] = sorted(counter.keys(), key=lambda x: (-counter[x], x))[0]
+    return most_common

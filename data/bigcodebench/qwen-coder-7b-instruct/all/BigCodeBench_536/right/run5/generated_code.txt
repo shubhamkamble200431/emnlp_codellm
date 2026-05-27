@@ -1,0 +1,36 @@
+import sqlite3
+import pandas as pd
+import os
+
+
+def task_func(db_name, table_name, csv_path="data.csv"):
+    """
+    Read SQLite3 table via pandas and export to a CSV file.
+
+    Parameters:
+    - db_name (str): The path to the SQLite3 database.
+    - table_name (str): The name of the table to export.
+    - csv_path (str, optional): The path where the CSV file will be saved. Defaults to 'data.csv'.
+
+    Requirements:
+    - sqlite3
+    - pandas
+    - os
+
+    Returns:
+    str: The absolute path of the exported CSV file.
+
+    Example:
+    >>> task_func('test.db', 'People')
+    'data.csv'
+    >>> task_func('/absolute/path/to/test.db', 'Orders', 'orders.csv')
+    '/absolute/path/to/orders.csv'
+    """
+    conn = sqlite3.connect(db_name)
+    df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
+    conn.close()
+    
+    abs_csv_path = os.path.abspath(csv_path)
+    df.to_csv(abs_csv_path, index=False)
+    
+    return abs_csv_path

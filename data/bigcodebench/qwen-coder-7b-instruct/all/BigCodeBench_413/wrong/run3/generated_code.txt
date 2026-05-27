@@ -1,0 +1,41 @@
+import os
+from flask_mail import Mail
+
+def task_func(app):
+    """
+    Initialize a Flask application with Flask-Mail. 
+
+    Parameters:
+    app (Flask): The Flask application to configure.
+
+    Returns:
+    tuple: A tuple containing the Flask-Mail instance and the app's mail configurations.
+
+    Note:
+    - The details of the email server are retrieved from environment variables. 
+    - If the variables do not exist, use defaults.
+    
+    Requirements:
+    - os
+    - flask_mail
+
+    Example:
+    >>> from flask import Flask
+    >>> app = Flask("test")
+    >>> mail, configs = task_func(app)
+    >>> 'MAIL_SERVER' in configs
+    True
+    """
+mail = Mail(app)
+
+configurations = {
+    'MAIL_SERVER': os.getenv('MAIL_SERVER', 'smtp.example.com'),
+    'MAIL_PORT': int(os.getenv('MAIL_PORT', 587)),
+    'MAIL_USE_TLS': os.getenv('MAIL_USE_TLS', 'true').lower() == 'true',
+    'MAIL_USERNAME': os.getenv('MAIL_USERNAME', 'username@example.com'),
+    'MAIL_PASSWORD': os.getenv('MAIL_PASSWORD', 'password')
+}
+
+app.config.update(configurations)
+
+return mail, configurations

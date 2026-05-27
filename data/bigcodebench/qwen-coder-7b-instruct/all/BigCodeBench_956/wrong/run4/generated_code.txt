@@ -1,0 +1,51 @@
+import re
+import string
+import random
+
+
+def task_func(text: str, seed=None) -> str:
+    """
+    Transforms a given string by removing special characters, normalizing whitespace,
+    and randomizing character casing.
+
+    Parameters:
+    - text (str): The text string to be preprocessed.
+    - seed (int, optional): Random seed for reproducibility. Defaults to None (not set).
+
+    Returns:
+    - str: The preprocessed text string.
+
+    Requirements:
+    - re
+    - string
+    - random
+
+    Note:
+    - This function considers special characters to be string punctuations.
+    - Spaces, tabs, and newlines are replaced with with '_', '__', and '___' respectively.
+    - To randomize casing, this function converts characters to uppercase with a 50% probability.
+
+    Example:
+    >>> task_func('Hello   World!', 0)
+    'HeLlo___WORlD'
+    >>> task_func('attention is all you need', 42)
+    'ATtENTIOn_IS_ALL_You_Need'
+    """
+        if seed is not None:
+            random.seed(seed)
+
+        result = []
+        for char in text:
+            if char.isalpha():
+                if random.choice([True, False]):
+                    result.append(char.upper())
+                else:
+                    result.append(char.lower())
+            elif char.isspace():
+                result.append('_' * (char.count(' ') + 1))
+            elif char in string.punctuation:
+                result.append('__')
+            else:
+                result.append(char)
+
+        return ''.join(result)

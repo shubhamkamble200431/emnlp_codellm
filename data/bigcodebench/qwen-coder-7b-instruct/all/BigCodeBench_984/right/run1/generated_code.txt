@@ -1,0 +1,44 @@
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+
+def task_func(df, x_column, y_column):
+    """
+    Draws a scatter plot for the specified columns from a pandas DataFrame and fits a linear regression model to the data.
+
+    Parameters:
+    df (DataFrame): The input pandas DataFrame.
+    x_column (str): The column name for the x-axis. Data contained in column must be numeric.
+    y_column (str): The column name for the y-axis. Data contained in column must be numeric.
+
+    Returns:
+    matplotlib.axes._axes.Axes: The Axes object containing the scatter plot and the linear regression line.
+
+    Requirements:
+    - matplotlib
+    - sklearn
+
+    Notes:
+    - After plotting the scatterplot, this function overlays the predicted regression line on top in red on the same Axes.
+
+    Example:
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({'A': [1, 2, 3], 'B': [2, 3, 4]})
+    >>> ax = task_func(df, 'A', 'B')
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Create a scatter plot
+    ax = df.plot.scatter(x=x_column, y=y_column)
+
+    # Fit a linear regression model
+    model = LinearRegression()
+    model.fit(df[[x_column]], df[y_column])
+
+    # Get the predictions from the model
+    predictions = model.predict(df[[x_column]])
+
+    # Plot the regression line
+    ax.plot(df[x_column], predictions, color='red')
+
+    return ax

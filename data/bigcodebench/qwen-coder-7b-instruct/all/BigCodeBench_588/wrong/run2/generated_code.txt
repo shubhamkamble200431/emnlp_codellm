@@ -1,0 +1,53 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Constants defining the range of random integers and the size of the DataFrame
+RANGE = 100
+SIZE = 1000
+
+
+def task_func():
+    """
+    Generates a DataFrame with two columns, 'X' and 'Y', each filled with random integers within a specified range,
+    and plots these points using a scatter plot. The visualization is created using Seaborn on top of Matplotlib.
+
+    The function is designed to be parameter-free for simplicity, utilizing constants for configuration.
+
+    Returns:
+        pd.DataFrame: A DataFrame with 'X' and 'Y' columns containing the generated random integers.
+
+    Requirements:
+        - numpy
+        - pandas
+        - seaborn
+        - matplotlib.pyplot
+
+    No Parameters.
+
+    Example:
+        >>> df = task_func()
+        >>> isinstance(df, pd.DataFrame)
+        True
+        >>> 'X' in df.columns and 'Y' in df.columns
+        True
+        >>> len(df)
+        1000
+        >>> all(df['X'].between(0, RANGE - 1)) and all(df['Y'].between(0, RANGE - 1))
+        True
+    """
+    # Generate random integers for X and Y columns
+    data = {
+        'X': np.random.randint(0, RANGE, SIZE),
+        'Y': np.random.randint(0, RANGE, SIZE)
+    }
+    
+    # Create DataFrame from the dictionary
+    df = pd.DataFrame(data)
+    
+    # Plotting using Seaborn and Matplotlib
+    sns.scatterplot(x='X', y='Y', data=df)
+    plt.show()
+    
+    return df

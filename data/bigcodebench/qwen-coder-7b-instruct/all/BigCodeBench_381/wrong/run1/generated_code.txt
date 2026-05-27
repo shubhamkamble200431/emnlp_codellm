@@ -1,0 +1,73 @@
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+import seaborn as sns
+import matplotlib.pyplot as plt
+import os
+
+def task_func(file_path='arena.csv', target_column='Index', seed=42):
+    """
+    Trains a random forest model on data from a CSV file, using one column as the target variable (y) 
+    and the rest as features (X), and visualizes the feature importances in a bar plot. This function 
+    also handles missing values by dropping rows with any NaN values.
+
+    Parameters:
+    - file_path (str): Path to the CSV file containing the dataset. Defaults to 'arena.csv'.
+    - target_column (str): Name of the column to be used as the target variable (y). Defaults to 'Index'.
+    - seed (int): Seed for the random state of the RandomForestClassifier to ensure reproducibility. Defaults to 42.
+
+    Returns:
+    - matplotlib.axes.Axes: Axes object displaying the bar plot of feature importances.
+    - numpy.ndarray: Array containing the feature importances derived from the random forest model.
+
+    Raises:
+    - FileNotFoundError: Raised if the specified file_path does not lead to a valid file.
+    - ValueError: Raised if the specified target_column is not found in the CSV file's columns, or if the input data contains NaN, infinity or a value too large for dtype('float32').
+
+    Requirements:
+    - pandas: For loading and manipulating the CSV file.
+    - sklearn.ensemble.RandomForestClassifier: For training the random forest model.
+    - seaborn and matplotlib for plotting the feature importances.
+    - os 
+
+    Example:
+    The CSV file format:
+        Index,Score1,Score2,Score3
+        1,10,20,30
+        2,15,25,35
+        3,20,30,40
+    
+    >>> file_path = 'arena.csv'
+    >>> create_dummy_file(file_path)
+    >>> ax, importances = task_func(file_path, 'Index') # This will train a random forest model predicting 'Index' from 'Score1', 'Score2', and 'Score3', then plot and return the importances of 'Score1', 'Score2', and 'Score3' as features (X).
+    >>> os.remove(file_path)
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+
+    df = pd.read_csv(file_path)
+
+    if target_column not in df.columns:
+        raise ValueError(f"The target column '{target_column}' is not found in the CSV file.")
+
+    df.dropna(inplace=True)
+
+    X = df.drop(target_column, axis=1)
+    y = df[target_column]
+
+    rf_model = RandomForestClassifier(n_estimators=100, random_state=seed)
+    rf_model.fit(X, y)
+
+    importances = rf_model.feature_importances_
+
+    feature_names = X.columns
+    sorted_indices = importances.argsort()[::-1]
+    sorted_importances = importances[sorted_indices]
+    sorted_feature_names = feature_names[sorted_indices]
+
+    fig, ax = plt.subplots()
+    sns.barplot(x=sorted_importances, y=sorted_feature_names, ax=ax)
+    ax.set_title('Feature Importances')
+    ax.set_xlabel('Importance')
+    ax.set_ylabel('Features')
+
+    return ax, sorted_importances

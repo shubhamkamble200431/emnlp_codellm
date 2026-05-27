@@ -1,0 +1,76 @@
+import sqlite3
+import random
+
+
+def task_func(db_path,
+          num_entries,
+          users=['Alice', 'Bob', 'Charlie', 'Dave', 'Eve'],
+          countries=['USA', 'UK', 'Canada', 'Australia', 'India'],
+          random_seed=None):
+    """
+    Generate an SQLite database to a given file path with random user data.
+
+    The user data consists of a table named 'users' with columns:
+        - id (integer): Used as Primary Key. numbering of entries starting at 0.
+        - name (string): name of the user. sampled from 'users'
+        - age (int): age of the user, where 20 <= age <= 60.
+        - country (string): sampled from 'countries'
+
+    The number of entries in the database is determined by num_entries.
+
+    Parameters:
+    db_path (str): The file path where the SQLite database should be created.
+    num_entries (int): The number of entries of random data to generate.
+    users (list of str, optional): List of user names to choose from. Defaults to ['Alice', 'Bob', 'Charlie', 'Dave', 'Eve'].
+    countries (list of str, optional): List of countries to choose from. Defaults to ['USA', 'UK', 'Canada', 'Australia', 'India'].
+    random_seed (int, optional): Seed used in rng. Defaults to Nonee.
+    
+    Returns:
+    str: The file path of the generated SQLite database.
+
+    Requirements:
+    - sqlite3
+    - random
+
+    Example:
+    >>> task_func('/tmp/users.db', 100)
+    '/tmp/users.db'
+
+    >>> path = task_func('test.db', num_entries=3, random_seed=2, users=['Simon', 'Albert'])
+    >>> conn = sqlite3.connect('test.db')
+    >>> c = conn.cursor()
+    >>> c.execute("SELECT * FROM users")
+    >>> c.fetchall()
+    [(1, 'Simon', 25, 'USA'), (2, 'Viola', 30, 'Canada'), (3, 'Viola', 58, 'UK')]
+    >>> c.execute("PRAGMA table_info(users)")
+    >>> c.fetchall()
+    [(0, 'id', 'INTEGER', 0, None, 1),
+    (1, 'name', 'TEXT', 0, None, 0),
+    (2, 'age', 'INTEGER', 0, None, 0),
+    (3, 'country', 'TEXT', 0, None, 0)]
+    """
+    if random_seed is not None:
+        random.seed(random_seed)
+
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            age INTEGER,
+            country TEXT
+        )
+    ''')
+
+    for i in range(num_entries):
+        user_name = random.choice(users)
+        user_age = random.randint(20, 60)
+        user_country = random.choice(countries)
+        c.execute('INSERT INTO users VALUES (?, ?, ?, ?)', (i, user_name, user_age, user_country))
+
+    conn.commit()
+    conn.close()
+
+    return db_path

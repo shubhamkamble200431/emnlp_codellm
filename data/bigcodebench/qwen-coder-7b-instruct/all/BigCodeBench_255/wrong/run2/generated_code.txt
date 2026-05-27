@@ -1,0 +1,47 @@
+import matplotlib
+import numpy as np
+
+# Constants
+FUNCTIONS = [np.sin, np.cos, np.tan]
+
+def task_func(ax, func_index):
+    """
+    Draw a mathematical function (sine, cosine, or tangent) on a polar diagram 'ax'.
+    The radial ticks are placed at a position corresponding to the index of the function multiplied by 45 degrees.
+
+    Parameters:
+    ax (matplotlib.axes._axes.Axes): The ax to plot on.
+    func_index (int): The index of the function in the FUNCTIONS list (0 for sine, 1 for cosine, 2 for tangent).
+
+    Returns:
+    matplotlib.axes._axes.Axes: The modified ax with the plotted function.
+    
+    Raises:
+    - This function will raise a ValueError if the input ax is not and Axes.
+    
+    Requirements:
+    - matplotlib
+    - numpy
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(111, polar=True)
+    >>> ax_up = task_func(ax, 1)
+    <class 'matplotlib.projections.polar.PolarAxes'>
+    >>> ax_up.lines[0].get_ydata()[0]
+    1.0
+    >>> plt.close()
+    """
+if not isinstance(ax, matplotlib.axes.Axes):
+    raise ValueError("Input ax must be an instance of matplotlib.axes.Axes")
+
+theta = np.linspace(0, 2 * np.pi, 100)
+r = FUNCTIONS[func_index](theta)
+
+ax.plot(theta, r, label=FUNCTIONS[func_index].__name__)
+ax.set_yticks([i * np.pi / 4 for i in range(8)])
+ax.set_yticklabels(['0', '$\pi/4$', '$\pi/2$', '$3\pi/4$', '$\pi$', '$5\pi/4$', '$3\pi/2$', '$7\pi/4$'])
+ax.legend()
+
+return ax

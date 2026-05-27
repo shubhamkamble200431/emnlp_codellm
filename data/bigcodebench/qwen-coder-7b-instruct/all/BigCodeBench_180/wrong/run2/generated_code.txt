@@ -1,0 +1,57 @@
+from PIL import Image
+import numpy as np
+from skimage.transform import resize
+import matplotlib.pyplot as plt
+import os
+
+def task_func(img_path, scale_factors=[0.5, 0.75, 1.5, 2.0]):
+    """
+    Open an image file and scale it by different scaling factors.
+    Display each scaled image using matplotlib and return the scaled images with their Axes.
+
+    Parameters:
+    img_path (str): Path to the image file.
+    scale_factors (list): List of scaling factors to apply. Default is [0.5, 0.75, 1.5, 2.0].
+
+    Returns:
+    list of tuples: Each tuple contains (matplotlib.axes.Axes, numpy.ndarray) representing the Axes and the pixel values of the scaled image.
+
+    Raises:
+    FileNotFoundError: If the image file cannot be found.
+
+    Requirements:
+    - PIL
+    - numpy
+    - scikit-image
+    - matplotlib.pyplot
+    - os
+
+    Example:
+    >>> dummy_img_path = "sample.png"
+    >>> Image.fromarray(np.random.randint(0, 255, (20, 20, 3), dtype=np.uint8)).save(dummy_img_path)
+    >>> result = task_func('sample.png')
+    >>> os.remove(dummy_img_path)
+    >>> for ax, img in result:
+    ...     print(ax.get_title(), img.shape)
+    Scale factor: 0.5 (10, 10, 3)
+    Scale factor: 0.75 (15, 15, 3)
+    Scale factor: 1.5 (30, 30, 3)
+    Scale factor: 2.0 (40, 40, 3)
+    """
+    try:
+        img = Image.open(img_path)
+        img_np = np.array(img)
+
+        results = []
+        for scale_factor in scale_factors:
+            scaled_img_np = resize(img_np, (int(img_np.shape[0] * scale_factor), int(img_np.shape[1] * scale_factor)), anti_aliasing=True)
+            fig, ax = plt.subplots()
+            ax.imshow(scaled_img_np)
+            ax.set_title(f'Scale factor: {scale_factor} ({scaled_img_np.shape})')
+            results.append((ax, scaled_img_np))
+
+        plt.show()
+
+        return results
+    except FileNotFoundError:
+        raise FileNotFoundError("The specified image file was not found.")

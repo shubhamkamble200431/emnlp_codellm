@@ -1,0 +1,28 @@
+from collections import Counter
+from operator import itemgetter
+import itertools
+
+
+def task_func(word_dict):
+    """
+    Given a dictionary of words as keys and letters as values, count the frequency of each letter in the words.
+    
+    Parameters:
+    word_dict (dict): The dictionary with words as keys and their letters as values.
+    
+    Returns:
+    dict: A dictionary with letters as keys and their frequencies as values.
+    
+    Requirements:
+    - collections.Counter
+    - operator.itemgetter
+    - itertools
+    
+    Example:
+    >>> word_dict = {'apple': 'a', 'banana': 'b', 'cherry': 'c', 'date': 'd', 'elderberry': 'e', 'fig': 'f', 'grape': 'g', 'honeydew': 'h'}
+    >>> counts = task_func(word_dict)
+    >>> print(counts)
+    {'e': 9, 'a': 6, 'r': 6, 'p': 3, 'n': 3, 'y': 3, 'd': 3, 'l': 2, 'b': 2, 'h': 2, 'g': 2, 'c': 1, 't': 1, 'f': 1, 'i': 1, 'o': 1, 'w': 1}
+    """
+    letters = ''.join(word_dict.values())
+    return dict(Counter(letters))

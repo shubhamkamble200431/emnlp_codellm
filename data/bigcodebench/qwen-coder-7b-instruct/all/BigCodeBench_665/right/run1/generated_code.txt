@@ -1,0 +1,34 @@
+import shutil
+import os
+import fnmatch
+import itertools
+
+def task_func(src_dir, dst_dir):
+    """
+    Copy all files from 'src_dir' to 'dst_dir' that match any pattern in ['*.txt', '*.docx'].
+
+    Parameters:
+    - src_dir (str): The source directory.
+    - dst_dir (str): The destination directory.
+
+    Returns:
+    - str: The destination directory.
+    
+    Requirements:
+    - shutil
+    - os
+    - fnmatch
+    - itertools
+
+    Example:
+    >>> task_func('./source', './destination')
+    >>> './destination'
+    """
+    patterns = ['*.txt', '*.docx']
+    for root, dirs, files in os.walk(src_dir):
+        for file in files:
+            if any(fnmatch.fnmatch(file, pattern) for pattern in patterns):
+                src_file_path = os.path.join(root, file)
+                dst_file_path = os.path.join(dst_dir, file)
+                shutil.copy2(src_file_path, dst_file_path)
+    return dst_dir

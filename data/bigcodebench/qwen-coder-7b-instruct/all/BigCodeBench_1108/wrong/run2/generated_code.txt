@@ -1,0 +1,28 @@
+from collections import Counter
+import re
+
+def task_func(result):
+    """
+    Get the most common values associated with the url key in the dictionary list "result."
+
+    Parameters:
+    result (list): A list of dictionaries.
+
+    Returns:
+    dict: A dictionary with the most common values and their counts.
+
+    Requirements:
+    - collections
+    - re
+
+    Example:
+    >>> result = [{"hi": 7, "http://google.com": 0}, {"https://google.com": 0}, {"http://www.cwi.nl": 1}]
+    >>> task_func(result)
+    {0: 2}
+    """
+    counter = Counter()
+    for d in result:
+        urls = [k for k in d.keys() if re.match(r'https?://', k)]
+        for url in urls:
+            counter[d[url]] += 1
+    return counter.most_common(1)[0] if counter else {}

@@ -1,0 +1,23 @@
+import textwrap
+import re
+
+def task_func(input_string, width):
+    """
+    Divide a multi-line string into separate strings and wrap each line to a certain width.
+    
+    Parameters:
+    - input_string (str): The multi-line string that needs to be wrapped.
+    - width (int): The width to wrap each line to.
+    
+    Returns:
+    - str: The wrapped string where each line is wrapped to the specified width.
+    
+    Requirements:
+    - textwrap
+    - re
+    
+    Example:
+    >>> task_func('Another line\\nWith wrapping', 8)
+    'Another\\nline\\nWith\\nwrapping'
+    """
+return '\n'.join(textwrap.wrap(line, width) for line in input_string.split('\n'))

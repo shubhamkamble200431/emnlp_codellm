@@ -1,0 +1,71 @@
+# Importing the required libraries
+import re
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+
+
+def task_func(text, n=2):
+    """
+    Analyzes a text string, removing duplicate consecutive words and stopwords defined by nltk.corpus,
+    generates a square co-occurrence matrix of words, and plots this matrix.
+
+    Parameters:
+    - text (str): Input text to be analyzed.
+    - n (int, optional): Size of n-grams for the co-occurrence matrix. Defaults to 2.
+
+    Returns:
+    - tuple:
+        - pd.DataFrame: Square co-occurrence matrix of words.
+        - matplotlib.axes.Axes: Plot object of the co-occurrence matrix.
+
+    Requirements:
+        - re
+        - pandas
+        - matplotlib.pyplot
+        - numpy
+        - sklearn.feature_extraction.text
+        - nltk.corpus
+
+    Example:
+    >>> import matplotlib
+    >>> text = "hello hello world world"
+    >>> df, ax = task_func(text, n=2)
+    >>> df.columns.tolist()
+    ['hello world']
+    >>> df.index.tolist()
+    ['hello world']
+    >>> df.iloc[0, 0]
+    0
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    # Removing duplicates and stopwords
+    words = [word for word in re.findall(r'\b\w+\b', text.lower()) if word not in stopwords.words('english')]
+    unique_words = sorted(set(words))
+    
+    # Generating n-grams
+    n_grams = list(zip(*[unique_words[i:] for i in range(n)]))
+    
+    # Creating co-occurrence matrix
+    co_occurrence_matrix = np.zeros((len(unique_words), len(unique_words)), dtype=int)
+    for gram in n_grams:
+        indices = [unique_words.index(word) for word in gram]
+        co_occurrence_matrix[np.ix_(indices, indices)] += 1
+    
+    # Converting matrix to DataFrame
+    df = pd.DataFrame(co_occurrence_matrix, index=unique_words, columns=unique_words)
+    
+    # Plotting the matrix
+    fig, ax = plt.subplots(figsize=(10, 8))
+    cax = ax.matshow(df, cmap='coolwarm')
+    fig.colorbar(cax)
+    ax.set_xticks(np.arange(len(unique_words)))
+    ax.set_yticks(np.arange(len(unique_words)))
+    ax.set_xticklabels(unique_words, rotation=90)
+    ax.set_yticklabels(unique_words)
+    plt.show()
+    
+    return df, ax

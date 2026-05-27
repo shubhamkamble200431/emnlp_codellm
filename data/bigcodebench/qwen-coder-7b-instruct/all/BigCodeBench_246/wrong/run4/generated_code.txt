@@ -1,0 +1,50 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.fft import fft
+
+
+ANGLES = np.arange(0, 2*np.pi, 0.01)
+
+def task_func(n_waves, seed=0):
+    """
+    Generate a series of n sine waves with increasing frequency with a fidelity of 0.01 radians as 
+    provided by the ANGLES array. The amplitude of each wave is 1. The function returns a list of
+    numpy arrays with the y values of the sine waves. Additionally, calculate the Fast Fourier Transform
+    (FFT) of the mixed signal and plot the histogram of the magnitude of the FFT data. If n_waves is less
+    than 1, return an empty list for the sine waves, an empty array for the FFT data, and None for the axes
+    object.
+    
+    Parameters:
+    n_waves (int): The number of sine waves in the series.
+    seed (int, Optional): The seed for the random number generator. Defaults to 0.
+    
+    Returns:
+    list: A list of numpy arrays with the y values of the sine waves.
+    np.array: FFT data.
+    plt.Axes: The axes object of the plot.
+    
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - scipy.fft
+
+    Example:
+    >>> sine_waves, fft_data, ax = task_func(5)
+    >>> len(sine_waves)
+    5
+    >>> fft_data.shape
+    (629,)
+    """
+    if n_waves < 1:
+        return [], np.array([]), None
+    
+    np.random.seed(seed)
+    sine_waves = [np.sin(angles + i * np.pi / n_waves) for i in range(n_waves)]
+    mixed_signal = sum(sine_waves)
+    fft_data = fft(mixed_signal)
+    
+    fig, ax = plt.subplots()
+    ax.hist(np.abs(fft_data))
+    plt.show()
+    
+    return sine_waves, fft_data, ax

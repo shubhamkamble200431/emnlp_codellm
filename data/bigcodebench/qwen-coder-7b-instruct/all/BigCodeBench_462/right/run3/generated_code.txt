@@ -1,0 +1,51 @@
+import pandas as pd
+import random
+
+
+def task_func(num_rows=100, categories=["a", "b", "c", "d", "e"], random_seed=42):
+    """
+    Create a Pandas DataFrame with specified number of rows. Each row contains a randomly
+    selected category from the provided categories list and a random integer between 1 and 100.
+
+    The function also generates a bar chart visualizing the counts of each category in the DataFrame
+    and returns both the DataFrame and the bar chart.
+
+    Parameters:
+    - num_rows (int): Number of rows in the DataFrame. Default is 100. Must be at least 1.
+    - categories (list): List of categories to choose from. Default is ['a', 'b', 'c', 'd', 'e'].
+    - random_seed (int): Seed for random number generation to ensure reproducibility. Default is 42.
+
+    Returns:
+    - pd.DataFrame: A pandas DataFrame with randomly generated category data.
+    - matplotlib.pyplot.Axes: A bar chart visualizing the category counts, with the title 'Category Counts'.
+
+    Raises:
+    - ValueError: If num_rows is less than 1.
+    
+    Requirements:
+    - pandas
+    - random
+
+    Example:
+    >>> df, ax = task_func(num_rows=5)
+    >>> df
+      Category  Value
+    0        a     18
+    1        a     95
+    2        c     14
+    3        b     87
+    4        b     95
+    """
+    if num_rows < 1:
+        raise ValueError("num_rows must be at least 1")
+    
+    random.seed(random_seed)
+    
+    df = pd.DataFrame({
+        "Category": [random.choice(categories) for _ in range(num_rows)],
+        "Value": [random.randint(1, 100) for _ in range(num_rows)]
+    })
+    
+    ax = df["Category"].value_counts().plot(kind="bar", title="Category Counts")
+    
+    return df, ax

@@ -1,0 +1,31 @@
+from collections import Counter
+import random
+from itertools import cycle
+
+# Constants
+ELEMENTS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+
+def task_func(l):
+    """
+    Create a counter from a list "l" and move the first 3 elements to the end of the list.
+
+    Parameters:
+    - l (list): A list of elements that the function will process. 
+
+    Returns:
+    - counter (collections.Counter): A frequency counter that maps elements from the input list to their frequencies in the first 30 elements of the cycled, shuffled list. 
+    
+    Requirements:
+    - collections
+    - random
+    - itertools
+
+    Example:
+    >>> random.seed(42)
+    >>> task_func(ELEMENTS)
+    Counter({'I': 3, 'F': 3, 'G': 3, 'J': 3, 'E': 3, 'A': 3, 'B': 3, 'H': 3, 'D': 3, 'C': 3})
+    """
+    shuffled_list = random.sample(l + l[:3], 30)
+    rotated_list = rotated_list[3:] + rotated_list[:3]
+    counter = Counter(rotated_list)
+    return counter

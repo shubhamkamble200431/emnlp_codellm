@@ -1,0 +1,61 @@
+import os
+from pathlib import Path
+import glob
+import shutil
+
+
+def task_func(source_directory: str, target_directory: str):
+    """
+    Moves files with specific extensions from a source directory to a target directory,
+    handling naming conflicts by renaming duplicates.
+
+    Parameters:
+    - source_directory (str): The absolute or relative path of the source directory.
+    - target_directory (str): The absolute or relative path of the target directory.
+                              This function will create it if it does not exist.
+
+    Returns:
+    - int: The number of files successfully moved.
+
+    Raises:
+    - FileNotFoundError: If source_directory does not exist.
+
+    Requirements:
+    - os
+    - pathlib
+    - glob
+    - shutil
+
+    Notes:
+    - This function scans the source directory recursively to find files.
+    - Files are filtered by the extensions: ".txt", ".docx", ".xlsx", ".csv".
+    - Renaming of files due to naming conflicts follows the pattern '<original_name>-n.<extension>'.
+
+    Examples:
+    >>> task_func('./source_folder', './target_folder')
+    3
+    >>> task_func('./empty_folder', './target_folder')
+    0
+    """
+    source_path = Path(source_directory)
+    target_path = Path(target_directory)
+
+    if not source_path.exists():
+        raise FileNotFoundError(f"The source directory '{source_directory}' does not exist.")
+
+    if not target_path.exists():
+        target_path.mkdir(parents=True, exist_ok=True)
+
+    move_count = 0
+    file_extensions = {".txt", ".docx", ".xlsx", ".csv"}
+
+    for file_path in glob.glob(str(source_path / "**" / "*"), recursive=True):
+        if Path(file_path).suffix in file_extensions:
+            target_file_path = target_path / Path(file_path).name
+            while target_file_path.exists():
+                base_name, extension = target_file_path.stem.rsplit('.', 1)
+                target_file_path = target_path / f"{base_name}-1.{extension}"
+            shutil.move(file_path, target_file_path)
+            move_count += 1
+
+    return move_count

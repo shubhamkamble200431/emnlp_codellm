@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+def task_func(start_date='2016-01-01', periods=24, freq='M', model='additive'):
+    """
+    Generate a sales time-series and decompose it into trend, seasonal, and residual components.
+    
+    Parameters:
+    - start_date (str): The start date of the time-series in the format 'YYYY-MM-DD'. Default is '2016-01-01'.
+    - periods (int): The number of periods to generate for the time-series. Default is 24.
+    - freq (str): The frequency of the time-series data. Default is 'M' (Monthly End).
+    - model (str): The type of seasonal decomposition ('additive' or 'multiplicative'). Default is 'additive'.
+
+    Returns:
+    - A dictionary containing 'trend', 'seasonal', and 'residual' components as Pandas Series.
+    
+    Requirements:
+    - numpy
+    - pandas
+    - statsmodels
+    
+    Examples:
+    >>> result = task_func('2016-01-01', 24, 'M')
+    >>> all(key in result for key in ['trend', 'seasonal', 'residual'])
+    True
+
+    >>> result = task_func('2020-01-01', 24, 'M', 'multiplicative')
+    >>> len(result['seasonal'])
+    24
+    """
+    # Create a date range
+    dates = pd.date_range(start=start_date, periods=periods, freq=freq)
+    
+    # Generate a synthetic sales time-series
+    np.random.seed(42)  # For reproducibility
+    trend = np.linspace(0, 10, periods)
+    seasonal = np.sin(np.linspace(0, 2 * np.pi, periods)) * 5
+    noise = np.random.normal(0, 2, periods)
+    sales = trend + seasonal + noise
+    
+    # Decompose the time-series
+    decomposition = seasonal_decompose(sales, model=model, period=None if freq != 'M' else 12)
+    
+    # Extract trend, seasonal, and residual components
+    trend_series = pd.Series(decomposition.trend, index=dates)
+    seasonal_series = pd.Series(decomposition.seasonal, index=dates)
+    residual_series = pd.Series(decomposition.resid, index=dates)
+    
+    # Return the components in a dictionary
+    return {
+        'trend': trend_series,
+        'seasonal': seasonal_series,
+        'residual': residual_series
+    }

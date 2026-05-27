@@ -1,0 +1,38 @@
+import os
+import ctypes
+from datetime import datetime
+import pytz
+
+def task_func(filepath):
+    """
+    Loads a DLL file from the specified filepath and returns its metadata, including creation time,
+    modification time, and file size. The times are displayed in UTC format. This function
+    demonstrates the use of ctypes for loading DLLs and os module for accessing file metadata.
+
+    
+    Parameters:
+    filepath (str): The path of the DLL file.
+
+    Returns:
+    str: The name of the loaded DLL file.
+    dict: A dictionary containing the metadata of the DLL file, including the keys 'Creation Time', 'Modification Time', and 'Size'.
+    
+    Requirements:
+    - ctypes
+    - os
+    - datetime.datetime
+    - pytz
+
+    Examples:
+    >>> isinstance(task_func('libc.so.6'), str) # Doctest will vary based on the system and DLL file availability.
+    True
+    >>> 'libc.so.6' in task_func('libc.so.6')
+    True
+    """
+    dll_name = os.path.basename(filepath)
+    metadata = {
+        'Creation Time': datetime.fromtimestamp(os.path.getctime(filepath), pytz.utc),
+        'Modification Time': datetime.fromtimestamp(os.path.getmtime(filepath), pytz.utc),
+        'Size': os.path.getsize(filepath)
+    }
+    return dll_name, metadata

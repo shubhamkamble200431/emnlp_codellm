@@ -1,0 +1,65 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+COLORS = ['r', 'g', 'b']
+
+def task_func(df, group_col, value_col):
+    """
+    Create a bar chart of data in multiple groups with error bars.
+
+    Parameters:
+    - df (DataFrame): The input DataFrame containing the data.
+    - group_col (str): The name of the column to group the data by.
+    - value_col (str): The name of the column containing the values to plot.
+
+    Returns:
+    - Axes: A matplotlib axes object with the bar chart.
+
+    Requirements:
+    - matplotlib.pyplot
+    - numpy
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({'Group': ['A', 'B', 'A', 'B', 'A', 'B'], 'Value': [1, 2, 3, 4, 5, 6]})
+    >>> ax = task_func(df, 'Group', 'Value')
+    >>> len(ax.patches)
+    2
+    >>> plt.close()
+
+    Note:
+    - The function uses a predefined set of colors for the bars. If there are more groups than colors,
+      the colors will repeat from the beginning of the COLORS list.
+    - This function use "Bar chart of {value_col} by {group_col}" for the plot title.
+    - This function use value of variables group_col and value_col as the xlabel and ylabel respectively.
+
+    Raises:
+    -This function will raise TypeError if the 'Value' has non-numeric values.
+    """
+    # Validate that the value column contains numeric data
+    if not np.issubdtype(df[value_col].dtype, np.number):
+        raise TypeError(f"The '{value_col}' column must contain numeric values.")
+
+    # Get unique groups and corresponding values
+    groups = df[group_col].unique()
+    num_groups = len(groups)
+
+    # Prepare data for plotting
+    x_positions = np.arange(num_groups)
+    heights = df.groupby(group_col)[value_col].mean()
+    errors = df.groupby(group_col)[value_col].std()
+
+    # Create bar chart with error bars
+    fig, ax = plt.subplots()
+    bars = ax.bar(x_positions, heights, yerr=errors, color=[COLORS[i % len(COLORS)] for i in range(num_groups)])
+
+    # Set labels and title
+    ax.set_xlabel(value_col)
+    ax.set_ylabel(group_col)
+    ax.set_title(f"Bar chart of {value_col} by {group_col}")
+    ax.set_xticks(x_positions)
+    ax.set_xticklabels(groups)
+
+    return ax

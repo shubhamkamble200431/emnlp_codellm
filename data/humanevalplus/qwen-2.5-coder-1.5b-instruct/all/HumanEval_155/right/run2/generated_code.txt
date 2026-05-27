@@ -1,0 +1,23 @@
+
+def even_odd_count(num):
+    """Given an integer. return a tuple that has the number of even and odd digits respectively.
+
+     Example:
+        even_odd_count(-12) ==> (1, 1)
+        even_odd_count(123) ==> (1, 2)
+    """
+    # Convert the absolute value of num to its string representation
+    str_num = abs(num).__str__()
+
+    # Initialize counters for even and odd digits
+    even_count = 0
+    odd_count = 0
+
+    # Iterate through each digit in the string
+    for digit in str_num:
+        if int(digit) % 2 == 0:
+            even_count += 1
+        else:
+            odd_count += 1
+
+    return (even_count, odd_count)

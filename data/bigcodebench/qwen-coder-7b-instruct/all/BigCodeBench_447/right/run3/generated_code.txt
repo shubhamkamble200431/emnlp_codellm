@@ -1,0 +1,49 @@
+import numpy as np
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+
+def task_func(data, n_components=2, random_state=None):
+    """
+    Performs Principal Component Analysis (PCA) on the provided dataset to reduce its dimensionality,
+    and visualizes the results using a scatter plot.
+
+    This function applies PCA to the dataset, reducing its features to the specified number of principal components.
+    It then visualizes the reduced data in a scatter plot. For datasets reduced to a single component, the function
+    generates a 1D scatter plot along the X-axis, with all Y-values set to zero. For reductions resulting in two or more
+    components, only the first two principal components are visualized.
+
+    Parameters:
+    - data (ndarray): A numpy ndarray of shape (n_samples, n_features) representing the data.
+    - n_components (int, optional): Number of components to keep. Defaults to 2.
+    - random_state (int, optional): Seed for reproducibility. Defaults to None.
+
+    Returns:
+    dict: A dictionary containing:
+        - "transformed_data" (np.ndarray): The transformed data.
+        - "ax" (plt.Axes): The scatter plot visualizing the transformed data.
+
+    Requirements:
+    - numpy
+    - matplotlib
+    - sklearn
+
+    Example:
+    >>> data = np.random.random((100, 5))
+    >>> results = task_func(data, random_state=42)
+    >>> results['transformed_data'].shape
+    (100, 2)
+    >>> type(results['ax'])
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    pca = PCA(n_components=n_components, random_state=random_state)
+    transformed_data = pca.fit_transform(data)
+
+    fig, ax = plt.subplots()
+
+    if n_components == 1:
+        ax.scatter(range(len(transformed_data)), transformed_data.flatten(), color='blue')
+    elif n_components >= 2:
+        ax.scatter(transformed_data[:, 0], transformed_data[:, 1], color='blue')
+
+    return {"transformed_data": transformed_data, "ax": ax}

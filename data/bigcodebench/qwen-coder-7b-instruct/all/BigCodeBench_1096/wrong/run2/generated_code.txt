@@ -1,0 +1,42 @@
+from nltk.tokenize import RegexpTokenizer
+from string import punctuation
+import csv
+import os
+
+PUNCTUATION = set(punctuation)
+
+def task_func(text, filename):
+    """
+    Save all words in a text beginning with the "$" character in a CSV file, excluding any words that are solely composed of punctuation characters.
+
+    Parameters:
+    text (str): The input text.
+    filename (str): The name of the CSV file to save the '$' words.
+
+    Returns:
+    str: The absolute path of the saved CSV file.
+
+    Note:
+    - The header of the csv row is "Word"
+
+    Requirements:
+    - nltk.tokenize.RegexpTokenizer
+    - string.punctuation
+    - csv
+    - os
+
+    Example:
+    >>> text = "$abc def $efg $hij klm $ $abc $abc $hij $hij"
+    >>> task_func(text, 'dollar_words.csv')
+    '/absolute/path/to/dollar_words.csv'
+    """
+    tokenizer = RegexpTokenizer(r'\b\$\w+\b')
+    words = tokenizer.tokenize(text)
+    words = [word[1:] for word in words if not all(char in PUNCTUATION for char in word[1:])]
+
+    with open(filename, mode='w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Word'])
+        writer.writerows([[word] for word in words])
+
+    return os.path.abspath(filename)

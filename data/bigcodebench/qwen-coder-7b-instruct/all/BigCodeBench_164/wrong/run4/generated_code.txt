@@ -1,0 +1,45 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def task_func(num_labels=5, data_range=(0, 1)):
+    """
+    Generate random numeric data across a specified range for a given number of categories and visualize it with
+     a stacked bar chart.
+
+    Parameters:
+    num_labels (int): Specifies the number of distinct categories or labels to generate data for. Defaults to 5.
+    data_range (tuple): Defines the lower and upper bounds for the random data values. Defaults to (0, 1).
+
+    Returns:
+    matplotlib.figure.Figure: A Figure object containing the stacked bar chart of the generated data.
+
+    Requirements:
+    - pandas
+    - matplotlib
+    - numpy
+
+    Example:
+    >>> fig = task_func()
+    >>> fig.show()  # This will display the figure with default parameters
+
+    >>> fig = task_func(num_labels=3, data_range=(1, 10))
+    >>> fig.show()  # This will display the figure with three labels and data range from 1 to 10
+    """
+    labels = [f'Label {i+1}' for i in range(num_labels)]
+    data = np.random.rand(num_labels)
+    colors = plt.cm.rainbow(np.linspace(0, 1, num_labels))
+
+    fig, ax = plt.subplots()
+    bottom = np.zeros(num_labels)
+
+    for label, value, color in zip(labels, data, colors):
+        ax.bar(label, value, color=color, bottom=bottom)
+        bottom += value
+
+    ax.set_xlabel('Labels')
+    ax.set_ylabel('Values')
+    ax.set_title('Stacked Bar Chart')
+
+    return fig

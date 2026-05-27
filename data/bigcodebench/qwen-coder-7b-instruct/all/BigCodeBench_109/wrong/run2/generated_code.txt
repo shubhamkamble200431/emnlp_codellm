@@ -1,0 +1,63 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def task_func(df, items=None, locations=None):
+    """
+    Generates a bar chart representing the distribution of specified items across given locations.
+    
+    The function takes a DataFrame with 'Item' and 'Location' columns and plots the count of each item
+    per location. If lists of items and locations are provided, the chart will only include those specified,
+    otherwise it defaults to a predefined list.
+
+    Parameters:
+    - df (pandas.DataFrame): DataFrame containing 'Item' and 'Location' columns.
+    - items (list of str, optional): Specific items to include in the chart. Defaults to a predefined list
+      ['apple', 'banana', 'grape', 'orange', 'pineapple'] if None.
+    - locations (list of str, optional): Specific locations to include in the chart. Defaults to a predefined
+      list ['store1', 'store2', 'store3', 'store4', 'store5'] if None.
+
+    Returns:
+    - matplotlib.axes.Axes: Axes object with the plotted bar chart.
+
+    Raises:
+    - ValueError: If 'df' is not a DataFrame, or if 'Item' or 'Location' columns are missing.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> df = pd.DataFrame({
+    ...     'Item': ['apple', 'banana', 'apple', 'orange'],
+    ...     'Location': ['store1', 'store2', 'store3', 'store1']
+    ... })
+    >>> ax = task_func(df)
+    >>> ax.get_title()
+    'Item Distribution by Location'
+    """
+if not isinstance(df, pd.DataFrame):
+        raise ValueError("The input 'df' must be a pandas DataFrame.")
+
+required_columns = {'Item', 'Location'}
+missing_columns = required_columns - set(df.columns)
+if missing_columns:
+    raise ValueError(f"The DataFrame 'df' is missing the following columns: {', '.join(missing_columns)}")
+
+predefined_items = ['apple', 'banana', 'grape', 'orange', 'pineapple']
+predefined_locations = ['store1', 'store2', 'store3', 'store4', 'store5']
+
+items_to_plot = items if items else predefined_items
+locations_to_plot = locations if locations else predefined_locations
+
+filtered_df = df[df['Item'].isin(items_to_plot) & df['Location'].isin(locations_to_plot)]
+
+pivot_table = filtered_df.pivot_table(index='Item', columns='Location', aggfunc='size', fill_value=0)
+
+ax = pivot_table.plot(kind='bar', figsize=(10, 6))
+ax.set_title('Item Distribution by Location')
+ax.set_xlabel('Items')
+ax.set_ylabel('Count')
+
+plt.show()
+
+return ax

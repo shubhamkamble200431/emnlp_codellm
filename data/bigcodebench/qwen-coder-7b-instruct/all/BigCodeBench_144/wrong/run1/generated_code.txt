@@ -1,0 +1,46 @@
+import ipaddress
+import requests
+
+def task_func(ip_range, timeout):
+    """
+    Scans a specified IP address range and sends an HTTP GET request to each IP to verify if it is an active web server.
+    The function requires an IP range in CIDR format (e.g., '192.168.0.0/16') and a timeout value in seconds.
+    It returns a list of IPs where the request returned a status code of 200. If the request is not success, then ignore and continue
+    to the next IP address.
+
+    Parameters:
+        ip_range (str): The IP range to scan in CIDR notation.
+        timeout (int): The timeout for each HTTP GET request in seconds.
+
+    Requirements:
+        - ipaddress
+        - requests
+
+    Returns:
+        list: A list of IP addresses that responded with a status code of 200.
+
+    Raises:
+        ValueError: If an invalid IP range is provided.
+
+    Examples:
+    >>> type(task_func('192.168.0.0/16', 5)) is list
+    True
+    >>> isinstance(task_func('192.168.0.0/16', 5), list)
+    True
+    """
+    try:
+        network = ip_network(ip_range)
+    except ValueError:
+        raise ValueError("Invalid IP range provided")
+
+    active_ips = []
+
+    for ip in network.hosts():
+        try:
+            response = requests.get(f"http://{ip}", timeout=timeout)
+            if response.status_code == 200:
+                active_ips.append(str(ip))
+        except requests.RequestException:
+            continue
+
+    return active_ips

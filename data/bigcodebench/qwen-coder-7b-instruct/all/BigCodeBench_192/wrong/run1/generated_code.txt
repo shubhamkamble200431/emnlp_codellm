@@ -1,0 +1,50 @@
+import re
+import smtplib
+
+# Constants
+TEXT = "Josie Smith [3996 COLLEGE AVENUE, SOMETOWN, MD 21003]Mugsy Dog Smith [2560 OAK ST, GLENMEADE, WI 14098]"
+RECEPIENT_ADDRESS = "names@gmail.com"
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+EMAIL_ADDRESS = "your.email@gmail.com"
+EMAIL_PASSWORD = "your.password"
+
+def task_func(text=TEXT, smtp_server=SMTP_SERVER, smtp_port=SMTP_PORT, email_address=EMAIL_ADDRESS, email_password=EMAIL_PASSWORD, recepient_address=RECEPIENT_ADDRESS, smtp=None):
+    """
+    Extract all names from a string that is not enclosed by square brackets and send the names in an email.
+
+    Parameters:
+    text (str): The text from which to extract names.
+    smtp_server (str): The SMTP server to use for sending the email.
+    smtp_port (int): The port to use for the SMTP server.
+    email_address (str): The email address from which to send the email.
+    email_password (str): The password for the email address.
+    recepient_address (str): The recepient email adress.
+    
+    Returns:
+    list: A list of extracted names.
+    
+    Note:
+    - The message in the email is formatted in "Subject: Extracted Names\n\n" with the extracted name "\nJosie Smith\nMugsy Dog Smith".
+
+    Requirements:
+    - re
+    - smtplib
+
+    Example:
+    >>> from unittest.mock import MagicMock
+    >>> mock_smtp_instance = MagicMock()
+    >>> mock_smtp = MagicMock(return_value=mock_smtp_instance)
+    >>> task_func(text="Josie Smith [3996 COLLEGE AVENUE, SOMETOWN, MD 21003]Mugsy Dog Smith [2560 OAK ST, GLENMEADE, WI 14098]", smtp=mock_smtp)
+    ['Josie Smith', 'Mugsy Dog Smith']
+    """
+    pattern = r'(?<!\[)\b[A-Z][a-z]+\s[A-Z][a-z]+\b(?! \[)'
+    names = re.findall(pattern, text)
+    
+    if smtp:
+        smtp(smtp_server, smtp_port).starttls()
+        smtp(user=email_address, password=email_password).login()
+        msg = f"Subject: Extracted Names\n\n{'\n'.join(names)}"
+        smtp.sendmail(email_address, recepient_address, msg)
+    
+    return names

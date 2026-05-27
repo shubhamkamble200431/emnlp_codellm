@@ -1,0 +1,45 @@
+import numpy as np
+import pandas as pd
+
+# Constants
+COLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']
+
+def task_func(length, min_value = 0, max_value = 100):
+    """
+    Randomly generate a pandas DataFrame with specified ranges and length, and calculate the cumulative distribution function (CDF).
+
+    Parameters:
+    length (int): The length of the DataFrame to be generated.
+    min_value (int, optional): The minimum value for random data generation. Default is 0.
+    max_value (int, optional): The maximum value for random data generation. Default is 100.
+
+    Returns:
+    DataFrame: A pandas DataFrame with the calculated cumulative distribution function (CDF).
+
+    Note:
+    - DataFrame columns are defined by the COLUMNS constant.
+
+    Requirements:
+    - numpy
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> np.random.seed(0)
+    >>> cdf = task_func(100, 0, 1)
+    >>> print(len(cdf))
+    1
+    """
+    # Generate random data for each column
+    data = {col: np.random.randint(min_value, max_value + 1, size=length) for col in COLUMNS}
+    
+    # Create a DataFrame from the generated data
+    df = pd.DataFrame(data)
+    
+    # Calculate the cumulative sum for each column
+    cdf_data = {col: df[col].cumsum() / df[col].sum() for col in COLUMNS}
+    
+    # Create a new DataFrame for the CDF
+    cdf_df = pd.DataFrame(cdf_data)
+    
+    return cdf_df

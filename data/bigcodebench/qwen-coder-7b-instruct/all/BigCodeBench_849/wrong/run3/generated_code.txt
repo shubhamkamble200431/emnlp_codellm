@@ -1,0 +1,28 @@
+import re
+from nltk.corpus import stopwords
+from collections import Counter
+
+STOPWORDS = set(stopwords.words('english'))
+
+def task_func(input_string):
+    """
+    Divide a multi-line string into individual lines, remove stopwords, and count the frequency of each word.
+
+    Parameters:
+    - input_string (str): The multi-line string.
+
+    Returns:
+    - dict: A dictionary with word frequencies where each key is a unique word and the value is its frequency.
+
+    Requirements:
+    - re
+    - nltk.corpus
+    - collections
+
+    Example:
+    >>> task_func('line a\\nfollows by line b\\n...bye\\n')
+    {'line': 2, 'follows': 1, 'b': 1, 'bye': 1}
+    """
+    lines = input_string.split('\n')
+    words = [word.lower() for line in lines for word in re.findall(r'\b\w+\b', line) if word.lower() not in STOPWORDS]
+    return dict(Counter(words))

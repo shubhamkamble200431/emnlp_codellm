@@ -1,0 +1,41 @@
+import re
+import random
+import string
+
+def task_func(n, pattern, seed=None):
+    """
+    Generate a random string of length 'n' and find all non-overlapping matches
+    of the regex 'pattern'.
+
+    The function generates a random string of ASCII Letters and Digits using 
+    the random module. By providing a seed the results are reproducable.
+    Non overlapping matches of the provided pattern are then found using the re
+    module.
+    
+    Parameters:
+    n (int): The length of the random string to be generated.
+    pattern (str): The regex pattern to search for in the random string.
+    seed (int, optional): A seed parameter for the random number generator for reproducible results. Defaults to None.
+
+    Returns:
+    list: A list of all non-overlapping matches of the regex pattern in the generated string.
+
+    Requirements:
+    - re
+    - random
+    - string
+
+    Example:
+    >>> task_func(100, r'[A-Za-z]{5}', seed=12345)
+    ['mrKBk', 'BqJOl', 'NJlwV', 'UfHVA', 'LGkjn', 'vubDv', 'GSVAa', 'kXLls', 'RKlVy', 'vZcoh', 'FnVZW', 'JQlqL']
+
+    >>> task_func(1000, r'[1-9]{2}', seed=1)
+    ['51', '84', '16', '79', '16', '28', '63', '82', '94', '18', '68', '42', '95', '33', '64', '38', '69', '56', '32', '16', '18', '19', '27']
+     """
+    if seed is not None:
+        random.seed(seed)
+
+    random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=n))
+    matches = re.findall(pattern, random_string)
+
+    return matches

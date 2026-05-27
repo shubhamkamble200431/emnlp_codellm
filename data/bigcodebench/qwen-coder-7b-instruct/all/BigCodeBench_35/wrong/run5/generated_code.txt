@@ -1,0 +1,38 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+def task_func(df, target_values=[1, 3, 4]):
+    """
+    Replace all elements in DataFrame columns that do not exist in the target_values array with zeros, and then output the distribution of each column after replacing.
+    - label each plot as the name of the column it corresponds to.
+
+    Parameters:
+    - df (DataFrame): The input pandas DataFrame.
+    - target_values (list) : Array of values not to replace by zero.
+
+    Returns:
+    - matplotlib.axes.Axes: The Axes object of the plotted data.
+
+    Requirements:
+    - seaborn
+    - matplotlib.pyplot
+
+    Example:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> np.random.seed(42)
+    >>> df = pd.DataFrame(np.random.randint(0,10,size=(100, 5)), columns=list('ABCDE'))
+    >>> print(df.head(2))
+       A  B  C  D  E
+    0  6  3  7  4  6
+    1  9  2  6  7  4
+    >>> df1, ax = task_func(df)
+    >>> print(ax)
+    Axes(0.125,0.11;0.775x0.77)
+    """
+    for col in df.columns:
+        df[col] = df[col].apply(lambda x: x if x in target_values else 0)
+
+    g = sns.boxplot(data=df)
+    return g.get_figure().gca()

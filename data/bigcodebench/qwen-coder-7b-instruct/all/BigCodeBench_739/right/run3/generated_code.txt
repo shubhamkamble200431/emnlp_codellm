@@ -1,0 +1,33 @@
+import struct
+import random
+
+# Constants
+KEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']
+
+def task_func(hex_key=None):
+    """
+    Generate a random float number from a list of hexadecimal strings and then round the float number to 2 decimal places.
+
+    Parameters:
+    - None
+
+    Returns:
+    - rounded_float (float): The rounded float number.
+
+    Requirements:
+    - struct
+    - random
+
+    Example:
+    >>> random.seed(42)
+    >>> print(repr(f"{task_func():.1f}"))
+    '36806.1'
+
+    """
+    if hex_key is None:
+        hex_key = random.choice(KEYS)
+    
+    int_value = int(hex_key, 16)
+    float_number = struct.unpack('!f', struct.pack('!I', int_value))[0]
+    
+    return round(float_number, 2)

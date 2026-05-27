@@ -1,0 +1,58 @@
+import pandas as pd
+import numpy as np
+
+
+def task_func(column, data):
+    """
+    Analyze a list of sales data, calculate the sum, the mean, the minimum, the maximum of a given column,
+    and return the bar chart plot for the given column without displaying it.
+
+    Parameters:
+    column (str): The column to analyze. Expected values are ['Product', 'Quantity Sold', 'Total Sales'].
+    data (list): The sales data. Expected format: [['Product Name', Quantity Sold (int), Total Sales (int)], ...]
+                 The function checks for data validity in the quantity columns (must not be negative).
+
+    Returns:
+    tuple: A tuple containing:
+        - dict: A dictionary with the sum, mean, min, max of the column.
+        - matplotlib.axes.Axes: The Axes object of the plotted bar chart. The bar chart will have Product in its
+                                x-axis and the title Bar Chart of (column).
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Raises:
+    - ValueError: If the quantity sold or total sales is negative.
+    
+    Example:
+    >>> data = [['Product A', 100, 10000], ['Product B', 150, 15000], ['Product C', 200, 20000]]
+    >>> stats, plot = task_func('Total Sales', data)
+    >>> stats
+    {'sum': 45000, 'mean': 15000.0, 'min': 10000, 'max': 20000}
+    >>> plot
+    <Axes: title={'center': 'Bar Chart of Total Sales'}, xlabel='Product'>
+    """
+    if column not in ['Product', 'Quantity Sold', 'Total Sales']:
+        raise ValueError("Invalid column name")
+
+    df = pd.DataFrame(data, columns=['Product', 'Quantity Sold', 'Total Sales'])
+
+    if column != 'Product':
+        if (df[column] < 0).any():
+            raise ValueError("Negative value found in quantity columns")
+
+    column_data = df[column]
+
+    stats = {
+        'sum': column_data.sum(),
+        'mean': column_data.mean(),
+        'min': column_data.min(),
+        'max': column_data.max()
+    }
+
+    plot = column_data.plot(kind='bar', x='Product', title=f'Bar Chart of {column}', legend=False)
+    plt.xlabel('Product')
+    plt.ylabel(column)
+
+    return stats, plot

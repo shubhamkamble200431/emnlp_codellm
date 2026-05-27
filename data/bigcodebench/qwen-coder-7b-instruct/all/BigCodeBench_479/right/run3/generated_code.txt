@@ -1,0 +1,62 @@
+import random
+import string
+import pandas as pd
+
+
+def task_func(data_list, seed=0):
+    """
+    Replace a random substring (a sequence of characters between two commas or at the beginning/end of the string)
+    in a list of strings with a random string (comprising ascii lowercase characters) with the same length as
+    the substituted characters.
+
+    Parameters:
+    data_list (list): Input list of strings.
+                      Within each string, each substring's leading and trailing whitespaces are removed.
+                      If empty, it will return a DataFrame with the Original String and Modified String
+                      columns that is otherwise empty.
+    seed (int, optional): The seed for random operations to ensure reproducibility. Defaults to 0.
+
+    Returns:
+    DataFrame: A pandas DataFrame with two columns - 'Original String' and 'Modified String'.
+               'Original String' contains the original strings from the input list, and 'Modified String'
+               contains the modified strings where a random substring has been replaced.
+
+    Requirements:
+    - pandas
+    - random
+    - string
+
+    Example:
+    >>> task_func(['lamp, bag, mirror', 'table, chair, bag, lamp'])
+               Original String          Modified String
+    0        lamp, bag, mirror        lamp, tkg, mirror
+    1  table, chair, bag, lamp  table, chair, bag, kuhm
+    """
+    if not data_list:
+        return pd.DataFrame(columns=['Original String', 'Modified String'])
+
+    random.seed(seed)
+
+    result = []
+    for item in data_list:
+        # Remove leading/trailing spaces and split by comma
+        items = [i.strip() for i in item.split(',')]
+
+        # Select a random index to replace
+        if len(items) > 1:
+            idx_to_replace = random.randint(0, len(items) - 2)
+        else:
+            idx_to_replace = 0
+
+        # Generate a random substring of the same length
+        replacement_length = len(items[idx_to_replace])
+        replacement = ''.join(random.choices(string.ascii_lowercase, k=replacement_length))
+
+        # Replace the selected substring
+        modified_items = items[:]
+        modified_items[idx_to_replace] = replacement
+        modified_item = ', '.join(modified_items)
+
+        result.append({'Original String': item, 'Modified String': modified_item})
+
+    return pd.DataFrame(result)

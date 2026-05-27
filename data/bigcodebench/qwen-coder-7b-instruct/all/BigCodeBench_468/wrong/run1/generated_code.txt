@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+
+
+def task_func(file_path="data.csv", columns=["A", "B", "C"]):
+    """
+    Read a CSV file into a Pandas DataFrame, convert numeric values into floats,and draw a line chart of data in the specified columns.
+    In addition, compute the cube-root of the data.
+
+    Parameters:
+    - file_path (str): Path to the CSV file. Default is 'data.csv'.
+    - columns (list of str): List of column names from the data to plot.
+                             Default is ['A', 'B', 'C'].
+
+    Returns:
+    tuple: A tuple containing:
+        - DataFrame: A pandas DataFrame of the data in the CSV file.
+        - Axes: A matplotlib Axes object showing the plotted data.
+        - Series: A pandas Series containing the cube-root of the data.
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> df, ax, croot = task_func('path_to_csv.csv', ['Column1', 'Column2', 'Column3'])
+    >>> df
+       Column1  Column2  Column3
+    0      1.0      2.0      3.0
+    1      4.0      5.0      6.0
+    >>> ax
+    <matplotlib.axes._axes.Axes object at 0x7f24b00f4a90>
+    >>> croot
+    0    1.0
+    """
+    # Read the CSV file
+    df = pd.read_csv(file_path)
+
+    # Convert numeric values to floats
+    df[columns] = df[columns].astype(float)
+
+    # Draw a line chart of the specified columns
+    ax = df[columns].plot(kind='line')
+
+    # Compute the cube root of the data
+    croot = df[columns].applymap(lambda x: x ** (1/3))
+
+    return df, ax, croot

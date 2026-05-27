@@ -1,0 +1,42 @@
+import re
+import nltk
+nltk.download('stopwords')
+
+from nltk.corpus import stopwords
+from textblob import TextBlob
+
+# Constants
+STOPWORDS = set(stopwords.words('english'))
+
+def task_func(text):
+    """
+    Remove duplicate and stopwords from a string "text."
+    Then, analyze the sentiment of the text using TextBlob.
+
+    Parameters:
+    - text (str): The text string to analyze.
+
+    Returns:
+    - Sentiment: The sentiment of the text.
+
+    Requirements:
+    - re
+    - nltk.corpus.stopwords
+    - textblob.TextBlob
+
+    Example:
+    >>> text = "The quick brown fox jumps over the lazy dog and the dog was not that quick to respond."
+    >>> sentiment = task_func(text)
+    >>> print(sentiment)
+    Sentiment(polarity=0.13888888888888887, subjectivity=0.6666666666666666)
+    """
+    # Remove duplicates by splitting into words and back into a single string
+    words = re.split(r'\W+', text.lower())
+    unique_words = ' '.join(sorted(set(words), key=lambda word: words.count(word), reverse=True))
+
+    # Remove stopwords
+    filtered_text = ' '.join([word for word in unique_words.split() if word not in STOPWORDS])
+
+    # Analyze sentiment using TextBlob
+    blob = TextBlob(filtered_text)
+    return blob.sentiment

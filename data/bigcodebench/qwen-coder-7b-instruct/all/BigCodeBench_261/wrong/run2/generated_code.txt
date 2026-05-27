@@ -1,0 +1,46 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def task_func(ax, radius):
+    '''
+    Draw a circle with a given radius on the polar chart 'ax' and set radial ticks.
+    This function manipulates plot data using matplotlib.
+
+    Parameters:
+    ax (matplotlib.axes._axes.Axes): The ax to plot on. Must be a polar plot.
+    radius (float): The radius of the circle. Must be non-negative.
+
+    Returns:
+    matplotlib.axes._axes.Axes: The modified Axes object with the circle plotted.
+
+    Note:
+    - If the radius is negative this function will raise ValueError.
+    - If 'ax' is not a polar plot this function will raise TypeError.
+
+    Requirements:
+    - matplotlib.pyplot
+    - numpy
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(111, polar=True)
+    >>> result_ax = task_func(ax, 1.5)
+    >>> np.allclose(result_ax.get_lines()[0].get_ydata(), 1.5)
+    True
+    >>> plt.close()
+    '''
+    if radius < 0:
+        raise ValueError("Radius must be non-negative")
+    if not isinstance(ax, plt.PolarAxesSubplot):
+        raise TypeError("The axis must be a polar plot")
+
+    theta = np.linspace(0, 2 * np.pi, 100)
+    x = radius * np.cos(theta)
+    y = radius * np.sin(theta)
+
+    ax.plot(theta, radius * np.ones_like(theta), color='red', linestyle='--')
+    ax.set_rticks(np.arange(0, radius + 1, 1))
+    ax.set_rlim(0, radius)
+    return ax

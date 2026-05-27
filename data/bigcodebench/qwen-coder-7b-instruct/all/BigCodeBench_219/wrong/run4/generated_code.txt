@@ -1,0 +1,42 @@
+import math
+import statistics
+import numpy as np
+
+
+def task_func(input_list):
+    """
+    Sorts the input list in ascending order based on the degree value of its elements, and then 
+    calculates the mean, median, and mode of both the sorted list and the same for the magnitude of 
+    the fast fourier transform of the degree values upto the nearest integer.
+
+    Parameters:
+    input_list (list): A list of numbers to be sorted and analyzed.
+
+    Returns:
+    tuple: A tuple containing the rounded mean, median and mode of the sorted list along with those 
+    for the magnitude of the fast fourier transform of the degree values.
+
+    Requirements:
+    - math
+    - statistics
+    - numpy
+
+    Example:
+    >>> input_list = [30, 45, 60, 90, 180]
+    >>> stats = task_func(input_list)
+    >>> print(stats)
+    (81, 60, 30, 10712, 8460, 8460)
+    """
+    sorted_list = sorted(input_list)
+    fft_values = np.fft.fft(sorted_list)
+    fft_magnitude = np.abs(fft_values).round().astype(int)
+    
+    sorted_mean = round(statistics.mean(sorted_list))
+    sorted_median = round(statistics.median(sorted_list))
+    sorted_mode = statistics.mode(sorted_list)
+    
+    fft_mean = round(statistics.mean(fft_magnitude))
+    fft_median = round(statistics.median(fft_magnitude))
+    fft_mode = statistics.mode(fft_magnitude)
+    
+    return sorted_mean, sorted_median, sorted_mode, fft_mean, fft_median, fft_mode

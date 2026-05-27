@@ -1,0 +1,60 @@
+from collections import defaultdict
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Calculate statistical measurements (mean and standard deviation) of the values associated with
+    each key in a list of dictionaries, and visualize mean and standard deviation with bar charts.
+
+    Parameters:
+    data (list): The list of dictionaries. Must not be empty. Each dictionary must have numeric values.
+
+    Returns:
+    tuple:
+        - dict: A dictionary with keys and their corresponding mean and standard deviation.
+        - list: A list of matplotlib Axes objects for each key's visualization.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - collections.defaultdict
+    
+    Raises:
+    - ValueError: If the input data is empty.
+    - TypeError: If the input is not a list of dictionaries or if any value in the dictionaries is not numeric.
+    
+    Example:
+    >>> stats, axes = task_func([{'cat': 1, 'dog': 3}, {'cat' : 2, 'dog': 5}, {'cat' : 3, 'dog': 7}])
+    >>> stats
+    {'cat': {'mean': 2.0, 'std': 0.816496580927726}, 'dog': {'mean': 5.0, 'std': 1.632993161855452}}
+    >>> axes
+    [<Axes: title={'center': 'Statistics of cat'}, ylabel='Value'>, <Axes: title={'center': 'Statistics of dog'}, ylabel='Value'>]
+    """
+    if not data:
+        raise ValueError("Input data cannot be empty.")
+    if not all(isinstance(item, dict) for item in data):
+        raise TypeError("All items in the input list must be dictionaries.")
+    if not all(all(isinstance(value, (int, float)) for value in item.values()) for item in data):
+        raise TypeError("All values in the dictionaries must be numeric.")
+
+    stats = defaultdict(dict)
+    for key in set().union(*data):
+        values = [item[key] for item in data if key in item]
+        means = np.mean(values)
+        stds = np.std(values)
+        stats[key]['mean'] = means
+        stats[key]['std'] = stds
+
+    fig, axes = plt.subplots(len(stats), figsize=(8, 6 * len(stats)))
+    if len(stats) == 1:
+        axes = [axes]
+
+    for idx, (key, stat) in enumerate(stats.items()):
+        ax = axes[idx]
+        ax.bar(['Mean', 'Standard Deviation'], [stat['mean'], stat['std']])
+        ax.set_title(f'Statistics of {key}')
+        ax.set_ylabel('Value')
+
+    return stats, axes

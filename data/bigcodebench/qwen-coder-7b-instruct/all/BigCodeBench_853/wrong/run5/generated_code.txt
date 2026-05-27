@@ -1,0 +1,46 @@
+import os
+import shutil
+import string
+
+# Constants
+INVALID_CHARACTERS = string.punctuation + string.whitespace
+
+def task_func(directory_path):
+    """
+    Scan a directory and organize the files according to their endings. Files with invalid characters in the name will be moved to a new directory called "Invalid."
+    
+    The invalid characters are defined by the constant INVALID_CHARACTERS, which includes all punctuation and whitespace characters.
+
+    Parameters:
+    - directory_path (str): The path to the directory.
+
+    Returns:
+    - summary (dict): A summary dictionary containing the count of files moved to each directory.
+
+    Requirements:
+    - os
+    - shutil
+    - string
+
+    Example:
+    >>> task_func('path_to_directory')
+    {'txt': 2, 'jpg': 1, 'Invalid': 1}
+    """
+    summary = {}
+    invalid_dir = 'Invalid'
+    
+    if not os.path.exists(invalid_dir):
+        os.makedirs(invalid_dir)
+    
+    for root, dirs, files in os.walk(directory_path):
+        for file in files:
+            base, ext = os.path.splitext(file)
+            if any(char in INVALID_CHARACTERS for char in base):
+                source_file = os.path.join(root, file)
+                destination_file = os.path.join(invalid_dir, file)
+                shutil.move(source_file, destination_file)
+                summary.setdefault(invalid_dir, 0) += 1
+            else:
+                summary.setdefault(ext[1:], 0) += 1
+    
+    return summary

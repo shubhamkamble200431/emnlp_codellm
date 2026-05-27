@@ -1,0 +1,54 @@
+from functools import reduce
+from itertools import combinations
+import numpy as np
+
+
+def task_func(shape=(3, 3), low=1, high=10, seed=None):
+    """
+    Generate a matrix of specified shape and random numbers within a specified 
+    range. Generate a list of all possible number pairs (all possible combinations of
+    two numbers which are in the matrix) in the matrix.
+    Calculate the sum of the products of all pairs.
+
+    Parameters:
+    shape (tuple): Shape of the matrix, default is (3, 3).
+    low (int): Lower bound of the random number generation, inclusive (default is 1).
+    high (int): Upper bound of the random number generation, exclusive (default is 10).
+    seed (int, optional): Seed for the random number generator for reproducible results. If None, the random number 
+                          generator is initialized without a seed (default is None).
+
+    Returns:
+    int: The sum of products of all possible number pairs within the generated matrix.
+    np.array: The generated matrix.
+
+    Raises:
+    ValueError: If high <= low
+
+    Requirements:
+    - functools.reduce
+    - itertools.combinations
+    - numpy
+
+    Example:
+    >>> task_func((2, 2), 1, 5, seed=42)
+    (43, array([[3, 4],
+           [1, 3]]))
+
+    >>> task_func((5, 4), seed=1)
+    (4401, array([[6, 9, 6, 1],
+           [1, 2, 8, 7],
+           [3, 5, 6, 3],
+           [5, 3, 5, 8],
+           [8, 2, 8, 1]]))
+    """
+    if high <= low:
+        raise ValueError("high must be greater than low")
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    matrix = np.random.randint(low, high, size=shape)
+    pairs = combinations(matrix.flatten(), 2)
+    sum_of_products = reduce(lambda x, y: x + y[0] * y[1], pairs, 0)
+
+    return sum_of_products, matrix

@@ -1,0 +1,35 @@
+import numpy as np
+import random
+from sklearn.preprocessing import MinMaxScaler
+
+
+def task_func(list_of_lists, seed=42):
+    """
+    Scale the values in a list of lists to a (0,1) range using MinMaxScaler.
+    If any inner list is empty, the function fills it with five random integers between 0 and 100, and then scales the values.
+    
+    Parameters:
+    list_of_lists (list of list of int): A list containing inner lists of integers.
+    seed (int, Optional): Seed for random number generation. Default is 42.
+    
+    Returns:
+    list of list of float: A list of lists containing scaled values between the range [0, 1].
+    
+    Requirements:
+    - numpy
+    - random
+    - sklearn.preprocessing.MinMaxScaler
+    
+    Example:
+    >>> task_func([[1, 2, 3], [], [4, 5, 6]])
+    [[0.0, 0.5, 1.0], [0.8571428571428572, 0.1208791208791209, 0.0, 1.0, 0.3516483516483517], [0.0, 0.5, 1.0]]
+    """
+    random.seed(seed)
+    scaler = MinMaxScaler()
+    result = []
+    for sublist in list_of_lists:
+        if not sublist:
+            sublist = [random.randint(0, 100) for _ in range(5)]
+        scaled_sublist = scaler.fit_transform(np.array(sublist).reshape(-1, 1)).flatten().tolist()
+        result.append(scaled_sublist)
+    return result

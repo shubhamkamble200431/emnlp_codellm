@@ -1,0 +1,60 @@
+import numpy as np
+import math
+
+def task_func(data, target, k):
+    """
+    Calculate the 'k' nearest neighbors by geographic coordinates using a dataset 
+    and a target data point. The function returns a list of the 'k' nearest neighbors, 
+    sorted in ascending order of their distances from the target.
+
+    Parameters:
+    data (DataFrame): The dataset containing geographical coordinates with columns ['Latitude', 'Longitude'].
+    target (list): The target data point as [Latitude, Longitude].
+    k (int): The number of nearest neighbors to return. Must be a non-negative integer.
+
+    Returns:
+    list: List of the 'k' nearest neighbors as [Latitude, Longitude].
+
+    Raises:
+    ValueError: If 'k' is a negative integer or not an integer.
+
+    Constants:
+    radius of earth is 6371 km
+
+    Requirements:
+    - numpy
+    - math
+
+    Example:
+    >>> data = pd.DataFrame([[14, 25], [1, 22], [7, 8]], columns=['Latitude', 'Longitude'])
+    >>> target = [10, 15]
+    >>> k = 2
+    >>> task_func(data, target, k)
+    [[7, 8], [14, 25]]
+    """
+    if not isinstance(k, int) or k < 0:
+        raise ValueError("The value of 'k' must be a non-negative integer.")
+
+    earth_radius_km = 6371
+
+    def calculate_distance(lat1, lon1, lat2, lon2):
+        dlat = math.radians(lat2 - lat1)
+        dlon = math.radians(lon2 - lon1)
+        a = math.sin(dlat / 2) * math.sin(dlat / 2) + \
+            math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * \
+            math.sin(dlon / 2) * math.sin(dlon / 2)
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        distance = earth_radius_km * c
+        return distance
+
+    distances = []
+    for index, row in data.iterrows():
+        dist = calculate_distance(target[0], target[1], row['Latitude'], row['Longitude'])
+        distances.append((index, dist))
+
+    distances.sort(key=lambda x: x[1])
+
+    nearest_neighbors_indices = [index for index, _ in distances[:k]]
+    nearest_neighbors = data.loc[nearest_neighbors_indices, ['Latitude', 'Longitude']].values.tolist()
+
+    return nearest_neighbors

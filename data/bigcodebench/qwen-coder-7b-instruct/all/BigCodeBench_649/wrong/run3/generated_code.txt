@@ -1,0 +1,41 @@
+import numpy as np
+import pandas as pd
+from dateutil.parser import parse
+
+
+
+def task_func(dates_str_list):
+    """
+    Analyze the weekday distribution in a list of date strings. Implemented by dateutil.parser.
+
+    This function takes a list of date strings in "yyyy-mm-dd" format, calculates 
+    the weekday for each date, and returns a distribution of the weekdays.
+
+    Parameters:
+    - dates_str_list (list): The list of date strings in "yyyy-mm-dd" format.
+
+    Returns:
+    - Series: A pandas Series of the weekday distribution, where the index represents 
+              the weekdays (from Monday to Sunday) and the values represent the counts 
+              of each weekday in the provided list.
+
+    Requirements:
+    - datetime
+    - dateutil.parser
+    - numpy
+    - pandas
+
+    Example:
+    >>> task_func(['2022-10-22', '2022-10-23', '2022-10-24', '2022-10-25'])
+    Monday       1
+    Tuesday      1
+    Wednesday    0
+    Thursday     0
+    Friday       0
+    Saturday     1
+    Sunday       1
+    dtype: int64
+    """
+    dates = [parse(date_str).weekday() for date_str in dates_str_list]
+    weekday_distribution = pd.Series(dates).map(pd.Timestamp.day_name)
+    return weekday_distribution.value_counts(dropna=False).sort_index()

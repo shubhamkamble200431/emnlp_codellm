@@ -1,0 +1,51 @@
+import re
+import json
+from collections import defaultdict
+import string
+
+def task_func(json_string):
+    """
+    Process a JSON string containing a "text" field: convert to lowercase, remove punctuation, and count word frequency.
+
+    This function takes a JSON string with a field named "text", and returns a dictionary with word counts. 
+    It processes the text by converting it to lowercase, removing all punctuation and non-alphanumeric characters 
+    (except spaces), and then counting the frequency of each word.
+
+    Parameters:
+    - json_string (str): A JSON string with a "text" field to process.
+
+    Returns:
+    - dict: A dictionary with words as keys and their frequency counts as values. If the "text" field is missing, 
+      returns an empty dictionary.
+
+    Requirements:
+    - re
+    - json
+    - collections
+    - string
+
+    Example:
+    >>> json_input = '{"text": "Hello world! Hello universe. World, meet universe."}'
+    >>> task_func(json_input)
+    {'hello': 2, 'world': 2, 'universe': 2, 'meet': 1}
+
+    Notes:
+    - Punctuation is removed using the `string.punctuation` constant.
+    - The function is case-insensitive and treats words like "Hello" and "hello" as the same word.
+    - If the JSON string is malformed or the "text" field is missing, an empty dictionary is returned.
+    """
+    try:
+        data = json.loads(json_string)
+        text = data.get('text', '')
+    except (json.JSONDecodeError, KeyError):
+        return {}
+
+    translator = str.maketrans('', '', string.punctuation)
+    cleaned_text = text.translate(translator).lower()
+    words = cleaned_text.split()
+    word_count = defaultdict(int)
+
+    for word in words:
+        word_count[word] += 1
+
+    return dict(word_count)

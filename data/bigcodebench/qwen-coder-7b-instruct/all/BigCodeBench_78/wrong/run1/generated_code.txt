@@ -1,0 +1,47 @@
+import csv
+import io
+from django.http import HttpRequest, FileResponse
+
+def task_func(request, header, csv_data):
+    """
+    This function generates a CSV file response from a Django HttpRequest. It constructs a CSV
+    file using the provided header and CSV data, and sends it back as a Django FileResponse.
+    This function is particularly useful in scenarios where you need to provide a downloadable
+    CSV file in response to a user request on a Django web application.
+
+    Parameters:
+    request (HttpRequest): The incoming Django HttpRequest.
+    header (list of str): List of strings representing the header of the CSV file.
+    csv_data (list of list of str): List of rows, with each row being a list of strings, to be written into the CSV file.
+
+    Returns:
+    FileResponse: A Django FileResponse object containing the CSV data as an attachment.
+
+    Requirements:
+    - django.http
+    - django.conf
+    - csv
+    - io
+
+    Examples:
+    >>> from django.conf import settings
+    >>> if not settings.configured:
+    ...     settings.configure()
+    >>> request = HttpRequest()
+    >>> header = ['id', 'name', 'email']
+    >>> csv_data = [['1', 'John Doe', 'john@example.com'], ['2', 'Jane Doe', 'jane@example.com']]
+    >>> response = task_func(request, header, csv_data)
+    >>> response['Content-Type']
+    'text/csv'
+    >>> response['Content-Disposition']
+    'attachment; filename="data.csv"'
+    """
+from django.conf import settings
+
+response = HttpResponse(io.StringIO(), content_type='text/csv')
+csv_writer = csv.writer(response)
+csv_writer.writerow(header)
+for row in csv_data:
+    csv_writer.writerow(row)
+response['Content-Disposition'] = f'attachment; filename="data.csv"'
+return response

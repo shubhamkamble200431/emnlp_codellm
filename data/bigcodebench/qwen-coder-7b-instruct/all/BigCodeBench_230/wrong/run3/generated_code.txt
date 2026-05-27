@@ -1,0 +1,52 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+# Constants
+COLUMNS = ['Name', 'Age', 'Country', 'Score']
+
+def task_func(df):
+    """
+    Generates a histogram of scores and a boxplot of scores by country from a pandas DataFrame. 
+    It considers only unique names for both plots.
+
+    Parameters:
+    df (DataFrame): A pandas DataFrame containing the columns 'Name', 'Age', 'Country', and 'Score'.
+
+    Returns:
+    matplotlib.figure.Figure: A matplotlib figure containing the histogram and boxplot.
+
+    Requirements:
+    - matplotlib.pyplot
+    - seaborn
+    - pandas
+
+    Note:
+    - The function would return "Invalid input" string if the input is invalid (e.g., does not contain the required 'Name' key).
+    - The histogram of scores has a title "Histogram of Scores".
+    - The boxplot of scores has a title "Boxplot of Scores by Country".
+
+    Example:
+    >>> data = pd.DataFrame([{'Name': 'James', 'Age': 30, 'Country': 'USA', 'Score': 85}, {'Name': 'Nick', 'Age': 50, 'Country': 'Australia', 'Score': 80}])
+    >>> fig = task_func(data)
+    >>> axes = fig.get_axes()
+    >>> print(axes[0].get_title())
+    Histogram of Scores
+
+    >>> print(task_func("not a dataframe"))
+    Invalid input
+    """
+    if not isinstance(df, pd.DataFrame) or 'Name' not in df.columns:
+        return "Invalid input"
+    
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+    
+    # Generate a histogram of scores
+    sns.histplot(df['Score'], kde=True, ax=axs[0], color='blue')
+    axs[0].set_title('Histogram of Scores')
+    
+    # Generate a boxplot of scores by country
+    sns.boxplot(x='Country', y='Score', data=df, ax=axs[1], palette='viridis')
+    axs[1].set_title('Boxplot of Scores by Country')
+    
+    return fig

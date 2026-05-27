@@ -1,0 +1,55 @@
+import pandas as pd
+from scipy.stats import zscore
+import matplotlib.pyplot as plt
+
+def task_func(df):
+    """
+    Processes a pandas DataFrame with 'Date' and 'Value' columns. The 'Value' column contains lists of numbers. 
+    Converts 'Date' to datetime, splits 'Value' lists into separate columns, calculates Z-scores, 
+    and creates a box plot for Z-scores over time.
+
+    Parameters:
+    df (DataFrame): A pandas DataFrame with two columns: 'Date' (date strings) and 'Value' (lists of numbers).
+
+    Returns:
+    DataFrame: With original 'Value' lists split into separate columns and replaced with Z-scores.
+    Figure: A matplotlib figure of a box plot of Z-scores over time.
+
+    Note:
+    - This function use "Z-Scores Over Time" for the plot title.
+    - This function use "Date" and "Z-Score" as the xlabel and ylabel respectively.
+
+    Raises:
+    - This function will raise KeyError if the DataFrame does not have the 'Date' and 'Value' columns.
+
+    Requirements:
+    - pandas
+    - scipy.stats.zscore
+    - matplotlib.pyplot
+
+    Example:
+    >>> df = pd.DataFrame([['2021-01-01', [8, 10, 12]], ['2021-01-02', [7, 9, 11]]], columns=['Date', 'Value'])
+    >>> zscore_df, fig = task_func(df)
+    >>> print(zscore_df.shape)
+    (2, 4)
+    >>> plt.close()
+    """
+    if 'Date' not in df.columns or 'Value' not in df.columns:
+        raise KeyError("DataFrame must contain 'Date' and 'Value' columns")
+
+    df['Date'] = pd.to_datetime(df['Date'])
+    zscore_columns = []
+    for i, row in enumerate(df['Value']):
+        z_scores = zscore(row)
+        df[f'Z_Score_{i}'] = z_scores
+        zscore_columns.append(f'Z_Score_{i}')
+
+    zscore_df = df[['Date'] + zscore_columns]
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.boxplot(zscore_df[zscore_columns].T, labels=zscore_df['Date'], showfliers=False)
+    ax.set_title('Z-Scores Over Time')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Z-Score')
+
+    return zscore_df, fig

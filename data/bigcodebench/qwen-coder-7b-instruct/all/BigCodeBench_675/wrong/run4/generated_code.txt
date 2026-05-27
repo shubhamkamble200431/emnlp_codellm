@@ -1,0 +1,32 @@
+import os
+import random
+
+def task_func(directory, n_files):
+    """
+    Create n random text files in a specific directory, write a random string to each file, and then reset the cursor to the beginning of each file.
+
+    Parameters:
+    - directory (str): The directory in which to generate the files.
+    - n_files (int): The number of files to generate.
+
+    Returns:
+    - directory (str): The directory in which the files were generated.
+
+    Requirements:
+    - os
+    - random
+
+    Example:
+    >>> task_func('/path/to/directory', 5)
+    '/path/to/directory'
+    """
+for _ in range(n_files):
+    filename = f'random_file_{random.randint(1, 1000)}.txt'
+    filepath = os.path.join(directory, filename)
+    with open(filepath, 'w') as file:
+        random_string = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=10))
+        file.write(random_string)
+    with open(filepath, 'r+') as file:
+        file.seek(0)
+
+return directory

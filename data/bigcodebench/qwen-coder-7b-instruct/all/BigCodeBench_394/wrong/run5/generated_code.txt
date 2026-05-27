@@ -1,0 +1,33 @@
+import collections
+import string
+import random
+
+
+def task_func(length, seed=0):
+    """
+    Generate a random string of a given length using ASCII letters and calculate the frequency of each character.​
+
+    Parameters:
+    length (int): The length of the random string to be generated.
+    seed (int, Optional): The seed to be used for the random number generator. Default is 0.
+
+    Returns:
+    dict: A dictionary with the frequency of each character in the generated string.
+
+    Requirements:
+    - The function uses the 'collections', 'string', and 'random' modules from the Python standard library.
+    - The generated string consists only of ASCII letters.
+
+    Example:
+    >>> result = task_func(4)
+    >>> isinstance(result, dict)  # The result should be a dictionary
+    True
+    >>> all(key in string.ascii_letters for key in result.keys())  # All keys should be ASCII letters
+    True
+    >>> task_func(5, 0)  # The result should be deterministic for a given seed
+    {'y': 1, 'W': 1, 'A': 1, 'c': 1, 'q': 1}
+    """
+    random.seed(seed)
+    characters = ''.join(random.choices(string.ascii_letters, k=length))
+    frequency = collections.Counter(characters)
+    return frequency

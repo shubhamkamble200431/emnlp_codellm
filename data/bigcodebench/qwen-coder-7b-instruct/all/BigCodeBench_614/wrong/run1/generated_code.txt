@@ -1,0 +1,39 @@
+import pandas as pd
+import seaborn as sns
+
+
+def task_func(goals, penalties):
+    """
+    Visualize the distribution of goals and penalties for a number of teams and return the data as a
+    DataFrame with colomns 'Team', 'Goals' and 'Penalties'.
+
+    Parameters:
+    - goals (dict): A dictionary where keys are team names and values are numbers of goals scored.
+    - penalties (dict): A dictionary where keys are team names and values are numbers of penalties incurred.
+
+    Returns:
+    tuple: A tuple containing:
+        - DataFrame: A pandas DataFrame with the goals and penalties for the teams.
+        - Axes: A seaborn pairplot visualization of goals and penalties distribution for the teams.
+
+    Requirements:
+    - pandas
+    - seaborn
+
+    Example:
+    >>> goals = {'Team A': 3, 'Team B': 2, 'Team C': 1, 'Team D': 0, 'Team E': 2}
+    >>> penalties = {'Team A': 1, 'Team B': 0, 'Team C': 2, 'Team D': 3, 'Team E': 1}
+    >>> df, plot = task_func(goals, penalties)
+    >>> print(df)
+         Team  Goals  Penalties
+    0  Team A      3          1
+    1  Team B      2          0
+    2  Team C      1          2
+    3  Team D      0          3
+    4  Team E      2          1
+    """
+    data = {**goals, **penalties}
+    df = pd.DataFrame(list(data.items()), columns=['Team', 'Value'])
+    df['Type'] = ['Goals'] * len(goals) + ['Penalties'] * len(penalties)
+    plot = sns.pairplot(df, x_vars=['Value'], y_vars=[], hue='Type')
+    return df[['Team', 'Value']], plot

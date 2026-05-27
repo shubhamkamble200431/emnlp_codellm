@@ -1,0 +1,50 @@
+from random import sample
+import matplotlib.pyplot as plt
+
+
+# Constants
+COLUMNS = ['A', 'B', 'C', 'D', 'E']
+
+
+def task_func(df, tuples, n_plots):
+    """
+    Removes rows from a DataFrame based on values of multiple columns, 
+    and then create n random line plots of two columns against each other.
+
+    Parameters:
+    - df (pd.DataFrame): The input pandas DataFrame.
+    - tuples (list of tuple): A list of tuples, each tuple represents values in a row to be removed.
+    - n_plots (int): The number of line plots to generate.
+
+    Returns:
+    - (pd.DataFrame, list): A tuple containing the modified DataFrame and a list of plot details.
+      Each entry in the plot details list is a tuple containing the two columns plotted against each other.
+
+    Requirements:
+    - matplotlib.pyplot
+    - random
+
+    Example:
+    >>> import numpy as np, pandas as pd
+    >>> df = pd.DataFrame(np.random.randint(0,100,size=(100, 5)), columns=list('ABCDE'))
+    >>> tuples = [(10, 20, 30, 40, 50), (60, 70, 80, 90, 100)]
+    >>> modified_df, plot_details = task_func(df, tuples, 3)
+    """
+    # Remove rows from DataFrame based on tuples
+    mask = ~df.isin(tuples).all(axis=1)
+    modified_df = df[mask]
+
+    # List to store plot details
+    plot_details = []
+
+    # Create n random line plots
+    for _ in range(n_plots):
+        cols = sample(COLUMNS, 2)
+        plot_details.append(cols)
+        plt.plot(modified_df[cols[0]], modified_df[cols[1]])
+        plt.xlabel(cols[0])
+        plt.ylabel(cols[1])
+        plt.title(f"Plot of {cols[0]} vs {cols[1]}")
+        plt.show()
+
+    return modified_df, plot_details

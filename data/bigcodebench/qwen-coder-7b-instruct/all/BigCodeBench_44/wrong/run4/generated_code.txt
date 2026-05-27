@@ -1,0 +1,51 @@
+from sklearn.preprocessing import MinMaxScaler
+import matplotlib.pyplot as plt
+
+
+def task_func(df):
+    """
+    Normalize numeric columns in a DataFrame and draw a box plot for each column. Missing values are replaced by column's average.
+
+    Parameters:
+    df (DataFrame): The pandas DataFrame.
+
+    Returns:
+    DataFrame: A pandas DataFrame after normalization.
+    Axes: A matplotlib Axes displaying a box plot for each column.
+
+    Requirements:
+    - pandas
+    - numpy
+    - sklearn.preprocessing.MinMaxScaler
+    - matplotlib.pyplot
+
+    Example:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame([[1,2,3],[4,5,6],[7.0,np.nan,9.0]], columns=["c1","c2","c3"])
+    >>> df, ax = task_func(df)
+    >>> print(df)
+        c1   c2   c3
+    0  0.0  0.0  0.0
+    1  0.5  1.0  0.5
+    2  1.0  0.5  1.0
+    """
+    scaler = MinMaxScaler()
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+
+    # Replace missing values with the mean of each column
+    df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
+
+    # Normalize numeric columns
+    df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+
+    # Draw a box plot for each column
+    fig, ax = plt.subplots(len(numeric_cols), 1, figsize=(8, len(numeric_cols) * 2))
+    if len(numeric_cols) == 1:
+        ax = [ax]
+    for i, col in enumerate(numeric_cols):
+        ax[i].boxplot(df[col], vert=False)
+        ax[i].set_title(col)
+    plt.tight_layout()
+
+    return df, ax

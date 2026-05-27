@@ -1,0 +1,49 @@
+import heapq
+import math
+import matplotlib.pyplot as plt
+
+
+def task_func(l1, l2, N=10):
+    """ 
+    Find the N biggest differences between the respective elements of the list 'l1' and list 'l2', 
+    square the differences, take the square root and return the plotted values as a matplotlib Axes object.
+
+    Parameters:
+    l1 (list): A list of numbers.
+    l2 (list): A list of numbers.
+    N (int): Number of largest differences to consider. Default is 10.
+
+    Returns:
+    matplotlib.axes._axes.Axes: A matplotlib Axes object with the plotted differences.
+
+    Requirements:
+    - heapq
+    - math
+    - matplotlib.pyplot
+
+    Example:
+    >>> l1 = [99, 86, 90, 70, 86, 95, 56, 98, 80, 81]
+    >>> l2 = [21, 11, 21, 1, 26, 40, 4, 50, 34, 37]
+    >>> ax = task_func(l1, l2)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    diff_heap = []
+    for i in range(len(l1)):
+        diff = abs(l1[i] - l2[i])
+        diff_squared = diff ** 2
+        diff_sqrt = math.sqrt(diff_squared)
+        if len(diff_heap) < N:
+            heapq.heappush(diff_heap, diff_sqrt)
+        else:
+            heapq.heappushpop(diff_heap, diff_sqrt)
+
+    sorted_diffs = sorted(diff_heap, reverse=True)
+
+    fig, ax = plt.subplots()
+    ax.bar(range(1, N + 1), sorted_diffs)
+    ax.set_xlabel('Index')
+    ax.set_ylabel('Largest Differences')
+    ax.set_title(f'Top {N} Largest Differences')
+
+    return ax

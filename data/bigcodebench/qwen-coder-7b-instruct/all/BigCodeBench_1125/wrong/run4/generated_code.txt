@@ -1,0 +1,40 @@
+import re
+import json
+import requests
+
+def task_func(myString, token):
+    """
+    Extracts a URL from a string and sends it to a REST API via a POST request. The URL is included in the JSON payload,
+    and an authorization token is used in the headers for API access. If multiple URL is in myString, then use the first one
+
+    Parameters:
+    myString (str): The string from which to extract the URL.
+    token (str): The authorization token required for API access.
+
+    Returns:
+    dict: The response from the API, which varies based on the API's implementation.
+
+    Requirements:
+    - re
+    - json
+    - requests
+
+    Example:
+    >>> task_func('Please check: https://www.google.com', 'your_token_here')
+    {'message': 'URL received'}
+    """
+    url_pattern = r'https?://[^\s]+'
+    match = re.search(url_pattern, myString)
+    if match:
+        url = match.group()
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+        payload = {
+            'url': url
+        }
+        response = requests.post('https://api.example.com/endpoint', headers=headers, data=json.dumps(payload))
+        return response.json()
+    else:
+        raise ValueError("No URL found in the input string")

@@ -1,0 +1,30 @@
+from nltk.tokenize import RegexpTokenizer
+from collections import Counter
+
+
+def task_func(text):
+    """
+    Identifies and counts words in a given text that start with the "$" symbol. It returns the five most frequent
+    dollar-prefixed words along with their counts. Words solely consisting of "$" symbols without any following
+    alphanumeric characters are ignored in the frequency count.
+
+    Parameters:
+    - text (str): The input text to analyze.
+
+    Returns:
+    - list of tuples: Each tuple contains a dollar-prefixed word (excluding the "$" symbol) and its frequency,
+                      ordered by most to least common.
+
+    Requirements:
+    - nltk.tokenize.RegexpTokenizer
+    - collections.Counter
+
+    Example:
+    >>> text = "$abc def $efg $hij klm $ $abc $abc $hij $hij"
+    >>> task_func(text)
+    [('abc', 3), ('hij', 3), ('efg', 1)]
+    """
+tokenizer = RegexpTokenizer(r'\b\$[a-zA-Z0-9]+\b')
+words = tokenizer.tokenize(text.replace('$', ' $'))
+word_counts = Counter(word[2:] for word in words if word.startswith(' $'))
+return word_counts.most_common(5)

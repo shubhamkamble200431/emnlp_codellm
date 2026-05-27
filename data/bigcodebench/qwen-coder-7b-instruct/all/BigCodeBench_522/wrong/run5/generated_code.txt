@@ -1,0 +1,64 @@
+import collections
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Combine a list of dictionaries with possibly differing keys (student names) into a single dictionary,
+    calculate the average score for each student, and return a bar chart of average student scores with
+    student on the x-axis and average score on the y-axis.
+
+    This function handles data with varying dictionary lengths and missing keys by averaging available scores,
+    ignoring None. If there is any negative score, the function raises ValueError.
+    Bar colors can be: 'red', 'yellow', 'green', 'blue', 'purple'.
+
+    Parameters:
+    data (list): A list of dictionaries. The keys are student names and the values are scores.
+
+    Returns:
+    ax (matplotlib.axes._axes.Axes or None): A bar chart showing the 'Average Student Scores', with
+                                             'Student' on the x-axis and 'Average Score' on the y-axis.
+                                             If data is empty, return None.
+
+    Requirements:
+    - collections
+    - matplotlib.pyplot
+
+    Example:
+    >>> data = [{'John': 5, 'Jane': 10, 'Joe': 7},\
+                {'John': 6, 'Jane': 8, 'Joe': 10},\
+                {'John': 5, 'Jane': 9, 'Joe': 8},\
+                {'John': 7, 'Jane': 10, 'Joe': 9}]
+    >>> ax = task_func(data)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(0, 0, 'Jane'), Text(1, 0, 'Joe'), Text(2, 0, 'John')]
+    """
+    if not data:
+        return None
+
+    student_scores = collections.defaultdict(list)
+
+    for scores in data:
+        for student, score in scores.items():
+            if score is not None and score >= 0:
+                student_scores[student].append(score)
+            else:
+                raise ValueError("Negative score found")
+
+    avg_scores = {student: sum(scores) / len(scores) for student, scores in student_scores.items()}
+
+    students = list(avg_scores.keys())
+    averages = list(avg_scores.values())
+
+    colors = ['red', 'yellow', 'green', 'blue', 'purple']
+
+    fig, ax = plt.subplots()
+    ax.bar(students, averages, color=[colors[i % len(colors)] for i in range(len(students))])
+
+    ax.set_xlabel('Student')
+    ax.set_ylabel('Average Score')
+    ax.set_title('Average Student Scores')
+
+    return ax

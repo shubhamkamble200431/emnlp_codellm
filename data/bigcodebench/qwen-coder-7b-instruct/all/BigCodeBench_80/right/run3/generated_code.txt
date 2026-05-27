@@ -1,0 +1,42 @@
+from flask import Flask, render_template, request
+import json
+import logging
+
+logging.basicConfig(filename="out.log", level=logging.INFO)
+
+def task_func(template_folder):
+    """
+    Creates a Flask application with a specified templates folder. It defines a route at the root ('/')
+    which handles POST requests, logs the information request data as a JSON, and renders an 'index.html' template using
+    the data provided in POST requests.
+
+    Parameters:
+    template_folder (str): The folder containing the Flask application's templates.
+
+    Returns:
+    flask.app.Flask: A Flask application instance configured with a root route that handles POST requests.
+    The route logs incoming request data as JSON and serves the 'index.html' template with the provided data.
+
+    Requirements:
+    - flask.Flask
+    - flask.render_template
+    - flask.request
+    - json
+    - logging
+
+    Example:
+    >>> app = task_func('my_templates')
+    >>> isinstance(app, Flask)
+    True
+    >>> 'POST' in app.url_map.bind('').match('/', method='POST')
+    False
+    """
+    app = Flask(__name__, template_folder=template_folder)
+
+    @app.route('/', methods=['POST'])
+    def index():
+        data = request.json
+        logging.info(json.dumps(data))
+        return render_template('index.html', **data)
+
+    return app

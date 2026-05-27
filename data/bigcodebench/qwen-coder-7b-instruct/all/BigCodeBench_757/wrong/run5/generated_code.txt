@@ -1,0 +1,24 @@
+import numpy as np
+import datetime
+
+def task_func(arr):
+    """
+    Reverse the order of words separated by. "" in all strings of a numpy array.
+
+    Parameters:
+    - arr (numpy array): The numpy array.
+
+    Returns:
+    - numpy.ndarray: The numpy array with the strings reversed.
+
+    Requirements:
+    - numpy
+    - datetime
+
+    Example:
+    >>> arr = np.array(['apple.orange', 'red.green.yellow'])
+    >>> reversed_arr = task_func(arr)
+    >>> print(reversed_arr)
+    ['orange.apple' 'yellow.green.red']
+    """
+return np.char.replace(arr, '.', ' ').split(' ')[::-1].str.join('.').replace(' ', '')

@@ -1,0 +1,64 @@
+import numpy as np
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+
+def task_func(mean, std_dev, num_samples):
+    """
+    Generates a histogram of samples drawn from a normal distribution and overlays
+    the probability density function (PDF) of the normal distribution. The plot is titled
+    with the fit results, showing the mean and standard deviation used in the generation.
+    The function returns both the plot and the samples generated.
+
+    Parameters:
+        mean (float): The mean of the normal distribution.
+        std_dev (float): The standard deviation of the normal distribution.
+        num_samples (int): The number of samples to draw from the distribution.
+
+    Requirements:
+    - numpy
+    - scipy.stats.norm
+    - matplotlib.pyplot
+
+    Notes:
+    - The plot title is "Fit results: mean = %.2f, std = %.2f". This title format on the plot displays the mean and standard deviation
+        of the normal distribution used to generate the histogram. The values are presented in a format where %.2f
+        is replaced by the floating-point numbers corresponding to `mean` and `std_dev` respectively, rounded to two decimal places.
+    - The number of bins is set to 30
+
+    Returns:
+        tuple: A tuple containing:
+            - matplotlib.figure.Figure: The figure object for the plot.
+            - numpy.ndarray: An array of samples drawn from the normal distribution.
+
+    Examples:
+    >>> import matplotlib
+    >>> samples, fig = task_func(0, 1, 1000)
+    >>> len(samples)
+    1000
+    >>> type(samples)
+    <class 'numpy.ndarray'>
+    >>> isinstance(fig, matplotlib.figure.Figure)
+    True
+
+    Note: The actual values in the array depend on the random seed and will vary each time the function is called.
+    """
+    # Generate samples from the normal distribution
+    samples = np.random.normal(mean, std_dev, num_samples)
+
+    # Create a figure and axis for plotting
+    fig, ax = plt.subplots()
+
+    # Plot the histogram of the samples
+    n, bins, patches = ax.hist(samples, bins=30, density=True, alpha=0.6, color='g')
+
+    # Calculate the PDF values using the given mean and standard deviation
+    pdf_values = norm.pdf(bins, mean, std_dev)
+
+    # Overlay the PDF curve on the histogram
+    ax.plot(bins, pdf_values, 'k-', lw=2)
+
+    # Set the title of the plot with the mean and standard deviation
+    ax.set_title(f"Fit results: mean = {mean:.2f}, std = {std_dev:.2f}")
+
+    # Return the figure and the samples
+    return fig, samples

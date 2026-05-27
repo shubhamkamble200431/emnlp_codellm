@@ -1,0 +1,38 @@
+import pandas as pd
+import random
+
+
+def task_func(product_list, categories):
+    """
+    Create a sales report for a list of products in different categories.
+    The report includes the quantity sold and revenue generated for each product.
+    
+    Parameters:
+    product_list (list): The list of products.
+    categories (list): A list of categories for the products.
+    
+    Returns:
+    DataFrame: A pandas DataFrame with sales data for the products.
+    
+    Note:
+    - The column names uses are 'Product', 'Category', 'Quantity Sold', and 'Revenue'.
+    - The quantity sold is random number from 1 to 100
+    - The revenue is the number of quantity sold times with the random number from 10 to 100
+
+    Requirements:
+    - pandas
+    - random
+    
+    Example:
+    >>> random.seed(0)
+    >>> report = task_func(['Product 1'], ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports'])
+    >>> report.iloc[0]['Category'] in ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports']
+    True
+    """
+    data = {
+        'Product': product_list,
+        'Category': [random.choice(categories) for _ in product_list],
+        'Quantity Sold': [random.randint(1, 100) for _ in product_list],
+        'Revenue': [q * random.randint(10, 100) for q in range(1, len(product_list) + 1)]
+    }
+    return pd.DataFrame(data)

@@ -1,0 +1,50 @@
+import collections
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Combine a list of dictionaries with the same keys (fruit names) into a single dictionary,
+    calculate the total turnover for each fruit, and return a bar chart's axes with colors representing
+    different fruits. The colors are selected from: 'red', 'yellow', 'green', 'blue', 'purple'. The function
+    ensures that sales quantity must not be negative, throwing a ValueError if encountered.
+
+    Parameters:
+    data (list): A list of dictionaries. The keys are fruit names and the values are sales quantities.
+                 Sales quantity must not be negative.
+
+    Returns:
+    total_sales (dict): A dictionary containing the total sales for each fruit.
+    ax (matplotlib.container.BarContainer): A bar chart of total fruit sales, or None if data is empty
+
+    Requirements:
+    - collections
+    - matplotlib.pyplot
+
+    Example:
+    >>> sales, plot = task_func([{'apple': 10, 'banana': 15, 'cherry': 12},\
+                             {'apple': 12, 'banana': 20, 'cherry': 14},\
+                             {'apple': 15, 'banana': 18, 'cherry': 15},\
+                             {'apple': 11, 'banana': 17, 'cherry': 13}])
+    >>> sales
+    {'apple': 48, 'banana': 70, 'cherry': 54}
+    >>> type(plot)
+    <class 'matplotlib.container.BarContainer'>
+    """
+total_sales = collections.defaultdict(int)
+colors = ['red', 'yellow', 'green', 'blue', 'purple']
+fruit_count = len(total_sales)
+
+for record in data:
+    for fruit, sales in record.items():
+        if sales < 0:
+            raise ValueError("Sales quantity must not be negative")
+        total_sales[fruit] += sales
+
+if total_sales:
+    fig, ax = plt.subplots()
+    ax.bar(total_sales.keys(), total_sales.values(), color=colors[:fruit_count])
+else:
+    ax = None
+
+return dict(total_sales), ax

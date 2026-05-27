@@ -1,0 +1,52 @@
+import urllib.request
+import os
+import zipfile
+
+# Constants
+TARGET_DIR = "downloaded_files"
+TARGET_ZIP_FILE = "downloaded_files.zip"
+
+
+def task_func(url):
+    """
+    Download and extract a zip file from a specified URL to a designated directory.
+
+    Parameters:
+    - url (str): The URL of the zip file.
+
+    Returns:
+    - str: The path of the directory where the contents of the zip file are extracted.
+
+    Requirements:
+      - urllib
+      - os
+      - zipfile
+
+    Behavior:
+    - If the target directory TARGET_DIR does not exist, it is created.
+    - The zip file is downloaded from the given URL and saved locally as TARGET_ZIP_FILE.
+    - The local zip file TARGET_ZIP_FILE is deleted after extraction.
+
+    Error Handling:
+    - The function does not explicitly handle errors that may occur during the download or extraction process.
+      Errors such as a failed download, invalid URL, or corrupted zip file will result in an unhandled exception.
+
+    Examples:
+    >>> task_func("http://example.com/files.zip")
+    'downloaded_files'
+    """
+    # Create target directory if it doesn't exist
+    if not os.path.exists(TARGET_DIR):
+        os.makedirs(TARGET_DIR)
+
+    # Download the zip file
+    urllib.request.urlretrieve(url, TARGET_ZIP_FILE)
+
+    # Extract the zip file
+    with zipfile.ZipFile(TARGET_ZIP_FILE, 'r') as zip_ref:
+        zip_ref.extractall(TARGET_DIR)
+
+    # Delete the zip file after extraction
+    os.remove(TARGET_ZIP_FILE)
+
+    return TARGET_DIR

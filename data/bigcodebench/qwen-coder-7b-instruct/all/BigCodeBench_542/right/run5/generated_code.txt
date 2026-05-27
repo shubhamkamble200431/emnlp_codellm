@@ -1,0 +1,45 @@
+import hashlib
+import random
+import struct
+
+KEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']
+
+
+def task_func(hex_keys=KEYS, seed=42):
+    """
+    Given a list of hexadecimal string keys, this function selects one at random,
+    converts it into a floating-point number, and then computes its MD5 hash. An optional
+    seed parameter allows for deterministic random choices for testing purposes.
+
+    Parameters:
+    hex_keys (list of str): A list of hexadecimal strings to choose from.
+    seed (int, optional): A seed for the random number generator to ensure deterministic behavior.
+
+    Returns:
+    str: The MD5 hash of the floating-point number derived from the randomly selected hexadecimal string.
+
+    Raises:
+    ValueError: If contains invalid hexadecimal strings.
+
+    Requirements:
+    - struct
+    - hashlib
+    - random
+
+    Example:
+    >>> task_func(['1a2b3c4d', '5e6f7g8h'])
+    '426614caa490f2c185aebf58f1d4adac'
+    """
+    if not all(all(c in "0123456789ABCDEFabcdef" for c in key) for key in hex_keys):
+        raise ValueError("Invalid hexadecimal strings")
+
+    random.seed(seed)
+    selected_hex = random.choice(hex_keys)
+
+    try:
+        float_value = struct.unpack('!f', bytes.fromhex(selected_hex))[0]
+    except struct.error:
+        raise ValueError("Invalid hexadecimal string format")
+
+    md5_hash = hashlib.md5(str(float_value).encode()).hexdigest()
+    return md5_hash

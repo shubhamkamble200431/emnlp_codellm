@@ -1,0 +1,46 @@
+import string
+import random
+
+
+
+def task_func(length, random_seed=None):
+    """
+    Generate a random string of a given length, with each character being either
+    a parenthesis (from the set "(){}[]") 
+    or a lowercase English character.
+    For function uses a optional random_seed when sampling characters.
+
+    Parameters:
+    length (int): The length of the string to generate.
+    random_seed (int): Random seed for rng. Used in picking random characters.
+                       Defaults to None.
+
+    Returns:
+    str: The generated string.
+
+    Requirements:
+    - string
+    - random
+
+    Note: The function uses the internal string constant BRACKETS for 
+          definition of the bracket set.
+
+    Example:
+    >>> string = task_func(10, random_seed=1)
+    >>> print(string)
+    ieqh]{[yng
+    
+    >>> string = task_func(34, random_seed=42)
+    >>> print(string)
+    hbrpoigf)cbfnobm(o{rak)vrjnvgfygww
+
+    >>> string = task_func(23, random_seed=1)
+    >>> print(string)
+    ieqh]{[yng]by)a{rogubbb
+    """
+    if random_seed is not None:
+        random.seed(random_seed)
+
+    chars = string.ascii_lowercase + BRACKETS
+    result = ''.join(random.choice(chars) for _ in range(length))
+    return result

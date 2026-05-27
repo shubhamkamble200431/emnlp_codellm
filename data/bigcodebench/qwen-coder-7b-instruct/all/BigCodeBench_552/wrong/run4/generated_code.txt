@@ -1,0 +1,39 @@
+import collections
+import itertools
+import matplotlib.pyplot as plt
+
+# Constants
+ITEMS = ['apple', 'banana']
+
+
+def task_func(a, b, items=ITEMS):
+    """
+    Combine two lists and record the frequency of predefined items in the combined list.
+
+    Parameters:
+    a (list): A list of items.
+    b (list): Another list of items.
+    items (list, optional): a list of predefined items
+
+    Returns:
+    matplotlib.axes.Axes: A bar chart showing the frequency of predefined items in the combined list.
+
+    Requirements:
+    - collections
+    - itertools
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax = task_func(['apple', 'banana', 'cherry'], ['date', 'elderberry', 'apple', 'banana', 'cherry'])
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    combined = a + b
+    counter = collections.Counter(item for item in combined if item in items)
+
+    labels, values = zip(*counter.items())
+
+    fig, ax = plt.subplots()
+    ax.bar(labels, values)
+
+    return ax

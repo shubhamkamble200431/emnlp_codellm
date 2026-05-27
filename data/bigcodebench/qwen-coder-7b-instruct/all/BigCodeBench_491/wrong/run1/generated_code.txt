@@ -1,0 +1,66 @@
+import random
+from datetime import datetime
+import matplotlib.pyplot as plt
+
+def task_func(epoch_milliseconds, seed=None):
+    """
+    Generate and draw a sales trend for different categories from a particular epoch milliseconds
+    to the current UTC time.
+
+    The function selects category from ['Electronics', 'Clothing', 'Home', 'Books', 'Sports'].
+    Each day's sales are randomly determined between 10 and 50 units for each category.
+    The plot's x-axis represents 'Days since (the start date)', and the y-axis represents 'Sales' units.
+
+    Parameters:
+    - epoch_milliseconds (int): Start time. Must be positive and before current time.
+    - seed (int, optional): Seed for random number generation. Default is None (no seed).
+
+    Returns:
+    - sales_data (dict): Sales data for different categories over days.
+    - ax (plt.Axes): The plot depicting the sales trend.
+
+    Raises:
+    - ValueError: If the start time is negative or after the current time.
+    
+    Requirements:
+    - random
+    - datetime.datetime
+    - matplotlib
+
+    Example:
+    >>> random.seed(42)
+    >>> sales_data, ax = task_func(1236472051807, seed=42)
+    >>> type(sales_data)
+    <class 'dict'>
+    >>> list(sales_data['Electronics'])[:3]
+    [50, 24, 47]
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    if epoch_milliseconds <= 0:
+        raise ValueError("Start time must be positive.")
+        
+    if seed is not None:
+        random.seed(seed)
+
+    start_time = datetime.fromtimestamp(epoch_milliseconds / 1000)
+    current_time = datetime.utcnow()
+    days_diff = (current_time - start_time).days + 1
+    
+    categories = ['Electronics', 'Clothing', 'Home', 'Books', 'Sports']
+    sales_data = {category: [] for category in categories}
+    
+    for _ in range(days_diff):
+        for category in categories:
+            sales_data[category].append(random.randint(10, 50))
+    
+    fig, ax = plt.subplots()
+    for category in categories:
+        ax.plot(sales_data[category], label=category)
+    
+    ax.set_xlabel('Days since {}'.format(start_time.strftime('%Y-%m-%d')))
+    ax.set_ylabel('Sales')
+    ax.set_title('Sales Trend Over Time')
+    ax.legend()
+    
+    return sales_data, ax

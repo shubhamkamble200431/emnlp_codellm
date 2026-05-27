@@ -1,0 +1,46 @@
+import ast
+import os
+import glob
+
+# Constants
+DIRECTORY = 'data'
+
+def task_func(directory):
+    """
+    Convert all Unicode string representations of dictionaries in all text files 
+    in the specified directory to Python dictionaries.
+
+    Parameters:
+    directory (str): The path to the directory containing the text files.
+
+    Returns:
+    list: A list of dictionaries extracted from the text files.
+
+    Requirements:
+    - ast
+    - os
+    - glob
+
+    Example:
+    >>> task_func("sample_directory/")
+    [{'key1': 'value1'}, {'key2': 'value2'}]
+
+    Note:
+    Ensure that the text files in the directory contain valid Unicode string representations of dictionaries.
+
+    Raises:
+    - The function would raise a ValueError if there are text file(s) that have invalid dictionary representation
+    """
+    results = []
+    for filename in glob.glob(os.path.join(directory, '*.txt')):
+        with open(filename, 'r', encoding='utf-8') as file:
+            content = file.read().strip()
+            try:
+                dictionary = ast.literal_eval(content)
+                if isinstance(dictionary, dict):
+                    results.append(dictionary)
+                else:
+                    raise ValueError(f"Invalid dictionary representation in {filename}")
+            except (ValueError, SyntaxError):
+                raise ValueError(f"Invalid dictionary representation in {filename}")
+    return results

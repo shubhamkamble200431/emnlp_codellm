@@ -1,0 +1,35 @@
+from random import choice
+import pytz
+from dateutil.parser import parse
+
+# Constants
+TIMEZONES = ['America/New_York', 'Europe/London', 'Asia/Shanghai', 'Asia/Tokyo', 'Australia/Sydney']
+
+
+def task_func(date_str, from_tz):
+    """
+    Converts a datetime string from a given timezone to a datetime string in a randomly chosen timezone.
+
+    Parameters:
+    - date_str (str): The datetime string in "yyyy-mm-dd hh:mm:ss" format.
+    - from_tz (str): The timezone of the given datetime string.
+
+    Returns:
+    - tuple: A tuple containing the converted datetime string and the randomly chosen timezone.
+    
+    Requirements:
+    - pytz
+    - dateutil.parser
+    - random
+
+    Example:
+    >>> date_str, from_tz = '2023-06-15 12:00:00', 'UTC'
+    >>> converted_date, to_tz = task_func(date_str, from_tz)
+    >>> to_tz in TIMEZONES
+    True
+    """
+    tz_to = choice(TIMEZONES)
+    dt = parse(date_str, ignoretz=True)
+    dt_from = pytz.timezone(from_tz).localize(dt)
+    dt_to = dt_from.astimezone(pytz.timezone(tz_to))
+    return dt_to.strftime('%Y-%m-%d %H:%M:%S'), tz_to

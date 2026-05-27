@@ -1,0 +1,28 @@
+from typing import List
+
+
+def parse_music(music_string: str) -> List[int]:
+    """ Input to this function is a string representing musical notes in a special ASCII format.
+    Your task is to parse this string and return list of integers corresponding to how many beats does each
+    not last.
+
+    Here is a legend:
+    'o' - whole note, lasts four beats
+    'o|' - half note, lasts two beats
+    '.|' - quater note, lasts one beat
+
+    >>> parse_music('o o| .| o| o| .| .| .| .| o o')
+    [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]
+    """
+    pattern = r'o|\.|.'
+    beats_per_note = {r'o': 4, r'|': 2, '.': 1}
+    total_beats = sum(beats_per_note[note] for note in re.findall(pattern, music_string))
+    note_counts = [total_beats // len(re.findall(note_pattern, music_string)) for note_pattern in (r'o', r'|', '.')]
+
+    result = []
+    current_beats = 0
+    for i, note_count in enumerate(note_counts):
+        current_beats += note_count
+        if i == len(note_counts) - 1 or note_patterns[i + 1] != '.':
+            result.append(current_beats)
+    return result

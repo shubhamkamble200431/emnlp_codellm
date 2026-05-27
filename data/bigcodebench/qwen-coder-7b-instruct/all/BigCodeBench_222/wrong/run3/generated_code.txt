@@ -1,0 +1,51 @@
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(list_input):
+    """
+    Sort the given list in ascending order based on the degree value of its elements, calculate the cumulative sum of 
+    the sorted list, and draw a line chart of the cumulative sum.
+
+    Parameters:
+    list_input (list): The list to be sorted.
+
+    Returns:
+    tuple: A tuple containing:
+           - numpy array: The cumulative sum of the sorted list.
+           - matplotlib.axes._axes.Axes: The Axes object of the plotted line chart.
+
+    Requirements:
+    - math
+    - numpy
+    - matplotlib.pyplot
+
+    Example:
+    >>> cumsum, ax = task_func([10, 20, 30])
+    >>> print(cumsum)
+    [10 30 60]
+    >>> ax.get_title()
+    'Cumulative Sum Plot'
+    """
+    # Convert the input list to a numpy array
+    np_array = np.array(list_input)
+    
+    # Calculate the degree values of the elements (assuming they are complex numbers)
+    degrees = np.angle(np_array)
+    
+    # Sort the array based on the degree values
+    sorted_indices = np.argsort(degrees)
+    sorted_np_array = np_array[sorted_indices]
+    
+    # Calculate the cumulative sum of the sorted array
+    cumsum = np.cumsum(sorted_np_array)
+    
+    # Create a figure and axis for plotting
+    fig, ax = plt.subplots()
+    
+    # Draw the line chart of the cumulative sum
+    ax.plot(cumsum)
+    ax.set_title('Cumulative Sum Plot')
+    
+    return cumsum, ax

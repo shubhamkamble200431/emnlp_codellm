@@ -1,0 +1,42 @@
+import time
+import numpy as np
+
+
+def task_func(samples=10, delay=0.1):
+    """
+    Make a delay for a given amount of time for a specified number of samples,
+    measure the actual delay and calculate the statistical properties of the
+    delay times.
+
+    Parameters:
+    - samples (int): Number of samples for which the delay is measured.
+                     Default is 10.
+    - delay (float): Amount of time (in seconds) for each delay.
+                     Default is 0.1 second.
+
+    Returns:
+    tuple: The mean and standard deviation of the delay times.
+
+    Requirements:
+    - time
+    - numpy
+
+    Example:
+    >>> mean, std = task_func(samples=5, delay=0.05)
+    >>> print(f'Mean: %.3f, Std: %.1f' % (mean, std))
+    Mean: 0.050, Std: 0.0
+    >>> mean, std = task_func(100, 0.001)
+    >>> print(f'Mean: %.3f, Std: %.4f' % (mean, std))
+    Mean: 0.001, Std: 0.0000
+    """
+    delays = []
+    for _ in range(samples):
+        start_time = time.time()
+        time.sleep(delay)
+        end_time = time.time()
+        actual_delay = end_time - start_time
+        delays.append(actual_delay)
+
+    mean_delay = np.mean(delays)
+    std_delay = np.std(delays)
+    return mean_delay, std_delay

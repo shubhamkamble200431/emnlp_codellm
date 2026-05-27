@@ -1,0 +1,49 @@
+import pandas as pd
+from statistics import mean
+
+
+def task_func(df: pd.DataFrame) -> dict:
+    """
+    Convert a Pandas DataFrame into a dictionary of generator objects in which 
+    each generator generates a sequence of tuples that contain a unique name 
+    and the corresponding average score for that name.
+
+    Parameters:
+    df (DataFrame): The DataFrame containing 'Name' (string) and 'Score' (number) columns to analyze.
+
+    Returns:
+    dict: A dictionary of generator objects. Each generator generates a tuple 
+          containing a unique name and the corresponding average score for that name.
+
+    Raises:
+    ValueError: If the DataFrame does not have the 'Name' and 'Score' columns.
+
+    Requirements:
+    - pandas
+    - statistics
+
+    Example:
+    >>> df_sample = pd.DataFrame({
+    ...     'Name': ['Tom', 'Nick', 'John', 'Tom', 'John'],
+    ...     'Score': [85, 79, 90, 88, 82]
+    ... })
+    >>> gen_dict = task_func(df_sample)
+    >>> {key: next(value) for key, value in gen_dict.items()}
+    {'John': ('John', 86), 'Nick': ('Nick', 79), 'Tom': ('Tom', 86.5)}
+
+    >>> df_sample = pd.DataFrame({
+    ...     'Name': ['Micky', 'Donald', 'Girl'],
+    ...     'Score': [25.2, 9, -1]
+    ... })
+    >>> gen_dict = task_func(df_sample)
+    >>> {key: next(value) for key, value in gen_dict.items()}
+    {'Donald': ('Donald', 9.0), 'Girl': ('Girl', -1.0), 'Micky': ('Micky', 25.2)}
+    """
+    if 'Name' not in df.columns or 'Score' not in df.columns:
+        raise ValueError("The DataFrame must contain 'Name' and 'Score' columns.")
+
+    name_groups = df.groupby('Name')
+    return {
+        name: (name, mean(scores))
+        for name, scores in name_groups['Score']
+    }

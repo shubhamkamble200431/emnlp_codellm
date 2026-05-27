@@ -1,0 +1,49 @@
+import re
+import nltk
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Make sure to download NLTK stopwords
+nltk.download('stopwords')
+
+# Define a regex pattern for matching all non-alphanumeric characters
+ALPHANUMERIC = re.compile('[\W_]+')
+
+# Load NLTK's list of English stop words
+STOPWORDS = nltk.corpus.stopwords.words('english')
+
+
+def task_func(texts):
+    """
+    Creates a document-term matrix (DTM) from a list of text documents using CountVectorizer from Scikit-learn.
+    Texts are preprocessed by removing non-alphanumeric characters (excluding spaces),
+    converting to lowercase, and excluding English stop words defined in NLTK.
+
+    Parameters:
+    - texts (list of str): The list of text documents to convert into a DTM.
+
+    Returns:
+    - pd.DataFrame: A DataFrame where rows represent documents and columns represent unique terms;
+                    cell values indicate the frequency of a term in a document.
+
+    Requirements:
+    - re
+    - nltk
+    - pandas
+    - sklearn.feature_extraction.text
+
+    Example:
+    >>> texts = ["Hello, world!", "Machine learning is great.", "Python is my favorite programming language."]
+    >>> dtm = task_func(texts)
+    """
+    # Preprocess each text in the list
+    processed_texts = [' '.join(ALPHANUMERIC.sub('', doc).lower().split() for doc in texts if doc)]
+
+    # Initialize CountVectorizer with custom settings
+    vectorizer = CountVectorizer(stop_words=STOPWORDS)
+
+    # Fit and transform the processed texts to create the DTM
+    dtm = vectorizer.fit_transform(processed_texts)
+
+    # Convert the DTM to a DataFrame and return it
+    return pd.DataFrame(dtm.toarray(), columns=vectorizer.get_feature_names_out())

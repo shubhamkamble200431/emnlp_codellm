@@ -1,0 +1,72 @@
+import pandas as pd
+import numpy as np
+import itertools
+from datetime import datetime, timedelta
+import seaborn as sns
+
+def task_func(df, fruits=None, days=None, seed=None, sales_lower_bound=1, sales_upper_bound=50):
+    """
+    Appends randomly generated sales data for specified fruits over a given range of days to a DataFrame, 
+    and returns a seaborn boxplot of the sales.
+
+    Parameters:
+    - df (pd.DataFrame): Initial Empty DataFrame to append sales data to. Must be empty. 
+    - fruits (List[str], optional): List of fruits for sales data. Defaults to ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'].
+    - days (List[datetime], optional): List of days for sales data. Defaults to the range from January 1, 2024, to January 7, 2024.
+    - seed (int, optional): Seed for the random number generator. Defaults to None.
+    - sales_lower_bound (int, optional): Lower bound for random sales values. Defaults to 1.
+    - sales_upper_bound (int, optional): Upper bound for random sales values. Defaults to 50.
+
+    Returns:
+    Tuple[pd.DataFrame, sns.axisgrid.FacetGrid]: Updated DataFrame with sales data and a seaborn boxplot of the sales.
+
+    Raises:
+    TypeError: If 'df' is not a pandas DataFrame.
+    ValueError: If 'df' is not empty or  If 'sales_lower_bound' is not less than 'sales_upper_bound'.
+
+    Requirements:
+    - pandas 
+    - numpy
+    - itertools
+    - datetime
+    - seaborn
+
+    Example:
+    >>> initial_df = pd.DataFrame()
+    >>> report_df, plot = task_func(initial_df, seed=42)
+    >>> print(report_df.head())
+       Fruit        Day  Sales
+    0  Apple 2024-01-01     39
+    1  Apple 2024-01-02     29
+    2  Apple 2024-01-03     15
+    3  Apple 2024-01-04     43
+    4  Apple 2024-01-05      8
+    >>> plot.figure.show()
+
+    """
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("The 'df' parameter must be a pandas DataFrame.")
+
+    if not df.empty:
+        raise ValueError("The 'df' parameter must be empty.")
+
+    if sales_lower_bound >= sales_upper_bound:
+        raise ValueError("The 'sales_lower_bound' must be less than 'sales_upper_bound'.")
+
+    fruits = fruits or ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry']
+    days = days or [datetime(2024, 1, 1) + timedelta(days=i) for i in range(7)]
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    sales_data = []
+    for fruit in fruits:
+        for day in days:
+            sales_value = np.random.randint(sales_lower_bound, sales_upper_bound)
+            sales_data.append({'Fruit': fruit, 'Day': day, 'Sales': sales_value})
+
+    new_df = pd.DataFrame(sales_data)
+    df = pd.concat([df, new_df], ignore_index=True)
+
+    plot = sns.boxplot(x='Fruit', y='Sales', data=df)
+    return df, plot

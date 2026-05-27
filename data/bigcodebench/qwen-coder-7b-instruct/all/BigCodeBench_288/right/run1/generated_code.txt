@@ -1,0 +1,41 @@
+import collections
+import json
+import os
+
+
+def task_func(directory_path: str) -> dict:
+    """
+    Count the total appearances of all keys in all JSON files in the specified directory and return a dictionary 
+    with the keys from the JSON files as keys and their respective counts as values.
+
+    Parameters:
+    - directory_path (str): The path to the directory containing the JSON files.
+
+    Returns:
+    dict: A dictionary with the keys from the JSON files as keys and their counts as values.
+
+    Requirements:
+    - collections
+    - json
+    - os
+
+    Examples:
+    >>> import tempfile
+    >>> import json
+    >>> directory = tempfile.mkdtemp()
+    >>> data = [{'name': 'John', 'age': 25, 'address': '123 Main St'}, {'name': 'Doe', 'age': 30}, {'name': 'Jane', 'age': 35}]
+    >>> for i, d in enumerate(data):
+    ...     with open(f"{directory}/sample_{i}.json", 'w') as file:
+    ...         json.dump(d, file)
+    >>> task_func(directory)
+    {'name': 3, 'age': 3, 'address': 1}
+    """
+    result = collections.defaultdict(int)
+    for filename in os.listdir(directory_path):
+        if filename.endswith('.json'):
+            filepath = os.path.join(directory_path, filename)
+            with open(filepath, 'r') as file:
+                data = json.load(file)
+                for key in data.keys():
+                    result[key] += 1
+    return dict(result)

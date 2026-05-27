@@ -1,0 +1,39 @@
+import socket
+import ssl
+import http.client
+
+def task_func(SERVER_NAME, SERVER_PORT, path):
+    """
+    Makes an HTTPS GET request to a specified server and path, and retrieves the response.
+
+    Parameters:
+        SERVER_NAME (str): The name of the server to which the request is made.
+        SERVER_PORT (int): The port number of the server to which the request is made.
+        path (str): The path for the HTTP request.
+
+    Returns:
+        str: The response body from the server as a string.
+
+    Raises:
+        ssl.SSLError: If there is an SSL handshake error.
+
+    Requirements:
+    - socket
+    - ssl
+    - http.client
+
+    Examples:
+    >>> response = task_func('www.example.com', 443, '/path/to/request')
+    >>> isinstance(response, str)
+    True
+    """
+    context = ssl.create_default_context()
+    conn = http.client.HTTPSConnection(SERVER_NAME, SERVER_PORT, context=context)
+    try:
+        conn.request("GET", path)
+        response = conn.getresponse()
+        return response.read().decode('utf-8')
+    except ssl.SSLError as e:
+        raise ssl.SSLError(e) from None
+    finally:
+        conn.close()

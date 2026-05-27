@@ -1,0 +1,68 @@
+import os
+import ctypes
+import sys
+import subprocess
+
+
+def task_func(filepath):
+    """
+    Loads a DLL file specified by the given filepath, then retrieves and prints system information
+    including system name, node name, release, version, machine, Python version, and PIP version.
+    This function demonstrates the use of various system-related libraries in Python.
+
+    The format of the printed message is:
+    System: <system-name-here>
+    Node Name: <node-name-here>
+    Release: <release-here>
+    Version: <version-here>
+    Machine: <type-of-the-machine-here>
+    Python Version: <python-version-here> 
+    PIP Version: <pip-version-here>
+
+    Parameters:
+    filepath (str): The path of the DLL file to be loaded.
+
+    Returns:
+    str: The name of the loaded DLL file.
+
+    Raises:
+    OSError: if the input filepath is invalid or empty
+    TypeError: if the input filepath is not a string
+    
+    Requirements:
+    - ctypes
+    - os
+    - sys
+    - subprocess
+
+    Examples:
+    >>> task_func('libc.so.6') # Doctest will vary based on the system and DLL file.
+    'libc.so.6'
+    >>> isinstance(task_func('libc.so.6'), str)
+    True
+    """
+    if not isinstance(filepath, str):
+        raise TypeError("Input filepath must be a string")
+    if not filepath.strip():
+        raise OSError("Invalid or empty filepath")
+
+    try:
+        dll = ctypes.CDLL(filepath)
+    except OSError as e:
+        print(f"Error loading DLL: {e}")
+        return None
+
+    system_info = {
+        "System": os.name,
+        "Node Name": os.uname().nodename,
+        "Release": os.uname().release,
+        "Version": os.uname().version,
+        "Machine": os.uname().machine,
+        "Python Version": sys.version,
+        "PIP Version": subprocess.run([sys.executable, '-m', 'pip', '--version'], capture_output=True, text=True).stdout.split()[0]
+    }
+
+    for key, value in system_info.items():
+        print(f"{key}: {value}")
+
+    return dll.__file__

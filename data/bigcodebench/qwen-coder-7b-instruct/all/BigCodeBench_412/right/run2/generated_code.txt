@@ -1,0 +1,44 @@
+import json
+import base64
+import unicodedata
+
+def task_func(json_file: str) -> dict:
+    """
+    This function reads a JSON file where each key is a unique identifier, and the corresponding value is a base64 encoded string.
+    After decoding, it applies Unicode normalization form C (NFC) to each decoded string to ensure the canonical composition of characters.
+    The function returns a dictionary where the keys are preserved, and the values are the normalized, decoded strings. Decoding is performed using the UTF-8 encoding scheme.
+
+    Parameters:
+    - json_file (str): The path to the JSON file.
+
+    Returns:
+    - dict: A dictionary where each key is mapped to a normalized, decoded string from the base64 encoded value in the input file.
+
+    Requirements:
+    - unicodedata
+    - json
+    - base64
+
+    Examples:
+    Given a file 'example.json' with the content:
+    {"key1": "SGVsbG8gV29ybGQ=", "key2": "UHl0aG9uIENvZGUgUmVmaW5lcg=="}
+
+    >>> task_func('example.json')
+    {'key1': 'Hello World', 'key2': 'Python Code Refiner'}
+
+    Given a file 'empty.json' with the content:
+    {}
+
+    >>> task_func('empty.json')
+    {}
+    """
+    with open(json_file, 'r') as file:
+        data = json.load(file)
+    
+    result = {}
+    for key, value in data.items():
+        decoded_bytes = base64.b64decode(value)
+        normalized_string = unicodedata.normalize('NFC', decoded_bytes.decode('utf-8'))
+        result[key] = normalized_string
+    
+    return result

@@ -1,0 +1,59 @@
+import pandas as pd
+from scipy.stats import zscore
+import matplotlib.pyplot as plt
+
+def task_func(df):
+    """
+    Processes a pandas DataFrame with 'Date' and 'Value' columns. The 'Value' column contains lists of numbers. 
+    Converts 'Date' to datetime, splits 'Value' lists into separate columns, calculates Z-scores, 
+    and creates a box plot for Z-scores over time.
+
+    Parameters:
+    df (DataFrame): A pandas DataFrame with two columns: 'Date' (date strings) and 'Value' (lists of numbers).
+
+    Returns:
+    DataFrame: With original 'Value' lists split into separate columns and replaced with Z-scores.
+    Figure: A matplotlib figure of a box plot of Z-scores over time.
+
+    Note:
+    - This function use "Z-Scores Over Time" for the plot title.
+    - This function use "Date" and "Z-Score" as the xlabel and ylabel respectively.
+
+    Raises:
+    - This function will raise KeyError if the DataFrame does not have the 'Date' and 'Value' columns.
+
+    Requirements:
+    - pandas
+    - scipy.stats.zscore
+    - matplotlib.pyplot
+
+    Example:
+    >>> df = pd.DataFrame([['2021-01-01', [8, 10, 12]], ['2021-01-02', [7, 9, 11]]], columns=['Date', 'Value'])
+    >>> zscore_df, fig = task_func(df)
+    >>> print(zscore_df.shape)
+    (2, 4)
+    >>> plt.close()
+    """
+    if 'Date' not in df.columns or 'Value' not in df.columns:
+        raise KeyError("The DataFrame must contain 'Date' and 'Value' columns.")
+
+    # Convert 'Date' to datetime
+    df['Date'] = pd.to_datetime(df['Date'])
+
+    # Split 'Value' lists into separate columns
+    value_columns = pd.DataFrame(df['Value'].tolist(), index=df.index)
+    df = pd.concat([df.drop('Value', axis=1), value_columns], axis=1)
+
+    # Calculate Z-scores for each column except 'Date'
+    zscores = df.set_index('Date').apply(zscore).reset_index()
+
+    # Create a box plot of Z-scores over time
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for col in zscores.columns[1:]:
+        ax.boxplot(zscores[col], positions=[i for i in range(len(zscores))], labels=[zscores['Date'][i] for i in range(len(zscores))])
+
+    ax.set_title('Z-Scores Over Time')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Z-Score')
+
+    return zscores, fig

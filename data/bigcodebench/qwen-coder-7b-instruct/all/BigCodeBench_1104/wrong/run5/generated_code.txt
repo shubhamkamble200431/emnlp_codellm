@@ -1,0 +1,50 @@
+import subprocess
+import os
+import threading
+
+def task_func(script_path: str, timeout: int = 60) -> str:
+    """
+    Execute a specified python code with a given timeout. If the script execution exceeds the timeout, it is terminated.
+
+    Parameters:
+    - script_path (str): The path to the Python code to be executed.
+    - timeout (int): The maximum allowed time (in seconds) for the script execution. Default is 60 seconds.
+
+    Returns:
+    - str: A message indicating if the code was terminated due to timeout or executed successfully. The message is either "Script executed successfully." or "Terminating process due to timeout."
+
+    Requirements:
+    - subprocess
+    - os
+    - threading
+
+    Examples:
+    >>> task_func('/pathto/MyrScript.py')
+    'Script executed successfully.'
+    
+    >>> task_func('/pathto/LongRunningScript.py', 30)
+    'Terminating process due to timeout.'
+
+    Note:
+    - If the script was terminated due to timeout it will return "Script executed successfully.", otherwise "Terminating process due to timeout."
+
+    Raise:
+    - The code will raise FileNotFoundError if the file is not exist.
+    """
+    def run_script():
+        try:
+            result = subprocess.run(['python', script_path], check=True, capture_output=True, text=True)
+            return result.stdout
+        except subprocess.CalledProcessError as e:
+            return f"Error: {e.stderr}"
+
+    process = threading.Thread(target=run_script)
+    process.start()
+
+    process.join(timeout)
+    if process.is_alive():
+        process.terminate()
+        return "Terminating process due to timeout."
+    else:
+        output = run_script()  # Re-run script to get full output
+        return output.strip()

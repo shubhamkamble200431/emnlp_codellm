@@ -1,0 +1,17 @@
+
+def starts_one_ends(n):
+    """
+    Given a positive integer n, return the count of the numbers of n-digit
+    positive integers that start or end with 1.
+    """
+    # If n is 0, there's no way to form such a number
+    if n == 0:
+        return 0
+
+    # If n is 1, there's exactly one such number (1 itself)
+    if n == 1:
+        return 1
+
+    # The total number of n-digit numbers is 9 * 10^(n-2) because each digit can be any digit from 0 to 9 except for the first and last which must be 1
+    # Subtracting the cases where both the first and last digits are 1 gives us the desired count
+    return 9 * (10**(n-2)) - 9

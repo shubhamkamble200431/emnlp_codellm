@@ -1,0 +1,38 @@
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+def task_func(mu, sigma, num_samples):
+    """
+    Display a plot showing a normal distribution with a given mean and standard deviation and overlay a histogram of randomly generated samples from this distribution.
+    The plot title should be 'Normal Distribution'.
+
+    Parameters:
+    mu (float): The mean of the distribution.
+    sigma (float): The standard deviation of the distribution.
+    num_samples (int): The number of samples to generate.
+
+    Returns:
+    fig (matplotlib.figure.Figure): The generated figure. Useful for testing purposes.
+
+    Requirements:
+    - numpy
+    - scipy.stats
+    - matplotlib.pyplot
+
+    Example:
+    >>> plt = task_func(0, 1, 1000)
+    """
+    x = np.linspace(mu - 4*sigma, mu + 4*sigma, 1000)
+    y = stats.norm.pdf(x, mu, sigma)
+    
+    fig, ax = plt.subplots()
+    ax.plot(x, y, label='PDF')
+    
+    samples = stats.norm.rvs(mu, sigma, size=num_samples)
+    ax.hist(samples, bins=30, density=True, alpha=0.6, color='g', label='Histogram')
+    
+    ax.set_title('Normal Distribution')
+    ax.legend()
+    
+    return fig

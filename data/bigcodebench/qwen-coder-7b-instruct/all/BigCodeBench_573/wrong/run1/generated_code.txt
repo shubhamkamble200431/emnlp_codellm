@@ -1,0 +1,59 @@
+import numpy as np
+import pandas as pd
+
+
+def task_func(array_length=100):
+    '''
+    Generate two arrays of random numbers of a given length, calculate their mean, median, and standard deviation,
+    then store these results in a Panda DataFrame 'statistics' with keys 'Array1' and 'Array2'.
+    Draw a bar chart to compare these statistics with indices 'Mean', 'Median', and 'Standard Deviation'.
+
+    Parameters:
+    - array_length (int, optional): The length of the arrays to be generated. Default is 100.
+
+    Returns:
+    - DataFrame: A pandas DataFrame with the statistics of the arrays.
+    - Axes: The bar chart plot comparing the statistics.
+
+    Requirements:
+    - numpy
+    - pandas
+
+    Example:
+    >>> df, ax = task_func(50)
+    '''
+    arr1 = np.random.rand(array_length)
+    arr2 = np.random.rand(array_length)
+
+    stats_arr1 = {
+        'Mean': np.mean(arr1),
+        'Median': np.median(arr1),
+        'Standard Deviation': np.std(arr1)
+    }
+
+    stats_arr2 = {
+        'Mean': np.mean(arr2),
+        'Median': np.median(arr2),
+        'Standard Deviation': np.std(arr2)
+    }
+
+    statistics = pd.DataFrame({'Array1': stats_arr1, 'Array2': stats_arr2})
+
+    indices = ['Mean', 'Median', 'Standard Deviation']
+    values_arr1 = [stats_arr1[idx] for idx in indices]
+    values_arr2 = [stats_arr2[idx] for idx in indices]
+
+    x = np.arange(len(indices))
+    width = 0.35
+
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(x - width/2, values_arr1, width, label='Array1')
+    rects2 = ax.bar(x + width/2, values_arr2, width, label='Array2')
+
+    ax.set_ylabel('Values')
+    ax.set_title('Comparison of Statistics')
+    ax.set_xticks(x)
+    ax.set_xticklabels(indices)
+    ax.legend()
+
+    return statistics, ax

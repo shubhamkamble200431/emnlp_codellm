@@ -1,0 +1,45 @@
+import os
+import hashlib
+
+# Constants
+DIRECTORY = "./hashed_files"
+
+
+def task_func(input_string):
+    """
+    Hash each non-empty line of a multi-line string using SHA256 and save the hashes to files.
+    The filename is the first 10 characters of the hash, with a '.txt' extension.
+
+    Parameters:
+    - input_string (str): A multi-line string to be processed.
+
+    Returns:
+    - list[str]: A list of file paths where the hashes of non-empty lines are saved.
+
+    Requirements:
+    - os
+    - hashlib
+
+    Notes:
+    - If the DIRECTORY does not exist, it is created.
+    - Empty lines in the input string are ignored.
+
+    Example:
+    >>> file_paths = task_func('line a\nfollows by line b\n\n...bye\n')
+    >>> print(file_paths)
+    ['./hashed_files/489fe1fa6c.txt', './hashed_files/67009597fe.txt', './hashed_files/eab4758603.txt']
+    """
+if not os.path.exists(DIRECTORY):
+    os.makedirs(DIRECTORY)
+
+file_paths = []
+for i, line in enumerate(input_string.splitlines()):
+    if line.strip():
+        sha256_hash = hashlib.sha256(line.encode()).hexdigest()
+        filename = f"{sha256_hash[:10]}.txt"
+        filepath = os.path.join(DIRECTORY, filename)
+        with open(filepath, 'w') as file:
+            file.write(sha256_hash)
+        file_paths.append(filepath)
+
+return file_paths

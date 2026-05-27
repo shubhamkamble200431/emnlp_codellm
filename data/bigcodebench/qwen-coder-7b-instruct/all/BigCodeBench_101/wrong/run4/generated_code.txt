@@ -1,0 +1,48 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import numpy as np
+
+def task_func(data_url="http://lib.stat.cmu.edu/datasets/boston", seed=42):
+    """
+    Draw the correlation heatmap of the Boston Housing dataset using Seaborn, with an option to save it to a specified file.
+
+    Parameters:
+        seed (int, optional): Random seed for reproducibility. Defaults to 42.
+    The font should be in the family of sans-serif and Arial.
+
+    Returns:
+        matplotlib.axes.Axes: The Axes object containing the heatmap plot.
+
+    Raises:
+        ValueError: If an error occurs in generating or saving the plot.
+
+    Requirements:
+        - matplotlib
+        - os
+        - pandas
+        - seaborn
+        - numpy 
+
+    Example:
+        >>> ax = task_func()
+        >>> type(ax)
+        <class 'matplotlib.axes._axes.Axes'>
+    """
+    np.random.seed(seed)
+    data = pd.read_csv(data_url, sep="\s+", header=None)
+    column_names = ["CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM", "AGE", "DIS", "RAD", "TAX", "PTRATIO", "B", "LSTAT", "MEDV"]
+    data.columns = column_names
+
+    corr_matrix = data.corr()
+
+    plt.figure(figsize=(10, 8))
+    ax = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+
+    plt.title("Correlation Heatmap of the Boston Housing Dataset")
+    plt.xlabel("Features")
+    plt.ylabel("Features")
+    plt.xticks(fontfamily='sans-serif', fontname='Arial')
+    plt.yticks(fontfamily='sans-serif', fontname='Arial')
+
+    return ax

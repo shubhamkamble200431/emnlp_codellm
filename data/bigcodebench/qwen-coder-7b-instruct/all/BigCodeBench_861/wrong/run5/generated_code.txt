@@ -1,0 +1,35 @@
+from collections import Counter
+from random import choice, seed
+
+# Constants
+POSSIBLE_ITEMS = ['apple', 'banana', 'cherry', 'date', 'elderberry']
+
+def task_func(list_of_lists):
+    """
+    Create a "shopping cart" (Counter object) for each list in list_of_lists. 
+    The items in the cart are randomly selected from a predefined list of possible items (POSSIBLE_ITEMS).
+    The frequency of each item in the cart corresponds to the length of the list.
+
+    Parameters:
+    - list_of_lists (list): A list of lists, each representing a 'basket'.
+
+    Returns:
+    - baskets (list): A list of Counters, each representing a 'shopping cart'.
+
+    Requirements:
+    - collections
+    - random
+
+    Example:
+    >>> baskets = task_func([[1, 2, 3], [4, 5]])
+    >>> all(isinstance(basket, Counter) for basket in baskets) # Illustrative, actual items will vary due to randomness
+    True
+    >>> sum(len(basket) for basket in baskets) # The sum of lengths of all baskets; illustrative example
+    3
+    """
+    baskets = []
+    for _ in range(len(list_of_lists)):
+        basket_size = len(list_of_lists)
+        basket_items = [choice(POSSIBLE_ITEMS) for _ in range(basket_size)]
+        baskets.append(Counter(basket_items))
+    return baskets

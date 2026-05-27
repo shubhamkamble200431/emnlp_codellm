@@ -1,0 +1,69 @@
+import pandas as pd
+import numpy as np
+from random import choice, seed as set_seed
+
+def task_func(num_of_students, seed=42, name_list=None, gender_list=None, age_range=(15, 20), score_range=(50, 100)):
+    """
+    Generate a Pandas DataFrame with randomized student data. This function allows for specifying 
+    the total number of students and the randomness seed for reproducible outcomes. Data attributes 
+    include student names, ages, genders, and scores, each derived from provided parameters or defaults.
+
+    Parameters:
+    - num_of_students (int): The number of student records to generate. Must be a positive integer.
+    - seed (int, optional): Seed for the random number generator to ensure reproducible data. Defaults to 42.
+    - name_list (list of str, optional): A list of names from which student names are randomly selected. 
+      If not provided, defaults to ['John', 'Mike', 'Sara', 'Emma', 'Nick'].
+    - gender_list (list of str, optional): A list of genders from which student genders are randomly selected. 
+      If not provided, defaults to ['Male', 'Female'].
+    - age_range (tuple of int, optional): A tuple specifying the inclusive range of student ages. Defaults to (15, 20).
+    - score_range (tuple of int, optional): A tuple specifying the inclusive range of student scores. Defaults to (50, 100).
+
+    Returns:
+    - pandas.DataFrame: A DataFrame object with columns ['Name', 'Age', 'Gender', 'Score'], containing 
+      randomly generated data for the specified number of students. Names and genders are randomly selected 
+      from the provided lists (or defaults). Ages and scores are randomly generated within the specified ranges.
+
+    Raises:
+    - ValueError: If num_of_students is non-positive.
+
+    Notes:
+    - The 'Name' column values are selected randomly from the 'name_list'.
+    - The 'Age' column values are integers randomly generated within the 'age_range', inclusive.
+    - The 'Gender' column values are selected randomly from the 'gender_list'.
+    - The 'Score' column values are integers randomly generated within the 'score_range', inclusive.
+    - Setting the same seed value ensures the reproducibility of the dataset across different function calls.
+
+    Requirements:
+    - pandas
+    - numpy
+    - random
+
+    Example:
+    >>> student_data = task_func(5, seed=123)
+    >>> print(student_data.head())
+       Name  Age  Gender  Score
+    0  John   20  Female     52
+    1  John   19  Female     84
+    2  Sara   16    Male     69
+    3  John   17  Female     72
+    4  Nick   16  Female     82
+    """
+if num_of_students <= 0:
+        raise ValueError("num_of_students must be a positive integer")
+
+    if name_list is None:
+        name_list = ['John', 'Mike', 'Sara', 'Emma', 'Nick']
+    
+    if gender_list is None:
+        gender_list = ['Male', 'Female']
+
+    set_seed(seed)
+
+    df = pd.DataFrame({
+        'Name': [choice(name_list) for _ in range(num_of_students)],
+        'Age': [np.random.randint(age_range[0], age_range[1] + 1) for _ in range(num_of_students)],
+        'Gender': [choice(gender_list) for _ in range(num_of_students)],
+        'Score': [np.random.randint(score_range[0], score_range[1] + 1) for _ in range(num_of_students)]
+    })
+
+    return df

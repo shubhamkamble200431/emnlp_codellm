@@ -1,0 +1,72 @@
+# Importing the required libraries
+import re
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+
+
+def task_func(text, n=2):
+    """
+    Analyzes a text string, removing duplicate consecutive words and stopwords defined by nltk.corpus,
+    generates a square co-occurrence matrix of words, and plots this matrix.
+
+    Parameters:
+    - text (str): Input text to be analyzed.
+    - n (int, optional): Size of n-grams for the co-occurrence matrix. Defaults to 2.
+
+    Returns:
+    - tuple:
+        - pd.DataFrame: Square co-occurrence matrix of words.
+        - matplotlib.axes.Axes: Plot object of the co-occurrence matrix.
+
+    Requirements:
+        - re
+        - pandas
+        - matplotlib.pyplot
+        - numpy
+        - sklearn.feature_extraction.text
+        - nltk.corpus
+
+    Example:
+    >>> import matplotlib
+    >>> text = "hello hello world world"
+    >>> df, ax = task_func(text, n=2)
+    >>> df.columns.tolist()
+    ['hello world']
+    >>> df.index.tolist()
+    ['hello world']
+    >>> df.iloc[0, 0]
+    0
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    # Remove non-alphabetic characters and convert to lowercase
+    cleaned_text = re.sub(r'[^a-zA-Z\s]', '', text).lower()
+
+    # Tokenize the text into words
+    words = cleaned_text.split()
+
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    filtered_words = [word for word in words if word not in stop_words]
+
+    # Create bigrams
+    bigrams = [' '.join(filtered_words[i:i+n]) for i in range(len(filtered_words) - n + 1)]
+
+    # Count vectorization
+    vectorizer = CountVectorizer(ngram_range=(n, n))
+    X = vectorizer.fit_transform(bigrams)
+
+    # Get feature names
+    feature_names = vectorizer.get_feature_names_out()
+
+    # Create DataFrame from co-occurrence matrix
+    co_occurrence_matrix = pd.DataFrame(X.toarray(), columns=feature_names, index=feature_names)
+
+    # Plot the co-occurrence matrix
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(co_occurrence_matrix, annot=True, cmap='YlGnBu', cbar=False, xticklabels=True, yticklabels=True, ax=ax)
+
+    return co_occurrence_matrix, ax

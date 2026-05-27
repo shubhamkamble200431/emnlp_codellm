@@ -1,0 +1,49 @@
+import re
+import pandas as pd
+
+
+def task_func(df: pd.DataFrame, column_name: str, pattern: str) -> pd.DataFrame:
+    """
+    Reverse the order of words in a specific column of a pandas DataFrame where the words
+    match a user-specified regular expression pattern, using a nested helper function.
+    Words are considered to be whitespace-separated strings. This function maintains the
+    original order of non-matching words.
+
+    Parameters:
+    - df (pd.DataFrame): The pandas DataFrame.
+    - column_name (str): The name of the column to be modified.
+    - pattern (str), the regular expression pattern to match words against.
+
+    Returns:
+    - pd.DataFrame: A new pandas DataFrame with the specified column's words reordered
+    if they match the pattern, maintaining the original order of words that do not match,
+    and returning a copy of the unaltered DataFrame if the pattern is empty.
+
+    Requirements:
+    - pandas
+    - re
+
+    Example:
+    >>> df = pd.DataFrame({'A': ['apple orange', 'red yellow green'], 'B': [1, 2]})
+    >>> pattern = r'\b(?:apple|yellow)\b'
+    >>> reversed_df = task_func(df, 'A', pattern)
+    >>> reversed_df
+                      A  B
+    0      apple orange  1
+    1  red yellow green  2
+    >>> df = pd.DataFrame({'A': ['yellow car red', 'green apple yellow'], 'B': [3, 4]})
+    >>> pattern = r'\b(?:car|apple|yellow)\b'
+    >>> reversed_df = task_func(df, 'A', pattern)
+    >>> reversed_df
+                        A  B
+    0      yellow car red  3
+    1  green apple yellow  4
+    """
+    def reverse_words(match):
+        return ' '.join(reversed(match.group(0).split()))
+
+    if not pattern:
+        return df.copy()
+
+    df[column_name] = df[column_name].apply(lambda x: ' '.join(reverse_words(m) if m else m.group(0) for m in re.finditer(pattern, x)))
+    return df

@@ -1,0 +1,70 @@
+import pandas as pd
+from texttable import Texttable
+import os
+import glob
+
+def task_func(data_dir='./data/'):
+    """
+    Generates a summary table of all ascendingly sorted CSV files in a specified directory using Texttable. 
+    If an empty CSV file is encountered, a pandas.errors.EmptyDataError is raised.
+
+    Parameters:
+    - data_dir (str): The directory to search for CSV files. Default is './data/'.
+
+    Returns:
+    - str: A string representation of the table summarizing the CSV files. Each row contains the file name, number of rows, and number of columns.
+
+    Raises:
+    - FileNotFoundError: If the specified directory does not exist.
+    - ValueError: If there are no CSV files in the specified directory.
+    - pandas.errors.EmptyDataError: If an empty CSV file is encountered.
+
+    Requirements:
+    - pandas
+    - texttable
+    - os
+    - glob
+
+    Example:
+    >>> data_dir = './test_data/'
+    >>> dummy_files = create_dummy_files(data_dir)
+    >>> print(task_func(data_dir))
+    +-----------+------+---------+
+    |   File    | Rows | Columns |
+    +===========+======+=========+
+    | test2.csv | 10   | 4       |
+    +-----------+------+---------+
+    | test2.csv | 10   | 4       |
+    +-----------+------+---------+
+    | test1.csv | 5    | 2       |
+    +-----------+------+---------+
+    | test1.csv | 5    | 2       |
+    +-----------+------+---------+
+    >>> tear_down_dummy_files(data_dir, dummy_files)
+    """
+    # Check if the directory exists
+    if not os.path.exists(data_dir):
+        raise FileNotFoundError(f"The directory {data_dir} does not exist.")
+
+    # Find all CSV files in the directory
+    csv_files = glob.glob(os.path.join(data_dir, '*.csv'))
+    
+    if not csv_files:
+        raise ValueError("There are no CSV files in the specified directory.")
+    
+    # Initialize the Texttable object
+    t = Texttable()
+    t.add_row(['File', 'Rows', 'Columns'])
+    t.header(['File', 'Rows', 'Columns'])
+    t.set_cols_align(['l', 'r', 'r'])
+    t.set_cols_valign(['m', 'm', 'm'])
+
+    # Process each CSV file
+    for csv_file in csv_files:
+        try:
+            df = pd.read_csv(csv_file)
+            t.add_row([os.path.basename(csv_file), len(df), len(df.columns)])
+        except pd.errors.EmptyDataError:
+            raise pd.errors.EmptyDataError(f"Empty CSV file encountered: {csv_file}")
+
+    return t.draw()

@@ -1,0 +1,24 @@
+import numpy as np
+from scipy.stats import iqr
+
+def task_func(L):
+    """
+    Calculate the interquartile range of all elements in a nested list 'L'.
+    
+    Parameters:
+    - L (list): The nested list.
+    
+    Returns:
+    - iqr_value (float): The interquartile range.
+    
+    Requirements:
+    - numpy
+    - scipy.stats
+
+    Example:
+    >>> task_func([[1,2,3],[4,5,6]])
+    2.5
+    """
+    flattened = [item for sublist in L for item in sublist]
+    iqr_value = iqr(flattened)
+    return iqr_value

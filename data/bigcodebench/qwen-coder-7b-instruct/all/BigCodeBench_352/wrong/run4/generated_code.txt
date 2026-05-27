@@ -1,0 +1,51 @@
+import pandas as pd
+from collections import Counter
+
+
+def task_func(text_dict, word_keys, top_k=2):
+    """
+    Calculate the frequency of certain words in a text dictionary and return a bar chart's Axes object and a dictionary
+    containing the frequencies of the top_k most common words in text_dict. 
+    
+    The function takes a dictionary containing word frequencies and a list of words. It calculates the frequency 
+    of the provided words in the dictionary and returns the Axes object of the bar chart displaying the frequencies
+    along with the top_k most common words and their frequencies as a dictionary. If a word in word_keys is not present 
+    in text_dict, its frequency is considered to be 0.
+    
+    Parameters:
+    - text_dict (dict): The dictionary containing word frequencies. Key is the word and value is its frequency.
+    - word_keys (list of str): The list of words to consider.
+    - top_k (int, Optional): A positive integer denoting the number of most common words to return. Default is 2.
+    
+    Returns:
+    - matplotlib.axes._axes.Axes: Axes object of the bar chart displaying the frequencies.
+    - dict: Dictionary containing the frequencies of the top_k most common words. Key is the word and value is 
+    its frequency.
+    
+    Requirements:
+    - pandas
+    - collections.Counter
+
+    Raises:
+    - ValueError: If top_k is a negative integer.
+    
+    Example:
+    >>> import collections
+    >>> text_dict = collections.Counter(['the', 'be', 'to', 'the', 'that', 'and', 'a', 'in', 'the', 'that', 'have', 'I'])
+    >>> word_keys = ['the', 'and', 'I']
+    >>> ax, frequencies = task_func(text_dict, word_keys, 3)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> frequencies
+    {'the': 3, 'that': 2, 'be': 1}
+    """
+    if top_k < 0:
+        raise ValueError("top_k must be a non-negative integer")
+
+    word_counts = {word: text_dict.get(word, 0) for word in word_keys}
+    top_words = Counter(word_counts).most_common(top_k)
+
+    df = pd.DataFrame(top_words, columns=['Word', 'Frequency'])
+    ax = df.plot(kind='bar', x='Word', y='Frequency', legend=False)
+
+    return ax, dict(top_words)

@@ -1,0 +1,52 @@
+import pandas as pd
+import time
+
+
+def task_func(df, target_value):
+    '''
+    Convert the input dic of list to DataFrame and searcher in this DataFrame for rows with cells equal to the
+    provided target_value. It then plots the count of such rows per column.
+
+    Parameters:
+    - df (dic of list): The input dict. It should have a 'Name' key.
+    - target_value (str): The target value to be searched in the DataFrame.
+
+    Returns:
+    tuple: A tuple containing:
+        - A pandas Series with counts of the target value per column.
+        - A matplotlib Axes object representing the plot (None if dataframe is empty).
+
+    Requirements:
+    - pandas
+    - time
+
+    Example:
+    >>> df = {'Column1': ['0', 'a', '332', '33']}
+    >>> series, ax = task_func(df, '332')
+    '''
+    start_time = time.time()
+
+    # Convert the input dictionary to a DataFrame
+    df = pd.DataFrame(df)
+
+    # Check if the DataFrame is empty
+    if df.empty:
+        return pd.Series(dtype='int64'), None
+
+    # Search for rows with cells equal to the provided target_value
+    matching_rows = df[df.eq(target_value)]
+
+    # Count the number of matching rows per column
+    row_counts = matching_rows.count()
+
+    # Plot the count of such rows per column
+    fig, ax = plt.subplots()
+    row_counts.plot(kind='bar', ax=ax)
+    ax.set_title(f'Count of Rows with Target Value "{target_value}" per Column')
+    ax.set_xlabel('Columns')
+    ax.set_ylabel('Count')
+
+    end_time = time.time()
+    print(f"Execution time: {end_time - start_time:.4f} seconds")
+
+    return row_counts, ax

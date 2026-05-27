@@ -1,0 +1,41 @@
+import pandas as pd
+import seaborn as sns
+import numpy as np
+import ast
+
+def task_func(csv_file):
+    """
+    Load e-mail data from a CSV file, convert it into a Pandas DataFrame, and calculate the sum, mean, and standard deviation of the list associated with each e-mail. Additionally, this function will
+    draw a histogram of the mean values and return both the DataFrame and the histogram plot.
+
+    Parameters:
+    - csv_file (str): The path to the CSV file containing email data.
+
+    Returns:
+    - tuple: A tuple containing two elements:
+        - DataFrame: A pandas DataFrame with columns 'email', 'list', 'sum', 'mean', and 'std'.
+        - Axes: A histogram plot of the mean values.
+
+    Requirements:
+    - pandas
+    - seaborn
+    - numpy
+    - ast
+
+    Example:
+    >>> df, plot = task_func('data/task_func/csv_1.csv')
+    >>> print(df.head())
+    >>> print(type(plot))
+    """
+    df = pd.read_csv(csv_file)
+    df['list'] = df['list'].apply(ast.literal_eval)
+    df['sum'] = df['list'].apply(sum)
+    df['mean'] = df['list'].apply(np.mean)
+    df['std'] = df['list'].apply(np.std)
+
+    plot = sns.histplot(df['mean'], kde=False)
+    plot.set_title('Histogram of Mean Values')
+    plot.set_xlabel('Mean')
+    plot.set_ylabel('Frequency')
+
+    return df, plot

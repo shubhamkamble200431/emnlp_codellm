@@ -1,0 +1,41 @@
+import pandas as pd
+from scipy.stats import pearsonr
+
+
+def task_func(data):
+    """
+    Calculates the Pearson correlation coefficient between numerical scores and categorical grades.
+
+    This function performs three main tasks:
+    1. Converts scores from string format to floats.
+    2. Encodes categorical grades into numerical values based on their rank order.
+    3. Computes the Pearson correlation coefficient between the numerical scores and the encoded grades.
+
+    Parameters:
+    - data (dict): A dictionary containing two keys:
+                 - 'Score_String': A list of scores in string format.
+                 - 'Grade': A list of corresponding grades in string format.
+                 Each list under these keys must have the same length.
+
+    Returns:
+    - correlation (float): The Pearson correlation coefficient between the converted numerical scores and encoded grades.
+           Returns NaN if the input data frame has less than 2 rows, as the correlation coefficient cannot be calculated in this case.
+
+    Requirements:
+    - pandas
+    - scipy
+
+    Example:
+    >>> round(task_func({'Score_String': ['80.5', '85.7', '90.2'], 'Grade': ['B', 'B+', 'A-']}),2)
+    -0.46
+    """
+    df = pd.DataFrame(data)
+    if len(df) < 2:
+        return float('NaN')
+    
+    df['Score'] = df['Score_String'].astype(float)
+    grade_order = {'F': 1, 'D': 2, 'C-': 3, 'C': 4, 'C+': 5, 'B-': 6, 'B': 7, 'B+': 8, 'A-': 9, 'A': 10}
+    df['Grade_Encoded'] = df['Grade'].map(grade_order)
+    
+    correlation, _ = pearsonr(df['Score'], df['Grade_Encoded'])
+    return correlation

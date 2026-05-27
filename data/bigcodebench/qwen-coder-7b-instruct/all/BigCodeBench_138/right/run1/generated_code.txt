@@ -1,0 +1,41 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def task_func(df, letters=list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')):
+    """
+    Create and return a bar chart of the frequency of letters in a DataFrame 
+    where the column 'Letters' contains English uppercase letters.
+
+    Parameters:
+    df (DataFrame): The DataFrame with a 'Letters' column.
+    letters (list, optional): List of English uppercase letters. Defaults to A-Z.
+
+    Returns:
+    Axes: A Matplotlib Axes object representing the bar graph of letter frequency, with the x-axis labeled 'Letters', the y-axis labeled 'Frequency', and the title 'Letter Frequency'.
+
+    Raises:
+    ValueError: If 'df' is not a DataFrame or lacks the 'Letters' column.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> import random
+    >>> random.seed(42)
+    >>> df = pd.DataFrame({'Letters': random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=100)})
+    >>> ax = task_func(df)
+    >>> plt.show()
+    """
+    if not isinstance(df, pd.DataFrame) or 'Letters' not in df.columns:
+        raise ValueError("Input must be a DataFrame containing a 'Letters' column.")
+    
+    letter_counts = df['Letters'].value_counts().reindex(letters, fill_value=0)
+    
+    fig, ax = plt.subplots()
+    ax.bar(letter_counts.index, letter_counts.values)
+    ax.set_xlabel('Letters')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Letter Frequency')
+    
+    return ax

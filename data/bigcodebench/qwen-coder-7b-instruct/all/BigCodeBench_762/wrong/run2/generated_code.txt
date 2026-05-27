@@ -1,0 +1,59 @@
+import codecs
+import os
+import zipfile
+
+
+def task_func(directory_name="latin_files",
+          content='Sopetón',
+          file_names=['file1.txt', 'file2.txt', 'file3.txt'],
+          encoding="latin-1"):
+    '''
+    Create a directory with the given name, create specified .txt files. Encode
+    the content using the specified encoding and write it into all .txt files, 
+    then zip the directory. 
+
+    Args:
+    directory_name (str): The name of the directory to be created.
+    content (str, optional): The content which should be written to each .txt file.
+                             Defaults to 'Sopetón'.
+    file_names (list): List of .txt file names to be created.
+                       Defaults to ['file1.txt', 'file2.txt', 'file3.txt'].
+    encoding (str): The encoding type for the files. Default is 'latin-1'.
+
+    Returns:
+    str: The zipped file name.
+
+    Requirements:
+    - codecs
+    - os
+    - zipfile
+
+    Example:
+    >>> zipped_file = task_func("latin_files", "test", ["file1.txt", "file2.txt", "file3.txt"])
+    >>> print(zipped_file)
+    latin_files.zip
+
+    >>> zipped_file = task_func(directory_name="directorio", content='hi', file_names=["custom1.txt", "custom2.txt"], encoding='utf-8')
+    >>> print(zipped_file)
+    directorio.zip
+    '''
+    # Create the directory if it doesn't exist
+    if not os.path.exists(directory_name):
+        os.makedirs(directory_name)
+
+    # Write the content to each file in the directory
+    for file_name in file_names:
+        file_path = os.path.join(directory_name, file_name)
+        with codecs.open(file_path, 'w', encoding=encoding) as f:
+            f.write(content)
+
+    # Zip the directory
+    zip_path = directory_name + '.zip'
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        for root, dirs, files in os.walk(directory_name):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, start=directory_name)
+                zipf.write(file_path, arcname)
+
+    return zip_path

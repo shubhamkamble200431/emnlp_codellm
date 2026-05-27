@@ -1,0 +1,78 @@
+import math
+import numpy as np
+from datetime import datetime
+import pandas as pd
+
+
+def task_func(
+    start_time,
+    end_time,
+    step,
+    columns=["Timestamp", "Sensor1", "Sensor2", "Sensor3", "SensorStatus"],
+    sensor_statuses=["OK", "MAINTENANCE_REQUIRED", "ERROR"],
+    random_seed=42,
+):
+    """
+    Generate a DataFrame with detailed artificial sensor readings for specified timestamps
+    and sensor statuses from a predefined list.
+
+    The function generates sensor readings for Sensor1, Sensor2, and Sensor3 (or their
+    corresponding named columns in the supplied column list) using sine, cosine, and tan
+    functions, respectively, of the timestamp (converted to seconds), with a small random
+    noise added to simulate real sensor data variability.
+    SensorStatus is randomly chosen from the provided statuses for each timestamp.
+
+    Parameters:
+    - start_time (int): Start time in milliseconds since epoch.
+    - end_time (int): End time in milliseconds since epoch. Must not be before start_time.
+    - step (int): The interval in milliseconds between each generated data point. Must be positive.
+                  This step defines the frequency at which data points are generated. If the step
+                  does not neatly divide the interval between start_time and end_time into
+                  equal-sized portions, the last timestamp may be excluded.
+    - columns (list of str, optional): Names of the DataFrame columns to be included in the output.
+                                       Defaults to: ['Timestamp', 'Sensor1', 'Sensor2', 'Sensor3', 'SensorStatus'].
+                                       Regardless of naming, the function will populate the first column with
+                                       timestamp, the middle columns with sensor data, and the final with status.
+    - sensor_statuses (list of str, optional): Possible statuses for the sensors to randomly assign in the dataset.
+                                               Defaults to: ['OK', 'MAINTENANCE_REQUIRED', 'ERROR'].
+    - random_seed (int, optional): Seed for the random number generator to ensure reproducible results.
+                                   Defaults to 42.
+
+    Returns:
+    - pd.DataFrame: Generated sensor readings for the given timestamps.
+
+    Requirements:
+    - math
+    - datetime
+    - numpy
+    - pandas
+
+    Example:
+    >>> df = task_func(0, 5000, 1000)
+    >>> type(df)
+    <class 'pandas.core.frame.DataFrame'>
+    >>> df.head(1)
+                        Timestamp   Sensor1   Sensor2   Sensor3 SensorStatus
+    0  1970-01-01 00:00:00.000000  0.049671  0.986174  0.064769        ERROR
+    """
+    np.random.seed(random_seed)
+    
+    num_points = int((end_time - start_time) // step)
+    timestamps = np.arange(start_time, end_time + 1, step, dtype=int)
+    timestamps_dt = pd.to_datetime(timestamps, unit='ms')
+    
+    sensor_data = {
+        columns[1]: np.sin(timestamps / 1000) + np.random.normal(0, 0.05, size=num_points),
+        columns[2]: np.cos(timestamps / 1000) + np.random.normal(0, 0.05, size=num_points),
+        columns[3]: np.tan(timestamps / 1000) + np.random.normal(0, 0.05, size=num_points),
+    }
+    
+    sensor_status = np.random.choice(sensor_statuses, size=num_points)
+    
+    df = pd.DataFrame({
+        columns[0]: timestamps_dt,
+        **sensor_data,
+        columns[-1]: sensor_status,
+    })
+    
+    return df

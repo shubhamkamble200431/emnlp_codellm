@@ -1,0 +1,61 @@
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+import matplotlib.pyplot as plt
+
+# Constants
+STOP_WORDS = ["a", "an", "the", "in", "on", "at", "and", "or"]
+
+
+def task_func(file_path, save_path=None):
+    """
+    This function processes a text dataset from a CSV file, performs text vectorization while excluding specific
+    stopwords, and creates a histogram of the ten most common words. The function is robust to different input
+    scenarios, such as empty data or data containing only stopwords.
+
+    Parameters:
+    - file_path (str): Path to the CSV file containing the text data. The CSV should have a single text column named "Text".
+    - save_path (str, optional): Path where the histogram plot will be saved. If not provided, the plot is displayed.
+
+    Returns:
+    - matplotlib Axes object: If save_path is not provided and valid words are found in the input, the function
+      displays the histogram plot and returns the matplotlib Axes object.
+    - None: In two scenarios:
+      1. If save_path is provided, saves the plot to the specified location and returns None.
+      2. If the input file is empty or contains only stop words, prints a message and returns None.
+
+    Requirements:
+    - pandas
+    - scikit-learn
+    - matplotlib
+
+    Examples:
+    >>> ax = task_func('text_data.csv')
+    # ax is the matplotlib Axes object for the plot
+    >>> result = task_func('text_data.csv', 'output_plot.png')
+    # result is None, and the plot is saved to 'output_plot.png'
+    """
+    df = pd.read_csv(file_path)
+    if df.empty or df['Text'].isnull().all():
+        print("Input file is empty or contains only stop words.")
+        return None
+
+    vectorizer = CountVectorizer(stop_words=STOP_WORDS)
+    word_counts = vectorizer.fit_transform(df['Text']).sum(axis=0)
+    word_freq = dict(zip(vectorizer.get_feature_names_out(), word_counts.tolist()[0]))
+
+    sorted_word_freq = {k: v for k, v in sorted(word_freq.items(), key=lambda item: item[1], reverse=True)}
+    top_10_words = list(sorted_word_freq.keys())[:10]
+    top_10_counts = [sorted_word_freq[word] for word in top_10_words]
+
+    fig, ax = plt.subplots()
+    ax.barh(top_10_words, top_10_counts, color='blue')
+    ax.set_xlabel('Frequency')
+    ax.set_ylabel('Words')
+    ax.set_title('Top 10 Most Common Words')
+
+    if save_path:
+        plt.savefig(save_path)
+    else:
+        plt.show()
+
+    return ax

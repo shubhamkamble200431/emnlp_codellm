@@ -1,0 +1,51 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def task_func(num_groups=5, data_size=5, labels=None):
+    """
+    Generate random data and visualize it with a stacked bar chart, saving the chart to a file.
+    This function facilitates the exploration and sharing of data distribution across multiple categories.
+
+    Parameters:
+    num_groups (int): Number of groups for which data is to be generated, defaulting to 5.
+    data_size (int): Number of data points for each group, defaulting to 5.
+    labels (list of str, optional): Labels for the groups. If None, default labels 'Group1', 'Group2', ...,
+    'GroupN' are generated.
+
+    Returns:
+    tuple: A tuple containing:
+        - matplotlib.figure.Figure: The Figure object containing the stacked bar chart.
+        - pandas.DataFrame: The DataFrame with randomly generated data.
+        - str: The filename where the plot is saved ('test_plot.png').
+
+    Requirements:
+    - pandas
+    - matplotlib
+    - numpy
+
+    Example:
+    >>> np.random.seed(0)
+    >>> fig, data, plot_filename = task_func(3, 3, ['A', 'B', 'C'])
+    >>> print(data)
+              A         B         C
+    0  0.548814  0.715189  0.602763
+    1  0.544883  0.423655  0.645894
+    2  0.437587  0.891773  0.963663
+    >>> print(plot_filename)
+    test_plot.png
+    """
+    if labels is None:
+        labels = [f'Group{i+1}' for i in range(num_groups)]
+    
+    data = np.random.rand(data_size, num_groups)
+    df = pd.DataFrame(data, columns=labels)
+    
+    fig, ax = plt.subplots()
+    ax.stackplot(range(data_size), *df.T.values, labels=df.columns)
+    ax.legend(loc='upper left')
+    plot_filename = 'test_plot.png'
+    plt.savefig(plot_filename)
+    
+    return fig, df, plot_filename

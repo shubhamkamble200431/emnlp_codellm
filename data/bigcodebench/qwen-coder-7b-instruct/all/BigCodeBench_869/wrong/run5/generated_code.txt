@@ -1,0 +1,63 @@
+import pandas as pd
+from itertools import cycle
+from random import randint, seed
+
+
+def task_func(
+    n_grades,
+    students=['Alice', 'Bob', 'Charlie', 'David', 'Eve'],
+    grade_range=range(1, 11),
+    rng_seed=None
+):
+    """
+    Generates a grade report for a specified number of grades.
+    The function cycles through the given list of students, assigning each a
+    random grade from a predefined range, and compiles this information into
+    a pandas DataFrame.
+    The random grades can be made reproducable by providing a seed in 'rng_seed'.
+
+    Parameters:
+    n_grades (int): The number of grades to include in the report.
+    students (list of str): The students to include in the report. Defaults to ['Alice', 'Bob', 'Charlie', 'David', 'Eve'].
+    grade_range (range): The range of grades that can be assigned. Defaults to range(1, 11).
+    rng_seed (int, optional): Seed used in the generation of random integers.
+    
+    Returns:
+    DataFrame: A pandas DataFrame with two columns: 'Student' and 'Grade'. Each row represents a student's grade.
+
+    Raises:
+    ValueError: If list of students is empty.
+
+    Requirements:
+    - pandas
+    - itertools
+    - random
+
+    Example:
+    >>> grade_report = task_func(3, ['Alice', 'Bob'], range(1, 3), rng_seed=1)
+    >>> print(grade_report)
+      Student  Grade
+    0   Alice      1
+    1     Bob      1
+    2   Alice      2
+
+    >>> grade_report = task_func(5, rng_seed=12)
+    >>> print(grade_report)
+       Student  Grade
+    0    Alice      8
+    1      Bob      5
+    2  Charlie      9
+    3    David      6
+    4      Eve      3
+    """
+if not students:
+    raise ValueError("List of students cannot be empty")
+
+if rng_seed is not None:
+    seed(rng_seed)
+
+students_cycle = cycle(students)
+grades = [randint(*grade_range) for _ in range(n_grades)]
+
+df = pd.DataFrame({'Student': list(students_cycle)[:n_grades], 'Grade': grades})
+return df

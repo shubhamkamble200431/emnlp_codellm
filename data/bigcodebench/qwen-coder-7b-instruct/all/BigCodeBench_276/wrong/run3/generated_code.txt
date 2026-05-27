@@ -1,0 +1,42 @@
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
+def task_func(matrix):
+    """
+    Calculate the distribution of the maximum values of each row in the matrix, 
+    record the histogram and the estimate of the core density of the distribution, 
+    and return the skew, kurtosis, and the histogram plot of the distribution.
+    
+    Parameters:
+    matrix (list): A list of lists representing a matrix.
+    
+    Returns:
+    tuple: The skewness, the kurtosis of the distribution, and the histogram plot (matplotlib Axes object).
+    
+    Requirements:
+    - numpy
+    - scipy.stats
+    - matplotlib.pyplot
+    
+    Example:
+    >>> skew, kurtosis, ax = task_func([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> round(skew, 2)
+    0.0
+    >>> round(kurtosis, 2)
+    -1.5
+    """
+    matrix_np = np.array(matrix)
+    max_values = np.max(matrix_np, axis=1)
+    skew = stats.skew(max_values)
+    kurtosis = stats.kurtosis(max_values)
+    fig, ax = plt.subplots()
+    n, bins, patches = ax.hist(max_values, bins='auto', alpha=0.7, rwidth=0.85)
+    plt.grid(axis='y', alpha=0.75)
+    plt.xlabel('Max Values')
+    plt.ylabel('Frequency')
+    plt.title('Histogram of Max Values Distribution')
+    return skew, kurtosis, ax

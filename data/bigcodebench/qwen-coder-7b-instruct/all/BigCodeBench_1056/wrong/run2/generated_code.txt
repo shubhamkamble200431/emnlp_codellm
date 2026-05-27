@@ -1,0 +1,66 @@
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+
+# Constants
+LETTERS = list("abcdefghijklmnopqrstuvwxyz")
+NUMBERS = list(range(1, 27))
+
+
+def task_func(n_pairs=26):
+    """
+    This function generates and displays a bar chart representing random letter-number pairs.
+    Each bar corresponds to a unique pair, formed by combining a letter from 'a' to 'z' with a number
+    from 1 to 26. The function randomly shuffles these pairs and assigns a random count to each.
+
+    Parameters:
+    - n_pairs (int, optional): The number of letter-number pairs to display in the bar chart.
+      The value must be an integer between 1 and 26, inclusive. The default value is 26, which
+      includes one pair for each letter in the alphabet.
+
+    Returns:
+    - matplotlib.container.BarContainer: This object represents the bar chart created by the function.
+      Each bar in the chart is labeled with its corresponding letter-number pair (e.g., 'a:1', 'b:2').
+      The title of the chart is "Random Letter:Number Pairs Chart", the x-axis label is "Letter:Number Pairs",
+      and the y-axis label is "Counts".
+
+    Raises:
+    - ValueError: If 'n_pairs' is outside the range of 1 to 26, inclusive. This ensures that the function
+      operates within the bounds of the predefined letters ('a' to 'z') and numbers (1 to 26).
+
+    Requirements:
+    - numpy
+    - matplotlib
+    - random
+
+    Notes:
+    - Each call to this function will likely produce a different chart because it shuffles the order
+      of the pairs and assigns random counts to them.
+    - The random counts assigned to each pair range from 1 to 9.
+
+    Example:
+    >>> ax = task_func(5)
+    >>> [bar.get_label() for bar in ax]
+    ['d:4', 'b:2', 'c:3', 'e:5', 'a:1']
+    """
+    if not isinstance(n_pairs, int) or n_pairs < 1 or n_pairs > 26:
+        raise ValueError("'n_pairs' must be an integer between 1 and 26, inclusive.")
+
+    pairs = [(letter, str(number)) for letter in LETTERS[:n_pairs] for number in NUMBERS[:n_pairs]]
+    random.shuffle(pairs)
+
+    counts = [random.randint(1, 9) for _ in pairs]
+
+    labels = [f"{pair[0]}:{pair[1]}" for pair in pairs]
+    x_pos = np.arange(len(labels))
+    height = np.array(counts)
+
+    fig, ax = plt.subplots()
+    bars = ax.bar(x_pos, height, align='center', alpha=0.7, color='blue')
+    ax.set_xlabel('Letter:Number Pairs')
+    ax.set_ylabel('Counts')
+    ax.set_title('Random Letter:Number Pairs Chart')
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(labels)
+
+    return bars

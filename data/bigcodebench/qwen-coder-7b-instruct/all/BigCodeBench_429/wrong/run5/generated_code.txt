@@ -1,0 +1,39 @@
+import pandas as pd
+from sklearn.feature_selection import SelectKBest, f_classif
+import seaborn as sns
+
+
+def task_func(df1, df2):
+    """Perform the feature selection with SelectKBest (k=2) and return a heatmap of the feature correlations.
+
+    Parameters:
+    - df1 (pd.DataFrame): The dataframe containing features.
+    - df2 (pd.DataFrame): The dataframe containing the target variable. Must have an 'id' column corresponding to df1.
+
+    Returns:
+    - tuple: A tuple containing:
+        - list: A list of the selected features.
+        - Axes: A heatmap showing the correlation between the selected features.
+
+    Requirements:
+    - pandas
+    - sklearn.feature_selection.SelectKBest
+    - sklearn.feature_selection.f_classif
+    - seaborn
+
+    Example:
+    >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'feature1': [1.2, 3.4, 5.6], 'feature2': [2.3, 4.5, 6.7], 'feature3': [3.4, 5.6, 7.8]})
+    >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'target': [4.5, 6.7, 8.9]})
+    >>> selected_features, heatmap = task_func(df1, df2)
+    >>> heatmap
+    <Axes: >
+    >>> selected_features
+    ['feature2', 'feature3']
+    """
+selected_features = SelectKBest(f_classif, k=2).fit_transform(df1.drop('id', axis=1), df2['target'])
+selected_columns = df1.drop('id', axis=1).columns[selected_features != 0].tolist()
+
+correlation_matrix = df1[selected_columns].corr()
+heatmap = sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+
+return selected_columns, heatmap

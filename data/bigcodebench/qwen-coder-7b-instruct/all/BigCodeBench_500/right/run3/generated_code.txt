@@ -1,0 +1,57 @@
+import xlwt
+import os
+
+# Constants
+FIELDS = ['ID', 'Name', 'Age']
+
+def task_func(values, filename):
+    """
+    Writes a list of OrderedDicts to an Excel file. Each OrderedDict in the list represents a row in the Excel sheet,
+    and each key in the OrderedDict corresponds to a column defined in the FIELDS constant comprising column names 
+    'ID', 'Name', and 'Age'.
+
+    Parameters:
+    values (list of OrderedDict): A list where each element is an OrderedDict with keys matching the FIELDS constant.
+    filename (str): The filename for the Excel file to be created. It should include the '.xls' extension.
+
+    Returns:
+    str: The absolute path of the created Excel file.
+
+    Requirements:
+    - xlwt
+    - os
+
+    Examples:
+    Create an Excel file with data from a list of OrderedDicts.
+    >>> data = [OrderedDict([('ID', 1), ('Name', 'John Doe'), ('Age', 30)]),
+    ...         OrderedDict([('ID', 2), ('Name', 'Jane Doe'), ('Age', 28)])]
+    >>> path = task_func(data, 'test_data.xls')
+    >>> os.path.exists(path) and 'test_data.xls' in path
+    True
+
+    Create an Excel file with no data.
+    >>> empty_data = []
+    >>> path = task_func(empty_data, 'empty_data.xls')
+    >>> os.path.exists(path) and 'empty_data.xls' in path
+    True
+    """
+    workbook = xlwt.Workbook()
+    worksheet = workbook.add_sheet('Sheet1')
+
+    # Write headers
+    for col_num, field_name in enumerate(FIELDS):
+        worksheet.write(0, col_num, field_name)
+
+    # Write data rows
+    row_num = 1
+    for value in values:
+        for col_num, field_name in enumerate(FIELDS):
+            worksheet.write(row_num, col_num, value.get(field_name, ''))
+
+        row_num += 1
+
+    # Save the workbook
+    absolute_path = os.path.abspath(filename)
+    workbook.save(absolute_path)
+
+    return absolute_path

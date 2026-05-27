@@ -1,0 +1,54 @@
+import pandas as pd
+import seaborn as sns
+
+
+def task_func(data):
+    """
+    Analyze a dataset by calculating the average of values across each row and visualizing the correlation matrix as a
+    heatmap.
+
+    Parameters:
+    data (numpy.array): 2D array where each row represents a record and each column represents a feature
+
+    Returns:
+    tuple: A tuple containing:
+        - DataFrame: A pandas DataFrame enhanced with an 'Average' column that represents the mean across each row.
+        - Axes: The matplotlib Axes object showing the heatmap of the correlations.
+
+    Requirements:
+    - pandas
+    - numpy
+    - seaborn
+
+    Raises:
+    ValueError: If the input data is not a 2D array or if it contains non-numeric data.
+
+    Example:
+    >>> data = np.array([[1, 2, 3, 4, 5, 6, 7, 8], [8, 7, 6, 5, 4, 3, 2, 1]])
+    >>> df, ax = task_func(data)
+    >>> print(df['Average'].to_string(index=False))
+    4.5
+    4.5
+    """
+    if not isinstance(data, np.ndarray) or len(data.shape) != 2:
+        raise ValueError("Input data must be a 2D numpy array")
+
+    if not np.issubdtype(data.dtype, np.number):
+        raise ValueError("Input data must contain only numeric values")
+
+    # Calculate the average of values across each row
+    averages = np.mean(data, axis=1)
+
+    # Create a DataFrame from the input data
+    df = pd.DataFrame(data, columns=[f"Feature_{i+1}" for i in range(data.shape[1])])
+
+    # Add the 'Average' column to the DataFrame
+    df['Average'] = averages
+
+    # Calculate the correlation matrix
+    corr_matrix = np.corrcoef(np.column_stack((averages, data)))
+
+    # Visualize the correlation matrix as a heatmap
+    ax = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+
+    return df, ax

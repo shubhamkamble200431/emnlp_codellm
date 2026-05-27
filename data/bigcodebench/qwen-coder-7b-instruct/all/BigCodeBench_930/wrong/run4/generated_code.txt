@@ -1,0 +1,41 @@
+import random
+import string
+
+POSSIBLE_LETTERS = ['a', 'b', 'c']
+def task_func(word):
+    """
+    Generates a list of random pairs of adjacent letters from the given word. The number of such pairs will be equal to the length of the constant POSSIBLE_LETTERS.
+    
+    Parameters:
+    word (str): The input string. Must only contain letters.
+    
+    Returns:
+    list: A list of random pairs of adjacent letters from the word. If the word has fewer than 2 letters, returns a list of empty strings based on POSSIBLE_LETTERS length.
+    
+    Requirements:
+    - random
+    - string
+    
+    Raises:
+    ValueError: If the input contains non-letter characters.
+    
+    Examples:
+    >>> random.seed(0)
+    >>> task_func('abcdef')
+    ['de', 'de', 'ab']
+    >>> task_func('xyz')
+    ['yz', 'yz', 'yz']
+    """
+if not word.isalpha():
+        raise ValueError("Input must only contain letters.")
+        
+    if len(word) < 2:
+        return [''] * len(POSSIBLE_LETTERS)
+    
+    random_pairs = []
+    for _ in range(len(POSSIBLE_LETTERS)):
+        start_index = random.randint(0, max(0, len(word) - 2))
+        end_index = start_index + 1
+        random_pairs.append(word[start_index:end_index])
+    
+    return random_pairs

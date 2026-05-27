@@ -1,0 +1,54 @@
+import matplotlib.pyplot as plt
+from itertools import cycle
+import numpy as np
+from random import shuffle
+
+COLORS = ["b", "g", "r", "c", "m", "y", "k"]
+
+
+def task_func(list_of_lists):
+    """
+    Plots a series of lines for each list in `list_of_lists`. Each line is plotted with shuffled y-values
+    and sequential x-values starting from 1. The function shuffles the y-values of each inner list before plotting.
+    Each line is plotted with a different color from a predetermined set of colors. The function cycles through 
+    these colors for each inner list.
+
+    Parameters:
+    - list_of_lists (list of list): A list of lists where each inner
+    list represents a set of y-values to be shuffled and plotted. The x-values are automatically
+    generated as a sequence starting from 1 up to the length of the inner list.
+
+    Returns:
+    - tuple: A tuple containing the figure and axes objects of the plotted graph.
+
+    Requirements:
+    - matplotlib
+    - itertools
+    - numpy
+    - random
+
+    Example:
+    >>> import random
+    >>> random.seed(0)
+    >>> fig, ax = task_func([[1, 2, 3], [4, 5, 6]])
+    >>> ax.lines[0].get_color()
+    (0.0, 0.0, 1.0, 1)
+
+    Note:
+    - If an inner list is empty, it will be skipped and no line will be plotted for it.
+    - The colors are reused cyclically if there are more inner lists than colors available.
+    - The shuffling of y-values is random and different each time the function is called,
+      unless a random seed is set externally.
+    - The function uses a default set of colors defined in the COLORS constant.
+    """
+    fig, ax = plt.subplots()
+    color_cycle = cycle(COLORS)
+
+    for y_values in list_of_lists:
+        if y_values:
+            shuffle(y_values)
+            x_values = np.arange(1, len(y_values) + 1)
+            color = next(color_cycle)
+            ax.plot(x_values, y_values, color=color)
+
+    return fig, ax

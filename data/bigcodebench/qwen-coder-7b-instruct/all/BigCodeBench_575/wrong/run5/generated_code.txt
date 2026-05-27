@@ -1,0 +1,40 @@
+from random import shuffle
+import pandas as pd
+import numpy as np
+
+# Constants
+
+
+
+def task_func(l, n_groups = 5):
+    """
+    Given a list `l`, this function shuffles the list, constructs a dataframe using the shuffled list,
+    and then for each row in the dataframe, moves the first n_groups elements to the end of the same row.
+
+    Parameters:
+    - l (list): A list of elements.
+    - n_groups (int): number of groups. Default value is 5.
+
+    Returns:
+    - DataFrame: A modified DataFrame constructed from the shuffled list.
+
+    Requirements:
+    - pandas
+    - numpy
+    - random
+
+    Example:
+    >>> df = task_func(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
+    >>> df.shape == (5, 10)
+    True
+    >>> set(df.iloc[0]) == set(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
+    True
+    """
+    shuffle(l)
+    reshaped_l = [l[i:i + n_groups] for i in range(0, len(l), n_groups)]
+    df = pd.DataFrame(reshaped_l)
+    for i in range(len(df)):
+        if len(df.iloc[i]) < n_groups:
+            df.iloc[i] = df.iloc[i].tolist() * 2
+        df.iloc[i] = df.iloc[i][-n_groups:] + df.iloc[i][:-n_groups]
+    return df

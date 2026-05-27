@@ -1,0 +1,34 @@
+from django.http import HttpResponse
+from django.conf import settings
+import random
+import time
+
+def task_func(data, min_delay, max_delay):
+    """
+    After a random delay, generate a Django HttpResponse with JSON data to simulate the latency of the network.
+    
+    Parameters:
+    data (str): The data to be included in the response body.
+    min_delay (int): The minimum delay in seconds.
+    max_delay (int): The maximum delay in seconds.
+    
+    Returns:
+    HttpResponse: A Django HttpResponse with JSON data.
+    
+    Requirements:
+    - django
+    - random
+    - time
+
+    Example:
+    >>> import json
+    >>> random.seed(0)
+    >>> response = task_func(json.dumps({"Sample-Key": "Sample-Value"}), 1, 5)
+    >>> response.status_code
+    200
+    >>> json.loads(response.content)
+    {"Sample-Key": "Sample-Value"}
+    """
+    delay = random.randint(min_delay, max_delay)
+    time.sleep(delay)
+    return HttpResponse(data, content_type='application/json')

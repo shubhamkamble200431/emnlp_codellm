@@ -1,0 +1,46 @@
+import hashlib
+import io
+import os
+
+def task_func(file_path1, file_path2):
+    """
+    Compares two files to determine if they are identical by computing and comparing their MD5 hash values.
+    This method is effective for checking if two files have exactly the same content.
+
+    Parameters:
+    file_path1 (str): The file path of the first file.
+    file_path2 (str): The file path of the second file.
+
+    Returns:
+    bool: Returns True if the MD5 hashes of the files match (indicating identical content), False otherwise.
+
+    Raises:
+    FileNotFoundError: if either file_path1 or file_path2 does not exist.
+
+    Requirements:
+    - hashlib
+    - io
+    - os
+
+    Examples:
+    Assuming 'file1.gz' and 'file2.gz' contain the same content,
+    >>> task_func('file1.gz', 'file2.gz')
+    True
+
+    Assuming 'file1.gz' and 'file3.txt' contain different content,
+    >>> task_func('file1.gz', 'file3.txt')
+    False
+    """
+    def calculate_md5(file_path):
+        hasher = hashlib.md5()
+        with open(file_path, 'rb') as f:
+            while chunk := f.read(4096):
+                hasher.update(chunk)
+        return hasher.hexdigest()
+
+    try:
+        md5_1 = calculate_md5(file_path1)
+        md5_2 = calculate_md5(file_path2)
+        return md5_1 == md5_2
+    except FileNotFoundError:
+        raise FileNotFoundError(f"One or both of the files do not exist: {file_path1}, {file_path2}")

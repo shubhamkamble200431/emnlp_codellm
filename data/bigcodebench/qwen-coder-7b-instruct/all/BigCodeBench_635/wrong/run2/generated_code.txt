@@ -1,0 +1,70 @@
+# Importing the required libraries
+import re
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+
+
+def task_func(text, n=2):
+    """
+    Analyzes a text string, removing duplicate consecutive words and stopwords defined by nltk.corpus,
+    generates a square co-occurrence matrix of words, and plots this matrix.
+
+    Parameters:
+    - text (str): Input text to be analyzed.
+    - n (int, optional): Size of n-grams for the co-occurrence matrix. Defaults to 2.
+
+    Returns:
+    - tuple:
+        - pd.DataFrame: Square co-occurrence matrix of words.
+        - matplotlib.axes.Axes: Plot object of the co-occurrence matrix.
+
+    Requirements:
+        - re
+        - pandas
+        - matplotlib.pyplot
+        - numpy
+        - sklearn.feature_extraction.text
+        - nltk.corpus
+
+    Example:
+    >>> import matplotlib
+    >>> text = "hello hello world world"
+    >>> df, ax = task_func(text, n=2)
+    >>> df.columns.tolist()
+    ['hello world']
+    >>> df.index.tolist()
+    ['hello world']
+    >>> df.iloc[0, 0]
+    0
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    # Removing duplicate consecutive words
+    cleaned_text = re.sub(r'\b(\w+\s+\w+)\s+\1', r'\1', text)
+
+    # Tokenizing the text
+    tokens = cleaned_text.split()
+
+    # Removing stopwords
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [word for word in tokens if word not in stop_words]
+
+    # Generating n-grams
+    n_grams = zip(*[filtered_tokens[i:] for i in range(n)])
+
+    # Counting co-occurrences
+    vectorizer = CountVectorizer(analyzer=lambda x: x)
+    co_occurrence_matrix = vectorizer.fit_transform(n_grams).toarray()
+
+    # Creating DataFrame
+    df = pd.DataFrame(co_occurrence_matrix, index=n_grams, columns=n_grams)
+
+    # Plotting the co-occurrence matrix
+    fig, ax = plt.subplots(figsize=(10, 8))
+    heatmap = sns.heatmap(df, annot=True, cmap='YlGnBu', fmt='d', cbar=False, ax=ax)
+    plt.show()
+
+    return df, ax

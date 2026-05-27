@@ -1,0 +1,64 @@
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+import matplotlib.pyplot as plt
+
+# Constants
+STOP_WORDS = ["a", "an", "the", "in", "on", "at", "and", "or"]
+
+
+def task_func(file_path, save_path=None):
+    """
+    This function processes a text dataset from a CSV file, performs text vectorization while excluding specific
+    stopwords, and creates a histogram of the ten most common words. The function is robust to different input
+    scenarios, such as empty data or data containing only stopwords.
+
+    Parameters:
+    - file_path (str): Path to the CSV file containing the text data. The CSV should have a single text column named "Text".
+    - save_path (str, optional): Path where the histogram plot will be saved. If not provided, the plot is displayed.
+
+    Returns:
+    - matplotlib Axes object: If save_path is not provided and valid words are found in the input, the function
+      displays the histogram plot and returns the matplotlib Axes object.
+    - None: In two scenarios:
+      1. If save_path is provided, saves the plot to the specified location and returns None.
+      2. If the input file is empty or contains only stop words, prints a message and returns None.
+
+    Requirements:
+    - pandas
+    - scikit-learn
+    - matplotlib
+
+    Examples:
+    >>> ax = task_func('text_data.csv')
+    # ax is the matplotlib Axes object for the plot
+    >>> result = task_func('text_data.csv', 'output_plot.png')
+    # result is None, and the plot is saved to 'output_plot.png'
+    """
+    try:
+        df = pd.read_csv(file_path)
+        text_column = df.get("Text")
+        if text_column is None or text_column.empty:
+            print("The input file is empty.")
+            return None
+
+        vectorizer = CountVectorizer(stop_words=STOP_WORDS)
+        word_counts = vectorizer.fit_transform(text_column.astype(str))
+        feature_names = vectorizer.get_feature_names_out()
+        counts = word_counts.sum(axis=0).tolist()[0]
+
+        sorted_indices = sorted(range(len(counts)), key=lambda i: counts[i], reverse=True)
+        top_ten_words = [feature_names[i] for i in sorted_indices[:10]]
+        top_ten_counts = [counts[i] for i in sorted_indices[:10]]
+
+        fig, ax = plt.subplots()
+        ax.barh(top_ten_words, top_ten_counts, color='skyblue')
+
+        if save_path:
+            plt.savefig(save_path)
+            return None
+        else:
+            plt.show()
+            return ax
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None

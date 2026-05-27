@@ -1,0 +1,36 @@
+import os
+import re
+import shutil
+
+# Constants
+SOURCE_DIR = '/source/dir'
+TARGET_DIR = '/target/dir'
+FILE_PATTERN = re.compile(r'^(.*?)-\d+\.json$')
+
+def task_func():
+    """
+    Move all json files in a source directory to a target directory and rename them by splitting the filename the last time "-" occurs and keeping the prefix part of the filename.
+    
+    Parameters:
+    - None
+
+    Returns:
+    - None
+
+    Requirements:
+    - os
+    - re
+    - shutil
+
+    Example:
+    >>> task_func()
+
+    """
+    for filename in os.listdir(SOURCE_DIR):
+        if FILE_PATTERN.match(filename):
+            match = FILE_PATTERN.match(filename)
+            prefix = match.group(1)
+            new_filename = f"{prefix}.json"
+            old_file_path = os.path.join(SOURCE_DIR, filename)
+            new_file_path = os.path.join(TARGET_DIR, new_filename)
+            shutil.move(old_file_path, new_file_path)
