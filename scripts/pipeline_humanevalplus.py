@@ -1,44 +1,3 @@
-"""
-pipeline_humaneval.py  —  Unified CODE_LLM Pipeline  (HumanEvalPlus, Qwen2.5-Coder)
-======================================================================================
-Identical pipeline logic to emnlp_subhakar.py, adapted for HumanEvalPlus:
-
-  • Dataset  : HumanEvalPlus  (164 problems, IDs HumanEval/0 … HumanEval/163)
-  • Acts root:
-      1.5B: .../humanevalplus/qwen-coder-1.5b-instruct_20260426_162930/all
-      7B  : .../humanevalplus/qwen-coder-7b-instruct_20260426_162930/all
-
-Stages (run sequentially for each model):
-
-  1. SPLIT        — Load pre-generated runs from acts root, apply 60/20/20
-                    problem-level split (train / val / test).
-  2. PROBING      — Layer-wise logistic probe trained on contrastive-TRAIN,
-                    evaluated by AUROC on contrastive-VAL.
-                    Top-5 layers by AUROC_val carry forward.
-  3. SYMMETRY + L*-SCORE
-                  — Computed for reference; top-5 for STEERING are chosen
-                    by AUROC_val (not l*-score).
-  4. STEERING     — Three intervention types on top-5 AUROC layers (TEST),
-                    run 3 times with different seeds:
-                      (a) Forward  Addition    h←h+α·d̂  α∈{0.5,1,2,5,10,20,50}
-                          on WRONG runs from TEST.
-                      (b) Backward Subtraction h←h+α·d̂ α∈{-0.5,…,-50}
-                          on RIGHT runs from TEST.
-                      (c) Direction Ablation   h←h-(h·d̂)·d̂
-                          on RIGHT runs from TEST.
-                    Δp@1 computed against stored outcome baseline (0.0/1.0).
-                    Generation is batched (STEER_BATCH_SIZE).
-                    Each seed writes to steering/seed_{n}/
-
-Usage
------
-  python pipeline_humaneval.py                          # run both models
-  python pipeline_humaneval.py --model qwen-coder-1.5b-instruct
-  python pipeline_humaneval.py --model qwen-coder-7b-instruct
-  python pipeline_humaneval.py --out-root /my/output/dir
-  python pipeline_humaneval.py --batch-size 8
-"""
-
 import argparse
 import csv
 import gc
@@ -60,10 +19,6 @@ from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CONFIG
-# ─────────────────────────────────────────────────────────────────────────────
-
 TRAIN_RATIO    = 0.60
 VAL_RATIO      = 0.20
 SPLIT_SEED     = 42
@@ -74,22 +29,18 @@ EXEC_TIMEOUT   = 10
 
 EXPECTED_RUNS_PER_PROBLEM = 5
 
-# Probing
 N_BOOTSTRAP  = 10
 TOP_N_PROBE  = 5
 GAP_THRESH   = 0.15
 RNG_SEED     = 42
 
-# Layer selection  — ranked by AUROC_val (l* still computed for reference)
 TOP_K_STEER  = 5
-W1, W2       = 0.6, 0.4      # l* weights (reference only)
+W1, W2       = 0.6, 0.4
 
-# Steering alphas
-ALPHAS_FWD   = [0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0]
-ALPHAS_BWD   = [-0.5, -1.0, -2.0, -5.0, -10.0, -20.0, -50.0]
+ALPHAS_FWD   = [0.5, 1.0, 2.0, 5.0, 10.0]
+ALPHAS_BWD   = [-0.5, -1.0, -2.0, -5.0, -10.0]
 ALPHA_ABLATE = 1.0
 
-# Batched generation for steering
 STEER_BATCH_SIZE = 128
 
 N_STEER_RUNS = {
@@ -97,19 +48,10 @@ N_STEER_RUNS = {
     "qwen-coder-7b-instruct":   3,
 }
 
-# ── HumanEvalPlus run paths ──────────────────────────────────────────────────
-_HE_BASE = (
-    "/media/kpdubey/8.0 TB Volume/Shubham/MI/PROBING/"
-    "layerwise_results_contrastive_pipeline1/humanevalplus"
-)
-
+_DATA_ROOT = Path(__file__).parent.parent / "data" / "humanevalplus"
 ACTS_ROOTS = {
-    "qwen-coder-1.5b-instruct": (
-        f"{_HE_BASE}/qwen-coder-1.5b-instruct_20260426_162930/all"
-    ),
-    "qwen-coder-7b-instruct": (
-        f"{_HE_BASE}/qwen-coder-7b-instruct_20260426_162930/all"
-    ),
+    "qwen-coder-1.5b-instruct": str(_DATA_ROOT / "qwen-2.5-coder-1.5b-instruct" / "all"),
+    "qwen-coder-7b-instruct":   str(_DATA_ROOT / "qwen-2.5-coder-7b-instruct" / "full_dataset_runs"),
 }
 
 MODEL_REGISTRY = {
@@ -127,7 +69,6 @@ MODEL_REGISTRY = {
     },
 }
 
-# Directories inside acts_root that are NOT problem folders
 SKIP_DIRS = {
     "probing", "steering", "plots", "pipeline2_results",
     "pipeline2_probing", "all", "contrastive", "comparison",
@@ -137,20 +78,7 @@ SKIP_DIRS = {
 OUT_ROOT = Path(__file__).parent / "pipeline_results_humaneval"
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# DATASET LOADER  (HumanEvalPlus)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def load_humanevalplus() -> list[dict]:
-    """
-    Load HumanEvalPlus problems.  Priority:
-      1. evalplus Python package  (get_human_eval_plus)
-      2. evalplus/humanevalplus HuggingFace dataset
-      3. openai-evals/evals HumanEval fallback (no plus tests)
-    Returns list of dicts with at minimum:
-      task_id, prompt, entry_point, test, canonical_solution
-    """
-    # 1. evalplus package
     try:
         from evalplus.data import get_human_eval_plus
         problems = get_human_eval_plus()
@@ -164,7 +92,6 @@ def load_humanevalplus() -> list[dict]:
 
     from datasets import load_dataset
 
-    # 2. evalplus/humanevalplus on HuggingFace
     try:
         ds = load_dataset("evalplus/humanevalplus", split="test", trust_remote_code=True)
         result = [dict(row) for row in ds]
@@ -173,7 +100,6 @@ def load_humanevalplus() -> list[dict]:
     except Exception as e:
         print(f"  [DATA] evalplus/humanevalplus HF unavailable: {e}")
 
-    # 3. openai/openai-evals HumanEval (164 problems, no plus tests)
     try:
         ds = load_dataset("openai/openai-evals", "HumanEval", split="test",
                           trust_remote_code=True)
@@ -187,10 +113,6 @@ def load_humanevalplus() -> list[dict]:
         )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# H5 HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _load_h5(path: Path) -> np.ndarray:
     with h5py.File(path, "r") as hf:
         return hf["activation"][:].astype(np.float32)
@@ -201,26 +123,13 @@ def _safe_id(tid) -> str:
 
 
 def _find_acts_root(acts_dir: str | Path) -> Path:
-    """
-    Return the directory that directly contains problem folders.
-    If an 'all/' subfolder exists, use that; otherwise use acts_dir itself.
-    """
     root = Path(acts_dir)
     if (root / "all").is_dir():
         return root / "all"
     return root
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# RUN-DIR SCANNING  (robust for run1/run2/… naming)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _iter_run_dirs(verdict_dir: Path) -> list[Path]:
-    """
-    Return all run sub-directories inside a verdict folder (right/ or wrong/).
-    Handles any naming convention: run1, run_1, run_00, 0, 1, etc.
-    Sorted deterministically.
-    """
     if not verdict_dir.is_dir():
         return []
     return sorted(
@@ -230,7 +139,6 @@ def _iter_run_dirs(verdict_dir: Path) -> list[Path]:
 
 
 def detect_n_layers(acts_root: Path) -> int:
-    """Detect number of layers by inspecting the first run directory found."""
     for prob_dir in sorted(acts_root.iterdir()):
         if not prob_dir.is_dir() or prob_dir.name in SKIP_DIRS:
             continue
@@ -241,10 +149,6 @@ def detect_n_layers(acts_root: Path) -> int:
                     return len(h5s)
     raise RuntimeError(f"No layer H5 files found under {acts_root}")
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# INTEGRITY VALIDATION
-# ─────────────────────────────────────────────────────────────────────────────
 
 def validate_run_integrity(acts_root: Path, n_layers: int) -> dict:
     missing_runs   = []
@@ -297,15 +201,7 @@ def validate_run_integrity(acts_root: Path, n_layers: int) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGE 1: SPLIT  (60 / 20 / 20)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def scan_runs(acts_root: Path) -> dict[str, dict]:
-    """
-    Walk acts_root and collect per-problem run stats.
-    Returns {task_id: {"n_right": int, "n_wrong": int, "n_total": int}}
-    """
     problems: dict[str, dict] = {}
     for prob_dir in sorted(acts_root.iterdir()):
         if not prob_dir.is_dir() or prob_dir.name in SKIP_DIRS:
@@ -323,7 +219,6 @@ def scan_runs(acts_root: Path) -> dict[str, dict]:
 
 
 def make_split(all_problem_ids: list[str]) -> tuple[list[str], list[str], list[str]]:
-    """Deterministic 60/20/20 split at problem level."""
     rng  = np.random.default_rng(SPLIT_SEED)
     ids  = sorted(all_problem_ids)
     perm = rng.permutation(len(ids))
@@ -533,19 +428,11 @@ def run_split(acts_dir: str, out_dir: Path) -> dict:
     return split
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGE 2: PROBING
-# ─────────────────────────────────────────────────────────────────────────────
-
 def collect_acts_for_ids(
     acts_root: Path,
     task_ids:  set[str],
     layer_idx: int,
 ) -> tuple[np.ndarray | None, np.ndarray | None]:
-    """
-    Load layer_XX.h5 activations for the given task IDs.
-    Iterates: acts_root / <problem> / (right|wrong) / <any_run_dir> / layer_XX.h5
-    """
     fname      = f"layer_{layer_idx:02d}.h5"
     rights, wrongs = [], []
 
@@ -612,10 +499,6 @@ def run_probing(
     split:    dict,
     out_dir:  Path,
 ) -> tuple[list[dict], list[dict]]:
-    """
-    Stage 2: layer-wise probing.
-    Top-5 layers selected by AUROC_val (descending).
-    """
     probe_dir  = out_dir / "probing"
     done_flag  = probe_dir / "probe_analysis.json"
 
@@ -680,7 +563,6 @@ def run_probing(
             "_direction":    direction,
         })
 
-    # ── Rank by AUROC_val ────────────────────────────────────────────────────
     valid = [r for r in all_results if r.get("auroc_val") is not None]
     top5  = sorted(valid, key=lambda r: r["auroc_val"], reverse=True)[:TOP_N_PROBE]
     top5  = sorted(top5,  key=lambda r: r["layer_idx"])
@@ -717,10 +599,6 @@ def run_probing(
 
     return [_clean(r) for r in all_results], [_clean(r) for r in top5]
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGE 3: SYMMETRY SCORE + L*-SCORE  (reference only — not used for selection)
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _collect_side(
     acts_root: Path,
@@ -773,10 +651,6 @@ def run_symmetry_and_lstar(
     probe_top5: list[dict],
     out_dir:    Path,
 ) -> list[dict]:
-    """
-    Stage 3: Sym and l*-score for each top-5 probe layer (reference only).
-    Steering target layers are STILL selected by AUROC_val (probe_top5 order).
-    """
     sym_dir   = out_dir / "symmetry"
     done_flag = sym_dir / "symmetry_results.json"
 
@@ -832,7 +706,6 @@ def run_symmetry_and_lstar(
             "lstar_score": round(lstar, 4),
         })
 
-    # ── Steering targets: top-K by AUROC_val ────────────────────────────────
     top_layers_by_auroc = sorted(
         sym_rows, key=lambda r: r.get("auroc_val") or 0.0, reverse=True
     )[:TOP_K_STEER]
@@ -862,10 +735,6 @@ def run_symmetry_and_lstar(
 
     return top_layers_by_auroc
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# MODEL LOADING  (multi-GPU + Flash-Attention-2)
-# ─────────────────────────────────────────────────────────────────────────────
 
 def load_model(model_cfg: dict, device: str):
     print(f"  Loading {model_cfg['display']} …")
@@ -935,10 +804,6 @@ def unload_model(model, tokenizer):
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# PROMPT HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
 
 def build_prompt(problem: dict, model_cfg: dict, tokenizer) -> str:
     task_text = problem.get("prompt", problem.get("text", ""))
@@ -1062,7 +927,6 @@ def truncate_to_function_continuation(text: str, prompt: str) -> str:
 
 
 def decode_generation(raw: str, problem: dict) -> str:
-    """HumanEval prompts always start with 'def', so complete the stub directly."""
     prompt_text = problem.get("prompt", "")
     prompt_stripped = prompt_text.strip()
     if prompt_stripped.startswith(("def ", "async def ")):
@@ -1124,10 +988,6 @@ def pass_at_k(n: int, c: int, k: int = 1) -> float:
     return 1.0 - float(np.prod([(n - c - i) / (n - i) for i in range(k)]))
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STEERING HOOKS
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _get_decoder_layer(model, layer_idx: int):
     for attr in ("model", "transformer", "gpt_neox", "language_model"):
         sub = getattr(model, attr, None)
@@ -1152,8 +1012,6 @@ def _cast_direction(direction: torch.Tensor, model) -> torch.Tensor:
 
 
 class AdditionHook:
-    """h ← h + α · d̂  at every decode step, last token only."""
-
     def __init__(self, model, layer_idx: int, direction: torch.Tensor, alpha: float):
         self._model     = model
         self._layer     = _get_decoder_layer(model, layer_idx)
@@ -1181,8 +1039,6 @@ class AdditionHook:
 
 
 class AblationHook:
-    """h ← h − (h · d̂) · d̂  at last token only."""
-
     def __init__(self, model, layer_idx: int, direction: torch.Tensor):
         self._model     = model
         self._layer     = _get_decoder_layer(model, layer_idx)
@@ -1208,10 +1064,6 @@ class AblationHook:
         if self._handle:
             self._handle.remove()
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# BATCHED GENERATION WITH HOOK
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _get_primary_device(model) -> torch.device:
     try:
@@ -1315,15 +1167,7 @@ def run_steering_experiment(
     return {"n_passed": n_passed, "n_total": n_total, "pass_rate": pass_rate}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGE 4: STEERING  (TEST split only)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _build_problem_map(problems_list: list[dict], stored_ids: set[str]) -> dict[str, dict]:
-    """
-    Map dataset task_ids to stored directory names.
-    HumanEval: task_id "HumanEval/0" → _safe_id → "HumanEval_0" (direct match).
-    """
     num_to_stored: dict[str, str] = {}
     for sid in stored_ids:
         digits = re.sub(r"[^0-9]", "", sid)
@@ -1367,16 +1211,6 @@ def run_steering(
     batch_size:   int,
     run_seed:     int = 0,
 ) -> list[dict]:
-    """
-    Stage 4: steering experiments, run-level split.
-
-    For each test problem, its stored n_wrong runs → Forward Addition (improve them).
-    For each test problem, its stored n_right runs → Backward Subtraction + Ablation.
-
-    Δfwd = steered_rate − 0.0  (wrong pool, baseline trivially 0).
-    Δbwd = 1.0 − steered_rate  (right pool, baseline trivially 1).
-    run_seed controls the generation seed offset so repeated runs differ.
-    """
     steer_dir  = out_dir / "steering" / f"seed_{run_seed}"
     done_flag  = steer_dir / "steering_results.json"
 
@@ -1390,19 +1224,23 @@ def run_steering(
     model_cfg = MODEL_REGISTRY[model_key]
     acts_root = _find_acts_root(acts_dir)
 
-    test_all_ids = split["test"]["all_ids"]
-    stored_probs = split["problems"]
+    test_all_ids    = split["test"]["all_ids"]
+    stored_probs    = split["problems"]
+
+    extra_wrong_ids = set(split["train"]["all_wrong_ids"]) | set(split["val"]["all_wrong_ids"])
+    extra_right_ids = set(split["train"]["all_right_ids"]) | set(split["val"]["all_right_ids"])
+    steering_ids    = set(test_all_ids) | extra_wrong_ids | extra_right_ids
 
     test_problems = {
         tid: problem_map[tid]
-        for tid in test_all_ids
+        for tid in steering_ids
         if tid in problem_map
     }
     n_matched  = len(test_problems)
-    n_expected = len(test_all_ids)
+    n_expected = len(steering_ids)
     if n_matched < n_expected:
-        missing = sorted(set(test_all_ids) - set(test_problems.keys()))
-        print(f"\n  [STEER] WARNING: {n_expected - n_matched} test problems "
+        missing = sorted(steering_ids - set(test_problems.keys()))
+        print(f"\n  [STEER] WARNING: {n_expected - n_matched} steering problems "
               f"have no problem_map entry (first 5: {missing[:5]})")
     if n_matched == 0:
         print("  [STEER] FATAL: zero matched problems.")
@@ -1410,10 +1248,24 @@ def run_steering(
 
     wrong_pool: list[tuple[str, int]] = []
     right_pool: list[tuple[str, int]] = []
-    for tid in sorted(test_problems):
+    for tid in sorted(test_all_ids):
+        if tid not in test_problems:
+            continue
         sp = stored_probs.get(tid, {})
         for i in range(sp.get("n_wrong", 0)):
             wrong_pool.append((tid, run_seed * 10 + i))
+        for i in range(sp.get("n_right", 0)):
+            right_pool.append((tid, run_seed * 10 + i))
+    for tid in sorted(extra_wrong_ids):
+        if tid not in test_problems:
+            continue
+        sp = stored_probs.get(tid, {})
+        for i in range(sp.get("n_wrong", 0)):
+            wrong_pool.append((tid, run_seed * 10 + i))
+    for tid in sorted(extra_right_ids):
+        if tid not in test_problems:
+            continue
+        sp = stored_probs.get(tid, {})
         for i in range(sp.get("n_right", 0)):
             right_pool.append((tid, run_seed * 10 + i))
 
@@ -1435,7 +1287,6 @@ def run_steering(
 
     model, tokenizer = load_model(model_cfg, device="cuda" if torch.cuda.is_available() else "cpu")
 
-    # Guard: drop any top-layer entries whose index exceeds the model depth.
     _n_model_layers = None
     for _attr in ("model", "transformer", "gpt_neox", "language_model"):
         _sub = getattr(model, _attr, None)
@@ -1458,7 +1309,6 @@ def run_steering(
     baseline_fwd_p1 = 0.0
     baseline_bwd_p1 = 1.0
 
-    # Remove any stale checkpoint
     base_ck = steer_dir / "pool_baselines.json"
     if base_ck.exists():
         base_ck.unlink()
@@ -1497,7 +1347,6 @@ def run_steering(
         tqdm.write(f"  wrong_pool={n_wrong_runs} runs  baseline_fwd={baseline_fwd_p1*100:.1f}%  "
                    f"right_pool={n_right_runs} runs  baseline_bwd={baseline_bwd_p1*100:.1f}%")
 
-        # (a) Forward Addition — steer wrong_pool, expect Δ > 0 (improvement)
         tqdm.write("    (a) Forward Addition  (wrong_pool, α > 0) …")
         fwd_results: list[dict] = []
         for alpha in ALPHAS_FWD:
@@ -1515,7 +1364,6 @@ def run_steering(
             })
             tqdm.write(f"      α={alpha:+.1f}  rate={rate*100:.1f}%  Δfwd={dp1:+.1f}%")
 
-        # (b) Backward Subtraction — steer right_pool, expect Δ < 0 (degradation)
         tqdm.write("    (b) Backward Subtraction  (right_pool, α < 0) …")
         bwd_results: list[dict] = []
         for alpha in ALPHAS_BWD:
@@ -1533,7 +1381,6 @@ def run_steering(
             })
             tqdm.write(f"      α={alpha:.1f}  rate={rate*100:.1f}%  Δbwd={dp1:+.1f}%")
 
-        # (c) Direction Ablation — steer right_pool, expect Δ < 0 (degradation)
         tqdm.write("    (c) Direction Ablation  (right_pool, h ← h − (h·d̂)d̂) …")
         res_abl = run_steering_experiment(
             model, tokenizer, model_cfg,
@@ -1586,10 +1433,6 @@ def run_steering(
     print(f"\n  [STEER] → {done_flag}")
     return all_layer_results
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# REPORTING
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _write_steering_report(steer_dir: Path, display: str, layer_results: list[dict]):
     SEP  = "=" * 80
@@ -1675,10 +1518,6 @@ def _write_steering_report(steer_dir: Path, display: str, layer_results: list[di
             ])
     print(f"  [STEER] CSV → {csv_path}")
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# MAIN PIPELINE
-# ─────────────────────────────────────────────────────────────────────────────
 
 def run_pipeline(model_key: str, out_root: Path, batch_size: int) -> None:
     model_cfg = MODEL_REGISTRY[model_key]

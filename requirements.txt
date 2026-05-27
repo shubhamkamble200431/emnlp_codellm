@@ -1,40 +1,9 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# Requirements for EMNLP activation-steering pipeline
-# (pipeline_emnlp.py, pipeline_humaneval.py, emnlp_subhakar.py,
-#  baseline_mbppplus.py, pipeline_emnlp-SH.py)
-#
-# Install:
-#   pip install -r requirements.txt
-#
-# PyTorch must be installed separately to match your CUDA version:
-#   pip install torch --index-url https://download.pytorch.org/whl/cu128
-# ─────────────────────────────────────────────────────────────────────────────
-
-# ── Core deep learning ────────────────────────────────────────────────────────
-torch>=2.10.0                    # tested with 2.10.0+cu128
-transformers>=4.57.0             # AutoModelForCausalLM, AutoTokenizer, chat templates
-accelerate>=1.12.0               # device_map="auto", multi-GPU layer distribution
-
-# ── Optional: faster attention (significant VRAM savings on A100/H100) ───────
-# flash-attn>=2.7.0              # uncomment if your GPU supports it
-#   install separately: pip install flash-attn --no-build-isolation
-
-# ── Activation storage & numerics ────────────────────────────────────────────
-h5py>=3.16.0                     # read/write layer_XX.h5 activation files
-numpy>=1.26.0,<2.0               # kept <2.0 for h5py/torch compatibility
-
-# ── Probing & metrics ─────────────────────────────────────────────────────────
-scikit-learn>=1.7.0              # LogisticRegression, StandardScaler, roc_auc_score
-
-# ── Progress & display ───────────────────────────────────────────────────────
+torch>=2.10.0
+transformers>=4.57.0
+accelerate>=1.12.0
+h5py>=3.16.0
+numpy>=1.26.0,<2.0
+scikit-learn>=1.7.0
 tqdm>=4.67.0
-
-# ── Dataset loading ───────────────────────────────────────────────────────────
-datasets>=4.6.0                  # HuggingFace datasets (MBPP+, HumanEval, BigCodeBench)
-evalplus>=0.3.0                  # get_mbpp_plus(), get_human_eval_plus()
-                                 # pip install evalplus
-
-# ── Standard library (no install needed, listed for clarity) ─────────────────
-# hashlib   — deterministic MD5 seeding in baseline_mbppplus.py (built-in)
-# resource  — subprocess resource limits in baseline_mbppplus.py (Linux built-in)
-# random    — global RNG seeding (built-in)
+datasets>=4.6.0
+evalplus>=0.3.0

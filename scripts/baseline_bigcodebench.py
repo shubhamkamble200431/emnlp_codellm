@@ -75,10 +75,10 @@ SKIP_DIRS = {
     "probing_5fold_cv",
 }
 
-_DATA_ROOT = Path(__file__).parent.parent / "data" / "humanevalplus"
+_DATA_ROOT = Path(__file__).parent.parent / "data" / "bigcodebench"
 ACTS_ROOTS = {
-    "qwen-coder-1.5b-instruct": str(_DATA_ROOT / "qwen-2.5-coder-1.5b-instruct" / "all"),
-    "qwen-coder-7b-instruct":   str(_DATA_ROOT / "qwen-2.5-coder-7b-instruct" / "full_dataset_runs"),
+    "qwen-coder-1.5b-instruct": str(_DATA_ROOT / "qwen-coder-1.5b-instruct" / "all"),
+    "qwen-coder-7b-instruct":   str(_DATA_ROOT / "qwen-coder-7b-instruct" / "all"),
 }
 
 MODEL_REGISTRY = {
@@ -94,8 +94,8 @@ MODEL_REGISTRY = {
     },
 }
 
-OUT_ROOT          = Path(__file__).parent / "baseline_results_humaneval"
-PIPELINE_OUT_ROOT = Path(__file__).parent / "pipeline_results_humaneval"
+OUT_ROOT          = Path(__file__).parent / "baseline_results_bigcodebench"
+PIPELINE_OUT_ROOT = Path(__file__).parent / "pipeline_results_bigcodebench"
 
 SPLIT_JSONS: dict[str, Path] = {}
 
@@ -120,40 +120,35 @@ class NoHook:
     def __exit__(self, *_): pass
 
 
-def load_humanevalplus() -> list[dict]:
-    try:
-        from evalplus.data import get_human_eval_plus
-        problems = get_human_eval_plus()
-        result   = [{"task_id": k, **v} for k, v in problems.items()]
-        print(f"  [DATA] Loaded HumanEvalPlus via evalplus pkg: {len(result)} problems")
-        return result
-    except ImportError:
-        pass
-    except Exception as e:
-        print(f"  [DATA] evalplus get_human_eval_plus failed: {e}")
-
-    from datasets import load_dataset
-
-    try:
-        ds = load_dataset("evalplus/humanevalplus", split="test", trust_remote_code=True)
-        result = [dict(row) for row in ds]
-        print(f"  [DATA] Loaded evalplus/humanevalplus HF: {len(result)} problems")
-        return result
-    except Exception as e:
-        print(f"  [DATA] evalplus/humanevalplus HF unavailable: {e}")
-
-    try:
-        ds = load_dataset(
-            "openai/openai-evals", "HumanEval", split="test", trust_remote_code=True
+def load_bigcodebench() -> list[dict]:
+    from datasets import load_dataset as hf_load
+    print("  Loading bigcode/bigcodebench (full set, v0.1.4) …")
+    ds = hf_load("bigcode/bigcodebench", split="v0.1.4")
+    rows: list[dict] = []
+    for item in ds:
+        prompt    = item.get("complete_prompt", "")
+        test_code = item.get("test", "")
+        entry_pt  = item.get("entry_point", "task_func")
+        test_runner = (
+            "import unittest as __ut, io as __io, sys as __sys\n"
+            f"{test_code}\n"
+            "__suite  = __ut.TestLoader().loadTestsFromTestCase(TestCases)\n"
+            "__result = __ut.TextTestRunner(stream=__io.StringIO(), verbosity=0)"
+            ".run(__suite)\n"
+            "if not __result.wasSuccessful():\n"
+            "    __sys.exit(1)\n"
         )
-        result = [dict(row) for row in ds]
-        print(f"  [DATA] Loaded openai/openai-evals HumanEval: {len(result)} problems "
-              f"(no plus tests — pass rates may differ)")
-        return result
-    except Exception as e:
-        raise RuntimeError(
-            f"Cannot load HumanEvalPlus. Install evalplus or the datasets library.\n{e}"
-        )
+        rows.append({
+            "task_id":            item.get("task_id", f"BigCodeBench/{len(rows)}"),
+            "prompt":             prompt,
+            "entry_point":        entry_pt,
+            "test":               None,
+            "test_list":          [test_runner],
+            "execution_mode":     "function",
+            "canonical_solution": item.get("canonical_solution", ""),
+        })
+    print(f"  [DATA] Loaded {len(rows)} BigCodeBench problems.")
+    return rows
 
 
 def _safe_id(tid) -> str:
@@ -438,10 +433,6 @@ def truncate_to_function_continuation(text: str, prompt: str) -> str:
 
 
 def decode_generation(raw: str, problem: dict) -> str:
-    prompt_text = problem.get("prompt", "")
-    if prompt_text.strip().startswith(("def ", "async def ")):
-        completion = truncate_to_function_continuation(raw, prompt_text)
-        return prompt_text + "\n" + completion
     return _extract_code_from_response(raw)
 
 
@@ -697,7 +688,7 @@ def run_baseline(
         resolved_split_json = _auto_detect_split_json(model_key)
 
     if resolved_split_json is not None and resolved_split_json.exists():
-        print(f"  [SPLIT] Loading from pipeline_humaneval.py: {resolved_split_json}")
+        print(f"  [SPLIT] Loading from pipeline_bigcodebench.py: {resolved_split_json}")
         test_ids, historical_data = load_split_from_json(resolved_split_json)
         print(f"  [SPLIT] Source: split.json  ({len(test_ids)} test problems)")
     else:
@@ -720,8 +711,8 @@ def run_baseline(
         print("  [ERROR] One or both pools are empty — cannot compute baseline.")
         return {}
 
-    print(f"\n{'='*60}\n  STEP 2 — LOAD HUMANEVALPLUS DATASET\n{'='*60}")
-    problems_list = load_humanevalplus()
+    print(f"\n{'='*60}\n  STEP 2 — LOAD BIGCODEBENCH DATASET\n{'='*60}")
+    problems_list = load_bigcodebench()
     stored_ids    = {
         d.name for d in acts_root.iterdir()
         if d.is_dir() and d.name not in SKIP_DIRS
@@ -828,7 +819,7 @@ def run_baseline(
 
     report_lines = [
         "=" * 72,
-        f"  DISTRIBUTION-LEVEL BASELINE REPORT — {display}  (HumanEvalPlus)",
+        f"  DISTRIBUTION-LEVEL BASELINE REPORT — {display}  (BigCodeBench)",
         f"  Generated : {results['generated_at']}",
         f"  Run seed  : {run_seed}  (master_seed={master_seed})",
         "",
@@ -875,7 +866,7 @@ def run_baseline(
 def main():
     parser = argparse.ArgumentParser(
         description=(
-            "HumanEvalPlus distribution-level baseline evaluation. "
+            "BigCodeBench distribution-level baseline evaluation. "
             "Computes pool-wise run-level success rates for wrong and right pools "
             "derived from the test split of stored activation data."
         )
@@ -904,7 +895,7 @@ def main():
     parser.add_argument(
         "--split-json", default=None,
         help=(
-            "Path to split.json produced by pipeline_humaneval.py. "
+            "Path to split.json produced by pipeline_bigcodebench.py. "
             "When omitted the script uses SPLIT_JSONS or auto-detects the "
             f"most recent run in {PIPELINE_OUT_ROOT}."
         ),

@@ -1,66 +1,3 @@
-"""
-pipeline.py  —  Unified CODE_LLM Pipeline  (MBPP+, Qwen2.5-Coder)
-==================================================================
-CHANGES vs previous version
------------------------------
-  1. ACTS_ROOTS updated to EMNLP paths.
-  2. Activation-fetching loop made robust for run1/run2/… naming under
-     <problem>/right/ and <problem>/wrong/ (no nested 'all/' assumed).
-  3. Batched steering generation (STEER_BATCH_SIZE, default 4) – runs
-     multiple prompts through the model simultaneously for ~4× throughput.
-  4. Multi-GPU + Flash-Attention-2 model loading (device_map="auto",
-     attn_implementation="flash_attention_2" when available).
-  5. Delta baseline for steering is the OVERALL test-set baseline pass@1
-     (not the pool-specific right/wrong baseline), so both forward and
-     backward deltas are comparable on the same denominator.
-  6. Layer ranking (and steering target selection) is by AUROC_val only,
-     not by l*-score.  l* is still computed and logged but not used for
-     layer selection.
-
-Stages (run sequentially for each model):
-
-  1. SPLIT        — Load pre-generated runs from acts root, apply 60/20/20
-                    problem-level split (train / val / test).
-  2. PROBING      — Layer-wise logistic probe trained on contrastive-TRAIN,
-                    evaluated by AUROC on contrastive-VAL.
-                    Top-5 layers by AUROC_val carry forward.
-  3. SYMMETRY + L*-SCORE
-                  — Computed for reference; top-5 for STEERING are chosen
-                    by AUROC_val (not l*-score).
-  4. STEERING     — Three intervention types on top-5 AUROC layers (TEST):
-                      (a) Forward  Addition    h←h+α·d̂  α∈{0.5,1,2,5,10}
-                          on WRONG runs from TEST.
-                      (b) Backward Subtraction h←h+α·d̂ α∈{-0.5,…,-10}
-                          on RIGHT runs from TEST.
-                      (c) Direction Ablation   h←h-(h·d̂)·d̂
-                          on RIGHT runs from TEST.
-                    Δp@1 computed against overall TEST baseline (all problems),
-                    not pool-specific baseline.
-                    Q-1.5B: 5 steering runs/problem; Q-7B: 3.
-                    Generation is batched (STEER_BATCH_SIZE).
-
-Paths
------
-  Acts root (pre-generated):
-    1.5B: /media/kpdubey/8.0 TB Volume/Shubham/MI/EMNLP/livecodebench/qwen-coder-1.5b-instruct/all
-    7B  : /media/kpdubey/8.0 TB Volume/Shubham/MI/EMNLP/livecodebench/qwen-coder-7b-instruct/all
-
-  Run layout expected:
-    <acts_root>/<problem_id>/right/run1/layer_01.h5
-    <acts_root>/<problem_id>/wrong/run2/layer_01.h5
-    … etc.
-
-  All outputs written under OUT_ROOT (configurable).
-
-Usage
------
-  python pipeline.py                          # run both models
-  python pipeline.py --model qwen-coder-1.5b-instruct
-  python pipeline.py --model qwen-coder-7b-instruct
-  python pipeline.py --out-root /my/output/dir
-  python pipeline.py --batch-size 8          # override steer batch size
-"""
-
 import argparse
 import csv
 import gc
@@ -82,10 +19,6 @@ from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CONFIG
-# ─────────────────────────────────────────────────────────────────────────────
-
 TRAIN_RATIO    = 0.60
 VAL_RATIO      = 0.20
 SPLIT_SEED     = 42
@@ -96,22 +29,18 @@ EXEC_TIMEOUT   = 10
 
 EXPECTED_RUNS_PER_PROBLEM = 5
 
-# Probing
 N_BOOTSTRAP  = 10
 TOP_N_PROBE  = 5
 GAP_THRESH   = 0.15
 RNG_SEED     = 42
 
-# Layer selection  — ranked by AUROC_val (l* still computed for reference)
 TOP_K_STEER  = 3
-W1, W2       = 0.6, 0.4      # l* weights (reference only)
+W1, W2       = 0.6, 0.4
 
-# Steering alphas
-ALPHAS_FWD   = [0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0]
-ALPHAS_BWD   = [-0.5, -1.0, -2.0, -5.0, -10.0, -20.0, -50.0]
+ALPHAS_FWD   = [0.5, 1.0, 2.0, 5.0, 10.0]
+ALPHAS_BWD   = [-0.5, -1.0, -2.0, -5.0, -10.0]
 ALPHA_ABLATE = 1.0
 
-# Batched generation for steering (≈4× GPU utilisation)
 STEER_BATCH_SIZE = 32
 
 N_STEER_RUNS = {
@@ -119,16 +48,10 @@ N_STEER_RUNS = {
     "qwen-coder-7b-instruct":   3,
 }
 
-# ── BigCodeBench run paths ───────────────────────────────────────────────────
+_DATA_ROOT = Path(__file__).parent.parent / "data" / "bigcodebench"
 ACTS_ROOTS = {
-    "qwen-coder-1.5b-instruct": (
-        "/media/kpdubey/8.0 TB Volume/Shubham/MI/EMNLP/"
-        "livecodebench/qwen-coder-1.5b-instruct/all"
-    ),
-    "qwen-coder-7b-instruct": (
-        "/media/kpdubey/8.0 TB Volume/Shubham/MI/EMNLP/"
-        "livecodebench/qwen-coder-7b-instruct/all"
-    ),
+    "qwen-coder-1.5b-instruct": str(_DATA_ROOT / "qwen-coder-1.5b-instruct" / "all"),
+    "qwen-coder-7b-instruct":   str(_DATA_ROOT / "qwen-coder-7b-instruct" / "all"),
 }
 
 MODEL_REGISTRY = {
@@ -146,21 +69,15 @@ MODEL_REGISTRY = {
     },
 }
 
-# Directories inside acts_root that are NOT problem folders
 SKIP_DIRS = {
     "probing", "steering", "plots", "pipeline2_results",
     "pipeline2_probing", "all", "contrastive", "comparison",
 }
 
-OUT_ROOT = Path(__file__).parent.parent / "EMNLP/pipeline_results_bigcodebench"
+OUT_ROOT = Path(__file__).parent / "pipeline_results_bigcodebench"
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# DATASET LOADERS  (MBPP+ and BigCodeBench)
-# ─────────────────────────────────────────────────────────────────────────────
 
 def load_bigcodebench() -> list[dict]:
-    """Load BigCodeBench full set (1 140 tasks, unittest-based)."""
     from datasets import load_dataset as hf_load
     print("  Loading bigcode/bigcodebench (full set, v0.1.4) …")
     ds = hf_load("bigcode/bigcodebench", split="v0.1.4")
@@ -192,7 +109,6 @@ def load_bigcodebench() -> list[dict]:
 
 
 def load_mbppplus() -> list[dict]:
-    # 1. evalplus Python package (best coverage + plus test cases)
     try:
         from evalplus.data import get_mbpp_plus
         problems = get_mbpp_plus()
@@ -202,8 +118,6 @@ def load_mbppplus() -> list[dict]:
 
     from datasets import load_dataset
 
-    # 2. Original MBPP full/test — covers exactly the stored dir IDs (11-510).
-    #    This is the correct dataset when activations were collected from MBPP full.
     try:
         ds = load_dataset(
             "google-research-datasets/mbpp", "full", split="test",
@@ -217,7 +131,6 @@ def load_mbppplus() -> list[dict]:
     except Exception as e:
         print(f"  [DATA] MBPP full/test unavailable: {e}")
 
-    # 3. evalplus/mbppplus on HuggingFace (only ~45% overlap with stored dirs)
     try:
         ds = load_dataset("evalplus/mbppplus", split="test", trust_remote_code=True)
         problems = [dict(row) for row in ds]
@@ -230,10 +143,6 @@ def load_mbppplus() -> list[dict]:
         )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# H5 HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _load_h5(path: Path) -> np.ndarray:
     with h5py.File(path, "r") as hf:
         return hf["activation"][:].astype(np.float32)
@@ -244,26 +153,13 @@ def _safe_id(tid) -> str:
 
 
 def _find_acts_root(acts_dir: str | Path) -> Path:
-    """
-    Return the directory that directly contains problem folders.
-    If an 'all/' subfolder exists, use that; otherwise use acts_dir itself.
-    """
     root = Path(acts_dir)
     if (root / "all").is_dir():
         return root / "all"
     return root
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# RUN-DIR SCANNING  (robust for run1/run2/… naming)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _iter_run_dirs(verdict_dir: Path) -> list[Path]:
-    """
-    Return all run sub-directories inside a verdict folder (right/ or wrong/).
-    Handles any naming convention: run1, run_1, run_00, 0, 1, etc.
-    Sorted deterministically.
-    """
     if not verdict_dir.is_dir():
         return []
     return sorted(
@@ -273,7 +169,6 @@ def _iter_run_dirs(verdict_dir: Path) -> list[Path]:
 
 
 def detect_n_layers(acts_root: Path) -> int:
-    """Detect number of layers by inspecting the first run directory found."""
     for prob_dir in sorted(acts_root.iterdir()):
         if not prob_dir.is_dir() or prob_dir.name in SKIP_DIRS:
             continue
@@ -284,10 +179,6 @@ def detect_n_layers(acts_root: Path) -> int:
                     return len(h5s)
     raise RuntimeError(f"No layer H5 files found under {acts_root}")
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# INTEGRITY VALIDATION
-# ─────────────────────────────────────────────────────────────────────────────
 
 def validate_run_integrity(acts_root: Path, n_layers: int) -> dict:
     missing_runs   = []
@@ -340,15 +231,7 @@ def validate_run_integrity(acts_root: Path, n_layers: int) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGE 1: SPLIT  (60 / 20 / 20)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def scan_runs(acts_root: Path) -> dict[str, dict]:
-    """
-    Walk acts_root and collect per-problem run stats.
-    Returns {task_id: {"n_right": int, "n_wrong": int, "n_total": int}}
-    """
     problems: dict[str, dict] = {}
     for prob_dir in sorted(acts_root.iterdir()):
         if not prob_dir.is_dir() or prob_dir.name in SKIP_DIRS:
@@ -366,7 +249,6 @@ def scan_runs(acts_root: Path) -> dict[str, dict]:
 
 
 def make_split(all_problem_ids: list[str]) -> tuple[list[str], list[str], list[str]]:
-    """Deterministic 60/20/20 split at problem level."""
     rng  = np.random.default_rng(SPLIT_SEED)
     ids  = sorted(all_problem_ids)
     perm = rng.permutation(len(ids))
@@ -576,19 +458,11 @@ def run_split(acts_dir: str, out_dir: Path) -> dict:
     return split
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGE 2: PROBING
-# ─────────────────────────────────────────────────────────────────────────────
-
 def collect_acts_for_ids(
     acts_root: Path,
     task_ids:  set[str],
     layer_idx: int,
 ) -> tuple[np.ndarray | None, np.ndarray | None]:
-    """
-    Load layer_XX.h5 activations for the given task IDs.
-    Iterates: acts_root / <problem> / (right|wrong) / <any_run_dir> / layer_XX.h5
-    """
     fname      = f"layer_{layer_idx:02d}.h5"
     rights, wrongs = [], []
 
@@ -655,10 +529,6 @@ def run_probing(
     split:    dict,
     out_dir:  Path,
 ) -> tuple[list[dict], list[dict]]:
-    """
-    Stage 2: layer-wise probing.
-    Top-5 layers selected by AUROC_val (descending).
-    """
     probe_dir  = out_dir / "probing"
     done_flag  = probe_dir / "probe_analysis.json"
 
@@ -666,7 +536,6 @@ def run_probing(
         print("  [PROBE] Resuming — probe_analysis.json found.")
         with open(done_flag) as f:
             data = json.load(f)
-        # Rank by AUROC_val
         top5 = sorted(
             [r for r in data["all_layers"] if r.get("auroc_val") is not None],
             key=lambda r: r["auroc_val"], reverse=True
@@ -724,10 +593,9 @@ def run_probing(
             "_direction":    direction,
         })
 
-    # ── Rank by AUROC_val ────────────────────────────────────────────────────
     valid = [r for r in all_results if r.get("auroc_val") is not None]
     top5  = sorted(valid, key=lambda r: r["auroc_val"], reverse=True)[:TOP_N_PROBE]
-    top5  = sorted(top5,  key=lambda r: r["layer_idx"])   # keep layer order for display
+    top5  = sorted(top5,  key=lambda r: r["layer_idx"])
 
     dir_dir = probe_dir / "directions"
     dir_dir.mkdir(exist_ok=True)
@@ -761,10 +629,6 @@ def run_probing(
 
     return [_clean(r) for r in all_results], [_clean(r) for r in top5]
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGE 3: SYMMETRY SCORE + L*-SCORE  (reference only — not used for selection)
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _collect_side(
     acts_root: Path,
@@ -817,10 +681,6 @@ def run_symmetry_and_lstar(
     probe_top5: list[dict],
     out_dir:    Path,
 ) -> list[dict]:
-    """
-    Stage 3: Sym and l*-score for each top-5 probe layer (reference only).
-    Steering target layers are STILL selected by AUROC_val (probe_top5 order).
-    """
     sym_dir   = out_dir / "symmetry"
     done_flag = sym_dir / "symmetry_results.json"
 
@@ -828,7 +688,6 @@ def run_symmetry_and_lstar(
         print("  [SYM] Resuming — symmetry_results.json found.")
         with open(done_flag) as f:
             data = json.load(f)
-        # Return top layers ranked by AUROC_val (not l*)
         return sorted(
             data["all_top5"],
             key=lambda r: r.get("auroc_val") or 0.0,
@@ -865,7 +724,7 @@ def run_symmetry_and_lstar(
         if sym is None:
             print(f"  [SYM] {lname}: insufficient activations — skipping sym.")
             sym   = float("nan")
-            lstar = auc  # fall back to AUROC
+            lstar = auc
         else:
             lstar = compute_lstar_score(auc, sym)
 
@@ -877,7 +736,6 @@ def run_symmetry_and_lstar(
             "lstar_score": round(lstar, 4),
         })
 
-    # ── Steering targets: top-K by AUROC_val ────────────────────────────────
     top_layers_by_auroc = sorted(
         sym_rows, key=lambda r: r.get("auroc_val") or 0.0, reverse=True
     )[:TOP_K_STEER]
@@ -889,7 +747,6 @@ def run_symmetry_and_lstar(
         "layer_selection":     "auroc_val",
         "all_top5":            sym_rows,
         "top_layers_auroc":    top_layers_by_auroc,
-        # l*-ranked kept for reference
         "top_layers_lstar":    sorted(sym_rows, key=lambda r: r["lstar_score"], reverse=True)[:TOP_K_STEER],
     }
     with open(done_flag, "w") as f:
@@ -909,19 +766,7 @@ def run_symmetry_and_lstar(
     return top_layers_by_auroc
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# MODEL LOADING  (multi-GPU + Flash-Attention-2)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def load_model(model_cfg: dict, device: str):
-    """
-    Load model with:
-      - bfloat16
-      - device_map='auto' + explicit max_memory per GPU  → forces Hugging Face
-        to spread layers across ALL available GPUs even when the model fits on
-        one (without max_memory it defaults to GPU 0 only for small models).
-      - flash_attention_2 when available → faster attention, less VRAM
-    """
     print(f"  Loading {model_cfg['display']} …")
 
     load_kwargs: dict = dict(
@@ -934,14 +779,11 @@ def load_model(model_cfg: dict, device: str):
         gpu_names = [torch.cuda.get_device_name(i) for i in range(n_gpu)]
         print(f"  GPUs available: {n_gpu}  ({gpu_names})")
 
-        # Allocate 90 % of each GPU's VRAM; remainder spills to CPU RAM.
-        # This forces device_map='auto' to distribute layers across GPUs
-        # even when the whole model would fit on GPU 0.
         max_memory: dict = {
             i: f"{int(torch.cuda.get_device_properties(i).total_memory * 0.90 / 1024**3)}GiB"
             for i in range(n_gpu)
         }
-        max_memory["cpu"] = "48GiB"   # CPU RAM overflow buffer
+        max_memory["cpu"] = "48GiB"
         print(f"  max_memory per device: {max_memory}")
 
         load_kwargs["device_map"] = "auto"
@@ -952,12 +794,11 @@ def load_model(model_cfg: dict, device: str):
     tokenizer = AutoTokenizer.from_pretrained(
         model_cfg["hf_id"],
         trust_remote_code=True,
-        padding_side="left",   # left-pad for batch generation
+        padding_side="left",
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # Try flash attention 2 for faster attention + lower VRAM peak
     try:
         model = AutoModelForCausalLM.from_pretrained(
             model_cfg["hf_id"],
@@ -975,7 +816,6 @@ def load_model(model_cfg: dict, device: str):
 
     model.eval()
 
-    # Report actual device map so we can verify distribution
     if hasattr(model, "hf_device_map"):
         device_counts: dict[str, int] = {}
         for dev in model.hf_device_map.values():
@@ -995,19 +835,7 @@ def unload_model(model, tokenizer):
         torch.cuda.empty_cache()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# PROMPT HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _make_code_stub(problem: dict) -> str | None:
-    """
-    Build a function-signature stub from MBPP-style problems where `code` holds
-    the reference solution.  Returns e.g.:
-        def remove_Occ(s, ch):
-            \"\"\"Write a python function to ...\"\"\"\
-    so the model knows exactly which function name to implement.
-    Returns None when the problem already has a code-stub `prompt` or no `code`.
-    """
     code = (problem.get("code") or "").strip()
     text = (problem.get("text") or problem.get("prompt") or "").strip()
     if not code or not text:
@@ -1025,8 +853,6 @@ def _make_code_stub(problem: dict) -> str | None:
 
 def build_prompt(problem: dict, model_cfg: dict, tokenizer) -> str:
     task_text = problem.get("prompt", problem.get("text", ""))
-    # When the prompt is a plain description, build a proper code stub so the
-    # model uses the correct function name (required for test_list assertions).
     if not task_text.strip().startswith(("def ", "async def ")):
         stub = _make_code_stub(problem)
         if stub:
@@ -1051,19 +877,10 @@ def strip_code_fences(text: str) -> str:
 
 
 def _extract_code_from_response(text: str) -> str:
-    """
-    Extract Python code from a model response that may include markdown prose.
-    Strategy: (1) find a ```python...``` or ```...``` block anywhere in text,
-    (2) strip outer fences if text starts with them,
-    (3) fall back to the first def/async def/class/import line onwards.
-    """
-    # (1) code fence anywhere in the response
     m = re.search(r"```(?:python)?\s*\n(.*?)```", text, re.DOTALL)
     if m:
         return m.group(1).rstrip()
-    # (2) outer fence only
     t = strip_code_fences(text).strip()
-    # (3) skip any leading prose by finding the first code-like line
     lines = t.split("\n")
     for i, line in enumerate(lines):
         if line.startswith(("def ", "async def ", "class ", "import ", "from ")):
@@ -1162,9 +979,6 @@ def truncate_to_function_continuation(text: str, prompt: str) -> str:
 def decode_generation(raw: str, problem: dict) -> str:
     prompt_text = problem.get("prompt", problem.get("text", ""))
     prompt_stripped = prompt_text.strip()
-    # When the prompt is a code stub (function signature), complete it.
-    # When the prompt is a plain English description (MBPP+ HF format), the
-    # model generates a complete function — extract and return it directly.
     if prompt_stripped.startswith(("def ", "async def ")):
         completion = truncate_to_function_continuation(raw, prompt_text)
         return prompt_text + "\n" + completion
@@ -1205,7 +1019,6 @@ def evaluate_solution(full_solution: str, problem: dict) -> bool:
             test_cases = [test_code]
         else:
             return False
-    # Optional preamble fields present in different MBPP variants
     imports    = problem.get("test_imports", [])
     setup_code = problem.get("test_setup_code", "") or ""
     preamble   = ("\n".join(imports) + "\n" if imports else "") + (setup_code + "\n" if setup_code.strip() else "")
@@ -1225,10 +1038,6 @@ def pass_at_k(n: int, c: int, k: int = 1) -> float:
     return 1.0 - float(np.prod([(n - c - i) / (n - i) for i in range(k)]))
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STEERING HOOKS
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _get_decoder_layer(model, layer_idx: int):
     for attr in ("model", "transformer", "gpt_neox", "language_model"):
         sub = getattr(model, attr, None)
@@ -1245,7 +1054,6 @@ def _cast_direction(direction: torch.Tensor, model) -> torch.Tensor:
         model_dtype = next(model.parameters()).dtype
     except StopIteration:
         model_dtype = torch.float32
-    # Also move to the same device as the first parameter
     try:
         model_device = next(model.parameters()).device
     except StopIteration:
@@ -1254,22 +1062,19 @@ def _cast_direction(direction: torch.Tensor, model) -> torch.Tensor:
 
 
 class AdditionHook:
-    """h ← h + α · d̂  at every decode step, last token only."""
-
     def __init__(self, model, layer_idx: int, direction: torch.Tensor, alpha: float):
         self._model     = model
         self._layer     = _get_decoder_layer(model, layer_idx)
-        self._direction = direction.float().cpu()  # keep on CPU; cast per-call inside hook
+        self._direction = direction.float().cpu()
         self._alpha     = alpha
         self._handle    = None
 
     def __enter__(self):
         alpha = self._alpha
-        d_cpu = self._direction  # float32 on CPU
+        d_cpu = self._direction
 
         def _hook(module, inp, out):
             h     = out[0] if isinstance(out, tuple) else out
-            # Cast direction to the layer's actual device & dtype (handles multi-GPU)
             d     = d_cpu.to(dtype=h.dtype, device=h.device).squeeze()
             h_new = h.clone()
             h_new[:, -1, :] = h[:, -1, :] + alpha * d
@@ -1284,12 +1089,10 @@ class AdditionHook:
 
 
 class AblationHook:
-    """h ← h − (h · d̂) · d̂  at last token only."""
-
     def __init__(self, model, layer_idx: int, direction: torch.Tensor):
         self._model     = model
         self._layer     = _get_decoder_layer(model, layer_idx)
-        self._direction = direction.float().cpu()  # keep on CPU; cast per-call inside hook
+        self._direction = direction.float().cpu()
         self._handle    = None
 
     def __enter__(self):
@@ -1297,7 +1100,6 @@ class AblationHook:
 
         def _hook(module, inp, out):
             h     = out[0] if isinstance(out, tuple) else out
-            # Cast direction to the layer's actual device & dtype (handles multi-GPU)
             d      = d_cpu.to(dtype=h.dtype, device=h.device).squeeze()
             h_new  = h.clone()
             h_last = h[:, -1, :]
@@ -1313,12 +1115,7 @@ class AblationHook:
             self._handle.remove()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# BATCHED GENERATION WITH HOOK
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _get_primary_device(model) -> torch.device:
-    """Return the device of the first model parameter (works with device_map='auto')."""
     try:
         return next(model.parameters()).device
     except StopIteration:
@@ -1333,17 +1130,10 @@ def _generate_batch(
     seeds:     list[int],
     hook_cm,
 ) -> list[bool]:
-    """
-    Generate completions for a batch of problems under a single hook and
-    evaluate each against its test cases.
-
-    Returns a list of booleans (passed / failed) in the same order as problems.
-    """
     device = _get_primary_device(model)
 
     prompts = [build_prompt(p, model_cfg, tokenizer) for p in problems]
 
-    # Left-pad so all sequences align at the generated position
     inputs = tokenizer(
         prompts,
         return_tensors="pt",
@@ -1352,8 +1142,6 @@ def _generate_batch(
         max_length=2048,
     ).to(device)
 
-    # Set per-batch seeds via the first seed (deterministic enough for
-    # a batch; individual seeds handled at the outer loop level)
     if seeds:
         torch.manual_seed(seeds[0])
 
@@ -1392,14 +1180,6 @@ def run_steering_experiment(
     mode:          str,
     batch_size:    int = STEER_BATCH_SIZE,
 ) -> dict:
-    """
-    Run one steering experiment over a flat pool of (problem_id, run_i) pairs.
-
-    run_pool is either wrong_pool (forward) or right_pool (backward/ablation).
-    Each entry is one steered generation.  Pass rate is computed flat:
-        n_passed / len(run_pool)
-    not averaged per-problem.
-    """
     direction = torch.from_numpy(direction_np.astype(np.float32))
     if direction.dim() == 1:
         direction = direction.unsqueeze(0).unsqueeze(0)
@@ -1437,10 +1217,6 @@ def run_steering_experiment(
     return {"n_passed": n_passed, "n_total": n_total, "pass_rate": pass_rate}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGE 4: STEERING  (TEST split only)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _agg_pass1(per_prob: dict) -> float:
     vals = [v["pass@1"] for v in per_prob.values() if v.get("n_total", 0) > 0]
     return float(np.mean(vals)) if vals else 0.0
@@ -1450,10 +1226,6 @@ def compute_baseline_from_stored_runs(
     acts_root: Path,
     test_ids:  list[str],
 ) -> dict[str, dict]:
-    """
-    Compute baseline pass@1 per problem from pre-steering stored runs.
-    Uses _iter_run_dirs so it handles run1/run2/… naming correctly.
-    """
     results: dict[str, dict] = {}
     for tid in test_ids:
         prob_dir = acts_root / tid
@@ -1472,10 +1244,6 @@ def compute_baseline_from_stored_runs(
 
 
 def _detect_dataset_from_stored_ids(stored_ids: set[str]) -> str:
-    """
-    Guess which dataset the stored dirs came from based on directory name patterns.
-    Returns 'bigcodebench' or 'mbpp'.
-    """
     bcb_count  = sum(1 for s in stored_ids if "BigCodeBench" in s or s.startswith("BCB"))
     mbpp_count = sum(1 for s in stored_ids if "Mbpp" in s or s.isdigit())
     if bcb_count > mbpp_count:
@@ -1484,20 +1252,6 @@ def _detect_dataset_from_stored_ids(stored_ids: set[str]) -> str:
 
 
 def _build_problem_map(problems_list: list[dict], stored_ids: set[str]) -> dict[str, dict]:
-    """
-    Map dataset task_ids to stored directory names.
-
-    Handles both MBPP+ and BigCodeBench:
-      MBPP+         : task_id 26 / "Mbpp/26"  → dir "Mbpp_26"
-      BigCodeBench  : task_id "BigCodeBench/0" → dir "BigCodeBench_0"
-
-    Strategy
-    --------
-    1. Direct match after safe_id conversion  ("BigCodeBench/0" → "BigCodeBench_0" ✓).
-    2. Numeric reverse-index for MBPP plain-integer IDs (26 → "Mbpp_26").
-    3. Fall-through (unmatched) — recorded for diagnostics.
-    """
-    # Build: exact numeric part → stored_id  (for MBPP plain-integer IDs)
     num_to_stored: dict[str, str] = {}
     for sid in stored_ids:
         digits = re.sub(r"[^0-9]", "", sid)
@@ -1509,20 +1263,17 @@ def _build_problem_map(problems_list: list[dict], stored_ids: set[str]) -> dict[
 
     for p in problems_list:
         raw_tid  = p["task_id"]
-        safe_tid = _safe_id(raw_tid)   # "BigCodeBench/0"→"BigCodeBench_0", "Mbpp/26"→"Mbpp_26"
+        safe_tid = _safe_id(raw_tid)
 
-        # ── 1. Direct match ──────────────────────────────────────────────────
         if safe_tid in stored_ids:
             candidate_map[safe_tid] = p
             continue
 
-        # ── 2. Numeric reverse-index (MBPP plain-integer IDs only) ───────────
         digits = re.sub(r"[^0-9]", "", str(raw_tid))
         if digits and digits in num_to_stored:
             candidate_map[num_to_stored[digits]] = p
             continue
 
-        # ── 3. Fall-through (unmatched) ───────────────────────────────────────
         candidate_map[safe_tid] = p
         unmatched.append(str(raw_tid))
 
@@ -1544,18 +1295,6 @@ def run_steering(
     batch_size:   int,
     run_seed:     int = 0,
 ) -> list[dict]:
-    """
-    Stage 4: steering experiments, run-level split.
-
-    For each test problem, its stored n_wrong runs → Forward Addition (improve them).
-    For each test problem, its stored n_right runs → Backward Subtraction + Ablation.
-
-    A problem with 3 right + 2 wrong contributes 2 runs to forward and 3 to backward.
-    No problem-level pool membership required.
-    Δfwd = steered_rate − 0.0  (wrong pool, baseline trivially 0).
-    Δbwd = 1.0 − steered_rate  (right pool, baseline trivially 1).
-    run_seed controls the generation seed offset so repeated runs differ.
-    """
     steer_dir  = out_dir / "steering" / f"seed_{run_seed}"
     done_flag  = steer_dir / "steering_results.json"
 
@@ -1569,34 +1308,48 @@ def run_steering(
     model_cfg = MODEL_REGISTRY[model_key]
     acts_root = _find_acts_root(acts_dir)
 
-    test_all_ids = split["test"]["all_ids"]
-    stored_probs = split["problems"]   # {tid: {"n_right": int, "n_wrong": int, ...}}
+    test_all_ids    = split["test"]["all_ids"]
+    stored_probs    = split["problems"]
 
-    # All test problems that exist in problem_map
+    extra_wrong_ids = set(split["train"]["all_wrong_ids"]) | set(split["val"]["all_wrong_ids"])
+    extra_right_ids = set(split["train"]["all_right_ids"]) | set(split["val"]["all_right_ids"])
+    steering_ids    = set(test_all_ids) | extra_wrong_ids | extra_right_ids
+
     test_problems = {
         tid: problem_map[tid]
-        for tid in test_all_ids
+        for tid in steering_ids
         if tid in problem_map
     }
     n_matched  = len(test_problems)
-    n_expected = len(test_all_ids)
+    n_expected = len(steering_ids)
     if n_matched < n_expected:
-        missing = sorted(set(test_all_ids) - set(test_problems.keys()))
-        print(f"\n  [STEER] WARNING: {n_expected - n_matched} test problems "
+        missing = sorted(steering_ids - set(test_problems.keys()))
+        print(f"\n  [STEER] WARNING: {n_expected - n_matched} steering problems "
               f"have no problem_map entry (first 5: {missing[:5]})")
     if n_matched == 0:
         print("  [STEER] FATAL: zero matched problems.")
         return []
 
-    # Flat run pools: one entry per individual stored run, irrespective of problem.
-    # wrong_pool = every run that failed in the test set.
-    # right_pool = every run that succeeded in the test set.
     wrong_pool: list[tuple[str, int]] = []
     right_pool: list[tuple[str, int]] = []
-    for tid in sorted(test_problems):
+    for tid in sorted(test_all_ids):
+        if tid not in test_problems:
+            continue
         sp = stored_probs.get(tid, {})
         for i in range(sp.get("n_wrong", 0)):
             wrong_pool.append((tid, run_seed * 10 + i))
+        for i in range(sp.get("n_right", 0)):
+            right_pool.append((tid, run_seed * 10 + i))
+    for tid in sorted(extra_wrong_ids):
+        if tid not in test_problems:
+            continue
+        sp = stored_probs.get(tid, {})
+        for i in range(sp.get("n_wrong", 0)):
+            wrong_pool.append((tid, run_seed * 10 + i))
+    for tid in sorted(extra_right_ids):
+        if tid not in test_problems:
+            continue
+        sp = stored_probs.get(tid, {})
         for i in range(sp.get("n_right", 0)):
             right_pool.append((tid, run_seed * 10 + i))
 
@@ -1618,7 +1371,6 @@ def run_steering(
 
     model, tokenizer = load_model(model_cfg, device="cuda" if torch.cuda.is_available() else "cpu")
 
-    # Guard: drop any top-layer entries whose index exceeds the model depth.
     _n_model_layers = None
     for _attr in ("model", "transformer", "gpt_neox", "language_model"):
         _sub = getattr(model, _attr, None)
@@ -1638,17 +1390,9 @@ def run_steering(
         top_layers = _valid
         directions = {k: v for k, v in directions.items() if k in {r["layer_name"] for r in top_layers}}
 
-    # ── Analytical baselines from stored run outcomes ─────────────────────────
-    # wrong_pool = runs that FAILED  → stored pass rate = 0.0 by definition
-    # right_pool = runs that PASSED  → stored pass rate = 1.0 by definition
-    # Using these avoids stochastic variance from re-generation and removes
-    # the ~26-min α=0 pre-generation step.
-    # Δfwd = steered_rate − 0.0  (positive = recovery of failing runs)
-    # Δbwd = steered_rate − 1.0  (negative = degradation of passing runs)
     baseline_fwd_p1 = 0.0
     baseline_bwd_p1 = 1.0
 
-    # Remove any stale checkpoint that stored the wrong α=0 baselines
     base_ck = steer_dir / "pool_baselines.json"
     if base_ck.exists():
         base_ck.unlink()
@@ -1686,7 +1430,6 @@ def run_steering(
         tqdm.write(f"  wrong_pool={n_wrong_runs} runs  baseline_fwd={baseline_fwd_p1*100:.1f}%  "
                    f"right_pool={n_right_runs} runs  baseline_bwd={baseline_bwd_p1*100:.1f}%")
 
-        # (a) Forward Addition — steer wrong_pool, expect Δ > 0 (improvement)
         tqdm.write("    (a) Forward Addition  (wrong_pool, α > 0) …")
         fwd_results: list[dict] = []
         for alpha in ALPHAS_FWD:
@@ -1696,7 +1439,7 @@ def run_steering(
                 wrong_pool, mode="forward", batch_size=batch_size,
             )
             rate = res["pass_rate"]
-            dp1  = (rate - baseline_fwd_p1) * 100   # positive = improvement
+            dp1  = (rate - baseline_fwd_p1) * 100
             fwd_results.append({
                 "alpha": alpha, "pass_rate": rate,
                 "n_passed": res["n_passed"], "n_total": res["n_total"],
@@ -1704,7 +1447,6 @@ def run_steering(
             })
             tqdm.write(f"      α={alpha:+.1f}  rate={rate*100:.1f}%  Δfwd={dp1:+.1f}%")
 
-        # (b) Backward Subtraction — steer right_pool, expect Δ < 0 (degradation)
         tqdm.write("    (b) Backward Subtraction  (right_pool, α < 0) …")
         bwd_results: list[dict] = []
         for alpha in ALPHAS_BWD:
@@ -1714,7 +1456,7 @@ def run_steering(
                 right_pool, mode="backward", batch_size=batch_size,
             )
             rate = res["pass_rate"]
-            dp1  = (rate - baseline_bwd_p1) * 100   # negative = degradation
+            dp1  = (rate - baseline_bwd_p1) * 100
             bwd_results.append({
                 "alpha": alpha, "pass_rate": rate,
                 "n_passed": res["n_passed"], "n_total": res["n_total"],
@@ -1722,7 +1464,6 @@ def run_steering(
             })
             tqdm.write(f"      α={alpha:.1f}  rate={rate*100:.1f}%  Δbwd={dp1:+.1f}%")
 
-        # (c) Direction Ablation — steer right_pool, expect Δ < 0 (degradation)
         tqdm.write("    (c) Direction Ablation  (right_pool, h ← h − (h·d̂)d̂) …")
         res_abl = run_steering_experiment(
             model, tokenizer, model_cfg,
@@ -1730,7 +1471,7 @@ def run_steering(
             right_pool, mode="ablation", batch_size=batch_size,
         )
         rate_abl = res_abl["pass_rate"]
-        dp1_abl  = (rate_abl - baseline_bwd_p1) * 100   # negative = degradation
+        dp1_abl  = (rate_abl - baseline_bwd_p1) * 100
         tqdm.write(f"      Ablation  rate={rate_abl*100:.1f}%  Δabl={dp1_abl:+.1f}%")
 
         best_fwd = max((r["delta_p1"] for r in fwd_results), default=0.0)
@@ -1775,10 +1516,6 @@ def run_steering(
     print(f"\n  [STEER] → {done_flag}")
     return all_layer_results
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# REPORTING
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _write_steering_report(steer_dir: Path, display: str, layer_results: list[dict]):
     SEP  = "=" * 80
@@ -1865,10 +1602,6 @@ def _write_steering_report(steer_dir: Path, display: str, layer_results: list[di
     print(f"  [STEER] CSV → {csv_path}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# MAIN PIPELINE
-# ─────────────────────────────────────────────────────────────────────────────
-
 def run_pipeline(model_key: str, out_root: Path, batch_size: int) -> None:
     model_cfg = MODEL_REGISTRY[model_key]
     acts_dir  = ACTS_ROOTS[model_key]
@@ -1924,7 +1657,6 @@ def run_pipeline(model_key: str, out_root: Path, batch_size: int) -> None:
         if d.is_dir() and d.name not in SKIP_DIRS
     }
 
-    # Auto-detect dataset from stored directory names
     dataset_kind = _detect_dataset_from_stored_ids(stored_ids)
     if dataset_kind == "bigcodebench":
         print("  Loading BigCodeBench problems …")
