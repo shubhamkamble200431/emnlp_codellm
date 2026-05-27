@@ -1,6 +1,5 @@
-# emnlp_codellm — Activation Steering for Code LLMs
-
-Activation steering pipeline for evaluating representation-level interventions on Qwen2.5-Coder models across HumanEvalPlus, MBPP+, and BigCodeBench.
+# Discovering and Steering Code Correctness through Residual Stream Directions in LLMs
+Code repository for EMNLP-2026 Submission
 
 ## Repository Structure
 
