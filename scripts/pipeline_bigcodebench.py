@@ -44,8 +44,8 @@ ALPHA_ABLATE = 1.0
 STEER_BATCH_SIZE = 32
 
 N_STEER_RUNS = {
-    "qwen-coder-1.5b-instruct": 3,
-    "qwen-coder-7b-instruct":   3,
+    "qwen-coder-1.5b-instruct": 5,
+    "qwen-coder-7b-instruct":   5,
 }
 
 _DATA_ROOT = Path(__file__).parent.parent / "data" / "bigcodebench"
@@ -1672,7 +1672,7 @@ def run_pipeline(model_key: str, out_root: Path, batch_size: int) -> None:
     print(f"  [STEER] Stored problem dirs   : {len(stored_ids)}")
     print(f"  [STEER] Matched (map size)    : {len(problem_map)}")
 
-    for run_seed in range(3):
+    for run_seed in range(5):
         print(f"\n{'─'*60}")
         print(f"  STEERING RUN  seed={run_seed}  ({run_seed+1}/3)")
         print(f"{'─'*60}")
