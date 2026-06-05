@@ -1,0 +1,80 @@
+import pandas as pd
+from random import seed, choices
+
+def task_func(L, num_dataframes=5, random_seed=None):
+    """
+    Generate a specified number of Pandas DataFrames from a list of lists "L".
+    Each DataFrame has the same column names randomly chosen from lowercase English
+    letters and 3 rows sampled from 'L'. Then, find the common
+    rows between all generated DataFrames.
+
+    If L is empty, an empty dataframe is returend.
+
+    Parameters:
+    L (list of lists): Input list of lists to be used as rows in the DataFrame.
+    num_dataframes (int, optional): Number of DataFrames to generate. Defaults to 5.
+    random_seed (int, optional): Seed for the random number generator for reproducibility. Defaults to None
+
+    Returns:
+    DataFrame: A pandas DataFrame with the common rows between all generated DataFrames.
+    list of DataFrame: A list of all generated DataFrames.
+    
+
+    Requirements:
+    - pandas
+    - random
+
+    Example:
+    >>> L = [['14', '65', 76], ['2', '5', 6], ['7', '12', 33], ['14', '22', 46]]
+    >>> common_rows, df_list = task_func(L, num_dataframes=3, random_seed=123)
+    >>> print(common_rows)
+        b   c   k
+    0  14  65  76
+    1  14  22  46
+    4   2   5   6
+    >>> print(df_list)
+    [    b   c   k
+    0  14  65  76
+    1  14  22  46
+    2  14  65  76,     b   c   k
+    0   7  12  33
+    1   2   5   6
+    2  14  22  46,     b   c   k
+    0  14  65  76
+    1   2   5   6
+    2   2   5   6]
+
+    >>> L = [[1, '65', 76], [2, '5', 6]]
+    >>> common_rows, df_list = task_func(L, num_dataframes=1, random_seed=1)
+    >>> print(common_rows)
+       d   w   t
+    0  1  65  76
+    >>> print(df_list)
+    [   d   w   t
+    0  1  65  76
+    1  1  65  76
+    2  1  65  76]
+    """
+    if len(L) == 0:
+        return pd.DataFrame(), []
+
+    # Set the random seed for reproducibility
+    if random_seed is not None:
+        seed(random_seed)
+
+    # Choose random columns for each DataFrame
+    columns = choices('abcdefghijklmnopqrstuvwxyz', k=len(L[0]))
+    dfs = []
+
+    for _ in range(num_dataframes):
+        # Sample rows from 'L'
+        sample_rows = [choices(L[i], k=3) for i in range(len(L))]
+
+        # Create a DataFrame from the sampled rows and chosen columns
+        df = pd.DataFrame(sample_rows, columns=columns)
+        dfs.append(df)
+
+    # Find the common rows between all DataFrames
+    common_rows = set(dfs[0]).intersection(*dfs[1:])
+
+    return common_rows, dfs

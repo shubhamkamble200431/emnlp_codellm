@@ -1,0 +1,48 @@
+import math
+from random import randint
+import matplotlib.pyplot as plt
+
+
+def task_func():
+    """
+    Create and draw a sine wave with random frequency, amplitude and phase shift. The return ax object
+    has 'Random Sine Wave' title, 'Time' on the x axis and 'Amplitude' on the y axis.
+
+    Parameters:
+    None
+
+    Returns:
+    ax (matplotlib.axes._axes.Axes): The axis object of the generated sine wave plot.
+
+    Requirements:
+    - math
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax = task_func()
+    """
+    # Generate random values
+    freq = randint(1, 10)
+    amplitude = randint(1, 20)
+    phase_shift = randint(-math.pi, math.pi)
+
+    # Create time array
+    t = [i / 100 for i in range(0, 1001)]
+
+    # Calculate sine wave
+    y = amplitude * math.sin(2 * math.pi * freq * t + phase_shift)
+
+    # Create plot
+    fig, ax = plt.subplots()
+
+    # Plot the sine wave
+    ax.plot(t, y)
+
+    # Set title and labels
+    ax.set_title('Random Sine Wave')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Amplitude')
+
+    # Return the axis object
+    return ax

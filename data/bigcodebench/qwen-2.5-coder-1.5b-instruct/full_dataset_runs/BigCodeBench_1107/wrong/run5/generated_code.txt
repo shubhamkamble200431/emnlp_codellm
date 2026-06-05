@@ -1,0 +1,39 @@
+from datetime import datetime
+import pytz
+
+# Constants
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+
+def task_func(unix_timestamp, target_timezone):
+    """
+    Converts a Unix timestamp to a formatted date and time string in a specified timezone.
+
+    Parameters:
+    unix_timestamp (int): The Unix timestamp representing the number of seconds since the Unix Epoch (January 1, 1970, 00:00:00 UTC).
+    target_timezone (str): The string identifier of the target timezone (e.g., 'America/New_York').
+
+    Returns:
+    str: A string representing the date and time in the target timezone, formatted as '%Y-%m-%d %H:%M:%S'.
+
+    Requirements:
+    - datetime.datetime
+    - pytz
+
+    Example:
+    >>> unix_timestamp = 1609459200
+    >>> target_timezone = 'America/New_York'
+    >>> task_func(unix_timestamp, target_timezone)
+    '2020-12-31 19:00:00'
+    """
+    # Convert the Unix timestamp to a datetime object using the UTC timezone
+    utc_datetime = datetime.utcfromtimestamp(unix_timestamp)
+
+    # Create a timezone object for the target timezone
+    target_tz = pytz.timezone(target_timezone)
+
+    # Localize the datetime object to the target timezone
+    localized_datetime = utc_datetime.astimezone(target_tz)
+
+    # Format the localized datetime as a string
+    return localized_datetime.strftime(DATE_FORMAT)

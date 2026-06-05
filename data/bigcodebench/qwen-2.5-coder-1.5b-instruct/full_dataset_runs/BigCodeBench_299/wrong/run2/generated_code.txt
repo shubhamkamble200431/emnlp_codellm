@@ -1,0 +1,45 @@
+import itertools
+import math
+from pandas import Series
+
+
+def task_func(elements, subset_size, top_n=2):
+    """
+    Generate all subsets of a given size from a tuple and calculate the product of the sums of the subsets. Additionally, 
+    return the top_n sums of the subsets. If the subset size is larger than the tuple length, return 1. If the subset size is 0,
+    return 1.
+
+    Parameters:
+    - elements (tuple): A tuple of elements to create subsets from.
+    - subset_size (int): The size of the subsets to be generated.
+    - top_n (int, Optional): The number of top subsets to return. Defaults to None.
+
+    Returns:
+    int: The product of the sums of the subsets.
+    list: The top_n sums of the subsets as a pandas Series.
+
+
+    Requirements:
+    - itertools
+    - math
+    
+    Example:
+    >>> prod, sums = task_func((1, 2, 3), 2)
+    >>> prod
+    60
+    >>> list(sums)
+    [5, 4]
+    """
+    if subset_size > len(elements) or subset_size == 0:
+        return 1
+    elements = list(elements)
+    subsets = itertools.combinations(elements, subset_size)
+    sum_sums = [sum(subset) for subset in subsets]
+    product = math.prod(sum_sums)
+    if top_n is not None:
+        sorted_sums = sorted(sum_sums, reverse=True)
+        top_sum_series = Series(sorted_sums[:top_n])
+    else:
+        top_sum_series = Series([sums[0]])
+
+    return product, top_sum_series

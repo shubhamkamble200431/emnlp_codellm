@@ -1,0 +1,76 @@
+import csv
+import os
+from datetime import datetime
+from random import randint
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Constants
+VEHICLE_TYPES = ['Car', 'Bus', 'Truck', 'Bike']
+OUTPUT_DIR = './output'
+
+
+def task_func(hours, output_dir=OUTPUT_DIR):
+    """
+    Generates traffic data for different vehicle types over a specified number of hours,
+    saves the data to a CSV file with coloumns 'Time', 'Car', 'Bus', 'Truck', and 'Bike',
+    and plots the data in a line chart with 'Time' on x-axis and 'Vehicle Count' on y-axis.
+
+    Parameters:
+    - hours (int): Number of hours to generate data for.
+    - output_dir (str, optional): The output file path
+
+    Returns:
+    - tuple: Path to the CSV file and the matplotlib axes object of the line plot.
+
+    Requirements:
+    - pandas
+    - os
+    - csv
+    - matplotlib.pyplot
+    - random
+    - datetime
+
+    Example:
+    >>> import matplotlib
+    >>> file_path, ax = task_func(2)  # Generate data for 2 hours
+    >>> isinstance(file_path, str)
+    True
+    >>> 'traffic_data.csv' in file_path
+    True
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    start_time = datetime.datetime.now()
+    end_time = start_time + datetime.timedelta(hours=hours)
+
+    # Initialize lists to store data
+    time_list = []
+    car_count = [0] * hours
+    bus_count = [0] * hours
+    truck_count = [0] * hours
+    bike_count = [0] * hours
+
+    # Simulate traffic data
+    for hour in range(hours):
+        # Randomly choose a vehicle type
+        vehicle_type = VEHICLE_TYPES[randint(0, 3)]
+
+        # Add vehicle count to corresponding list
+        if vehicle_type == 'Car':
+            car_count[hour] += 1
+        elif vehicle_type == 'Bus':
+            bus_count[hour] += 1
+        elif vehicle_type == 'Truck':
+            truck_count[hour] += 1
+        elif vehicle_type == 'Bike':
+            bike_count[hour] += 1
+
+        # Append current time to time list
+        time_list.append(start_time + datetime.timedelta(hours=hour))
+
+    # Create DataFrame
+    data = {
+        'Time': time_list,
+        'Car': car_count,
+        'Bus': bus_count

@@ -1,0 +1,48 @@
+import random
+import re
+
+
+def task_func(text, seed=None):
+    """
+    Scramble the letters in each word of a given text, keeping the first and last letters of each word intact.
+
+    Parameters:
+    text (str): The text to be scrambled.
+    seed (int, optional): A seed for the random number generator to ensure reproducible results.
+                          Defaults to None (not set).
+
+    Returns:
+    str: The scrambled text.
+
+    Requirements:
+    - random
+    - re
+
+    Notes:
+    - Words are determined by regex word boundaries.
+    - The scrambling only affects words longer than three characters, leaving shorter words unchanged.
+
+    Examples:
+    >>> task_func('Hello, world!', 0)
+    'Hello, wlrod!'
+    >>> task_func("Programming is fun, isn't it?", 42)
+    "Prmiangmrog is fun, isn't it?"
+    """
+    if seed is not None:
+        random.seed(seed)
+
+    # Split text into words using regex word boundaries
+    words = re.findall(r'\b\w+\b', text)
+
+    scrambled_words = []
+    for word in words:
+        if len(word) > 3:
+            # Keep the first and last characters intact
+            scrambled_word = word[0] + ''.join(random.sample(word[1:-1], len(word)-2)) + word[-1]
+        else:
+            scrambled_word = word
+        scrambled_words.append(scrambled_word)
+
+    # Join scrambled words back into a single string with spaces between them
+    scrambled_text = ' '.join(scrambled_words)
+    return scrambled_text

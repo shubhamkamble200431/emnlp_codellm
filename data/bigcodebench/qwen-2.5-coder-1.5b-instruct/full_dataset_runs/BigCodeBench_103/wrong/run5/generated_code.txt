@@ -1,0 +1,50 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def task_func(temperatures):
+    """
+    Calculate and plot the daytime temperatures for New York over a given period. The plot uses Arial font for display.
+
+    Parameters:
+        temperatures (pandas.DataFrame): The temperatures data as a pandas DataFrame with a DateTimeIndex 
+                                         in the 'America/New_York' timezone and a 'temperature' column.
+
+    Returns:
+        matplotlib.axes.Axes: The Axes object containing the temperature plot.
+        
+    for the returned plot,  set the xlabel as 'Date', ylabel as 'Temperature (°C)' and
+    title as Daily Temperatures in New York
+
+    Raises:
+        ValueError: If the input DataFrame is not in the expected format or empty.
+
+    Requirements:
+        - matplotlib
+        - pandas
+
+    Example:
+        >>> temperatures = pd.DataFrame({
+        ...     'temperature': [random.randint(-10, 30) for _ in range(365)],
+        ...     'date': pd.date_range(start='01-01-2023', periods=365, tz='America/New_York')
+        ... }).set_index('date')
+        >>> ax = task_func(temperatures)
+        >>> type(ax)
+        <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Check if the DataFrame is in the expected format and not empty
+    if isinstance(temperatures, pd.DataFrame) and len(temperatures) > 0:
+        # Convert the 'date' column to 'America/New_York' timezone
+        temperatures['date'] = temperatures['date'].dt.tz_localize('America/New_York').dt.tz_convert('UTC')
+        # Filter out nighttime hours (07:00 PM to 07:00 AM)
+        filtered_temps = temperatures.between_time('07:00', '07:00', include_start=False)
+        # Plot the daytime temperatures
+        fig, ax = plt.subplots()
+        ax.plot(filtered_temps.index, filtered_temps.temperature, marker='o', linestyle='-')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Temperature (°C)')
+        ax.set_title('Daily Temperatures in New York')
+        ax.tick_params(axis='x', labelrotation=45)
+        plt.rcParams['font.family'] = 'Arial'
+        return ax
+    else:
+        raise ValueError("Input

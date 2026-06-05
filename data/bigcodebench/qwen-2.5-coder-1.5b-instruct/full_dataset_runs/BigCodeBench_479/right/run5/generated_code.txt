@@ -1,0 +1,67 @@
+import random
+import string
+import pandas as pd
+
+
+def task_func(data_list, seed=0):
+    """
+    Replace a random substring (a sequence of characters between two commas or at the beginning/end of the string)
+    in a list of strings with a random string (comprising ascii lowercase characters) with the same length as
+    the substituted characters.
+
+    Parameters:
+    data_list (list): Input list of strings.
+                      Within each string, each substring's leading and trailing whitespaces are removed.
+                      If empty, it will return a DataFrame with the Original String and Modified String
+                      columns that is otherwise empty.
+    seed (int, optional): The seed for random operations to ensure reproducibility. Defaults to 0.
+
+    Returns:
+    DataFrame: A pandas DataFrame with two columns - 'Original String' and 'Modified String'.
+               'Original String' contains the original strings from the input list, and 'Modified String'
+               contains the modified strings where a random substring has been replaced.
+
+    Requirements:
+    - pandas
+    - random
+    - string
+
+    Example:
+    >>> task_func(['lamp, bag, mirror', 'table, chair, bag, lamp'])
+               Original String          Modified String
+    0        lamp, bag, mirror        lamp, tkg, mirror
+    1  table, chair, bag, lamp  table, chair, bag, kuhm
+    """
+    random.seed(seed)
+
+    def replace_substring(s):
+        if not s:
+            return s
+
+        # Find the first non-whitespace character index
+        start = s.find(' ')
+
+        if start == -1:
+            start = 0
+
+        # Find the last non-whitespace character index
+        end = len(s) - s[::-1].find(' ')
+
+        if end == 0:
+            end = len(s)
+
+        # Extract the substring
+        substring = s[start:end]
+
+        # Generate a random substring of the same length
+        replacement = ''.join(random.choice(string.ascii_lowercase) for _ in range(len(substring)))
+
+        # Construct the modified string
+        modified_string = s[:start] + replacement + s[end:]
+
+        return modified_string
+
+    df = pd.DataFrame({'Original String': data_list})
+    df['Modified String'] = df['Original String'].apply(replace_substring)
+
+    return df

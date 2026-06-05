@@ -1,0 +1,62 @@
+import subprocess
+import logging
+
+def task_func(filepath):
+    """
+    Attempts to compile a existing C++ file specified by 'filepath'. The output of the compilation process
+    is logged, indicating whether the compilation was successful or not. This function is useful
+    for automating the compilation of C++ code and tracking compilation results.
+    The log should indicate whether the compilation was successful or if an error occurred.
+
+    Parameters:
+    filepath (str): The path of the C++ file to be compiled.
+
+    Returns:
+    None: This function does not return anything but logs the outcome of the compilation process.
+
+    Raises:
+    - subprocess.CalledProcessError: If the compilation process fails.
+    - FileNotFoundError: If the compiler is not found or the specified file does not exist.
+
+    Requirements:
+    - subprocess
+    - logging
+
+    Examples:
+    >>> import os
+    >>> with open('example.cpp', 'w') as f: \
+            _ = f.write("int main(){return 0;}")
+    >>> task_func('example.cpp')
+    >>> os.path.exists('example')
+    True
+    """
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+
+    try:
+        # Check if the compiler is available
+        compiler_path = "g++"
+        result = subprocess.run([compiler_path], capture_output=True, text=True)
+        if result.returncode == 0:
+            logger.info(f"Compilation successful using {compiler_path}.")
+        else:
+            raise subprocess.CalledProcessError(result.returncode, f"Compilation failed using {compiler_path}.")
+
+        # Compile the C++ file
+        compile_command = [compiler_path, '-o', 'example', filepath]
+        result = subprocess.run(compile_command, capture_output=True, text=True)
+        if result.returncode == 0:
+            logger.info("File compiled successfully.")
+        else:
+            raise subprocess.CalledProcessError(result.returncode, "File compilation failed.")
+
+        # Check if the compiled file exists
+        if os.path.exists('example'):
+            logger.info("File 'example' created successfully.")
+        else:
+            raise FileNotFoundError("'example' file does not exist after compilation.")
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Compilation error: {e}")
+    except FileNotFoundError as e:
+        logger.error(f"FileNotFoundError: {e}")

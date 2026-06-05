@@ -1,0 +1,41 @@
+import re
+import os
+import glob
+import mimetypes
+
+def task_func(directory, file_pattern, suffix):
+    """
+    Scans a specified directory for files matching a given pattern and with a certain suffix, then determines their file types.
+    The function returns a dictionary with file names as keys and their corresponding MIME types as values.
+
+    Parameters:
+        directory (str): The path to the directory to scan.
+        file_pattern (str): The pattern to match files against.
+        suffix (str): The suffix that files must have to be included.
+
+    Returns:
+        dict: A dictionary mapping file names to their MIME types.
+
+    Requirements:
+    - re
+    - os
+    - glob
+    - mimetypes
+
+    Examples:
+    >>> isinstance(task_func(r'dir', '*', '_suff), dict)
+    True
+    >>> 'example_suff.txt' in task_func(r'dir', '*_suff.txt', '_suff')
+    True  # This example assumes 'example_suff.txt' is in the directory and matches the pattern and suffix
+    """
+    mime_types = {}
+    file_list = glob.glob(os.path.join(directory, file_pattern))
+
+    for file_path in file_list:
+        if not file_path.endswith(suffix):
+            continue
+
+        mime_type, _ = mimetypes.guess_type(file_path)
+        mime_types[file_path] = mime_type
+
+    return mime_types

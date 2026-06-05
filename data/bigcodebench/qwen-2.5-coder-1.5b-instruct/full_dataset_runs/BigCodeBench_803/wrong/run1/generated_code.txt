@@ -1,0 +1,55 @@
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
+
+def task_func(file_name: str) -> pd.DataFrame:
+    """Normalize data in a csv file using MinMaxScaler from sklearn.
+    Only numeric columns are normalized. Columns with other dtypes are left as
+    they are.
+    
+    Parameters:
+    file_name (str): The name of the csv file.
+    
+    Returns:
+    DataFrame: A pandas DataFrame with normalized data.
+
+    Raises:
+    ValueError: If input does not have numeric columns.
+
+    Requirements:
+    - pandas
+    - sklearn.preprocessing.MinMaxScaler
+    
+    Example:
+    >>> normalized_data = task_func("sample.csv")
+    >>> print(normalized_data.head())
+    Name	Age	Salary
+    0	Alex Anderson	0.304651	0.122298
+    1	Mr. Leslie Casey	0.28140	0.598905
+    2	Anthony George	0.996744	0.216552
+    3	Brian Washington	0.126279	0.459948
+    4	Elias Lawrence	0.337239	0.124185
+    """
+    try:
+        # Load CSV file into a DataFrame
+        df = pd.read_csv(file_name)
+
+        # Select numeric columns only
+        numeric_columns = df.select_dtypes(include=[np.number])
+
+        # Initialize MinMaxScaler
+        scaler = MinMaxScaler()
+
+        # Fit and transform the numeric columns
+        scaled_numeric_df = scaler.fit_transform(numeric_columns)
+
+        # Create a new DataFrame to hold the normalized values
+        normalized_df = pd.DataFrame(scaled_numeric_df, columns=numeric_columns.columns)
+
+        # Concatenate the non-numeric columns back to the normalized DataFrame
+        result_df = pd.concat([df.drop(columns=numeric_columns.columns), normalized_df], axis=1)
+
+        return result_df
+
+    except KeyError:
+        raise ValueError("Input does not have numeric columns.")

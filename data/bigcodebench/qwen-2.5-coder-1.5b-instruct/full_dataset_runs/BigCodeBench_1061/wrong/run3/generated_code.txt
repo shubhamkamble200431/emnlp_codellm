@@ -1,0 +1,68 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+
+def task_func(arr: np.ndarray) -> (plt.Axes, np.ndarray):
+    """
+    Plots a histogram of normalized data from an input 2D numpy array alongside the probability density function (PDF)
+    of a standard normal distribution.
+
+    Note:
+    - Takes in a 2D numpy array as input.
+    - Calculates the sum of elements in each row of the array.
+    - Normalizes these row sums to have a mean of 0 and a standard deviation of 1.
+      - Normalization is achieved by first calculating the mean and standard deviation of the row sums.
+      - Each row sum is then transformed by subtracting the mean and dividing by the standard deviation.
+      - If the standard deviation is 0 (indicating all row sums are equal), normalization results in an array of zeros with the same shape.
+    - Plots a histogram of the normalized data.
+      - Uses 30 bins for the histogram.
+      - The histogram is density-based, meaning it represents the probability density rather than raw frequencies.
+      - The bars of the histogram are semi-transparent (60% opacity) and green in color.
+    - Overlays the PDF of a standard normal distribution on the histogram for comparison.
+      - The PDF curve is plotted in red with a line width of 2.
+      - The range of the PDF curve is set to cover 99% of a standard normal distribution.
+    - Sets the title of the plot to "Histogram of Normalized Data with Standard Normal PDF".
+
+    Parameters:
+    - arr: A 2D numpy array. The array should contain numerical data.
+
+    Returns:
+    - A tuple containing:
+      - A matplotlib Axes object with the histogram of the normalized data and the overlaid standard normal PDF.
+      - The normalized data as a 1D numpy array.
+
+    Requirements:
+    - numpy
+    - scipy
+    - matplotlib
+
+    Example:
+    >>> ax, normalized_data = task_func(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> print(normalized_data)
+    [-1.22474487  0.          1.22474487]
+    """
+    # Calculate row sums
+    row_sums = np.sum(arr, axis=1)
+
+    # Normalize row sums
+    if np.std(row_sums) == 0:
+        normalized_data = np.zeros_like(row_sums)
+    else:
+        normalized_data = (row_sums - np.mean(row_sums)) / np.std(row_sums)
+
+    # Plot histogram
+    fig, ax = plt.subplots()
+    ax.hist(normalized_data, bins=30, density=True, alpha=0.6, color='green')
+
+    # Overlay standard normal PDF
+    x = np.linspace(-4, 4, 400)
+    pdf = norm.pdf(x)
+    ax.plot(x, pdf, color='red', linewidth=2, fill_between=False, label='Standard Normal PDF')
+
+    # Set title
+    ax.set_title('Histogram of Normalized Data with Standard Normal PDF')
+
+    return ax, normalized_data

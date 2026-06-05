@@ -1,0 +1,38 @@
+import pandas as pd
+from sklearn.cluster import KMeans
+
+
+def task_func(x_list, y_list, n_clusters=2, random_state=0):
+    """
+    Perform K-Means clustering on the given data by first turning it into a DataFrame with two columns "x" and "y" and then return the labels and centroids.
+
+    Parameters:
+    - x_list (list): List of data corresponding to 'x'
+    - y_list (list): List of data corresponding to 'y'
+    - n_clusters (int): Number of clusters to form, default to 2
+    - random_state (int): Initial random state of k-means, default to 0
+
+    Returns:
+    tuple: The labels and centroids as numpy arrays.
+        - kmeans.labels_: A NumPy array where each element is the cluster label assigned to each data point. 
+        - kmeans.cluster_centers_: A NumPy array containing the coordinates of the cluster centers.
+
+    Requirements:
+    - pandas
+    - sklearn
+
+    Example:
+    >>> df = pd.DataFrame({'x': [1, 2, 3, 4, 5, 6], 'y': [2, 3, 4, 5, 6, 7]})
+    >>> labels, centroids = task_func([1, 2, 3, 4, 5, 6], [2, 3, 4, 5, 6, 7], 2, 0)
+    """
+    # Create a DataFrame from the input lists
+    df = pd.DataFrame(data={'x': x_list, 'y': y_list})
+
+    # Initialize the KMeans model with the specified parameters
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
+
+    # Fit the model to the data and predict the cluster labels
+    kmeans.fit(df[['x', 'y']])
+
+    # Return the labels and centroids
+    return kmeans.labels_, kmeans.cluster_centers_

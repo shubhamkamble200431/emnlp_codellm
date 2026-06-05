@@ -1,0 +1,65 @@
+import pandas as pd
+import folium
+from geopy.geocoders import Photon
+
+def task_func(dic):
+    """
+    Generates a Folium map with markers for specified locations. It preprocesses the input to handle
+    both direct geographical coordinates and address strings. For address strings, it dynamically resolves
+    their latitude and longitude using the Photon geolocation service. This flexible input handling
+    allows for easy mapping of various location types.
+
+    Parameters:
+        dic (dict): A dictionary with location names as keys. Each key can either map to a dictionary
+                    {'Lat': latitude, 'Lon': longitude} for direct coordinates, or to a string indicating
+                    the location's address for geolocation lookup using Photon.
+
+    Returns:
+        folium.Map: A Folium map object with markers for each specified location.
+
+    Requirements:
+    - pandas
+    - folium
+    - geopy.geocoders.Photon
+
+    Notes:
+    - The geolocator, instantiated as Photon(user_agent="geoapiExercises"), plays a crucial role in enabling
+    the function to handle string addresses by converting them into latitude and longitude, thus broadening
+    the scope of input data that can be mapped.
+
+    Examples:
+    >>> locations = {'Place1': {'Lat': 0, 'Lon': 0}, 'Place2': 'New York, USA'}
+    >>> result = task_func(locations)
+    >>> isinstance(result, folium.Map)
+    True
+    >>> [0.0, 0.0] == result.location
+    True
+    """
+    # Function to get lat and lon based on address
+    def get_lat_lon(address):
+        geolocator = Photon(user_agent="geoapiExercises")
+        try:
+            location = geolocator.geocode(address)
+            return location.latitude, location.longitude
+        except Exception as e:
+            return None, None
+
+    # Preprocess the input dictionary
+    processed_locations = {}
+    for loc_name, details in dic.items():
+        if isinstance(details, dict) and 'Lat' in details and 'Lon' in details:
+            processed_locations[loc_name] = details
+        else:
+            # Convert address to latitude and longitude using Photon
+            lat, lon = get_lat_lon(details)
+            if lat is not None and lon is not None:
+                processed_locations[loc_name] = {'Lat': lat, 'Lon': lon}
+
+    # Create a new Folium map
+    m = folium.Map(location=[0, 0], zoom_start=4)
+
+    # Add markers for each location
+    for loc_name, details in processed_locations.items():
+        folium.Marker([details['Lat'], details['Lon']], popup=f"{loc_name}", tooltip=f"{loc_name}").add_to(m)
+
+    return m

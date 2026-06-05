@@ -1,0 +1,36 @@
+from collections import Counter
+import random
+import string
+
+# Constants
+LETTERS = string.ascii_letters
+
+def task_func(list_of_lists):
+    """
+    If you have a nested list, replace each sublist with a random letter and return a count of each letter in the final list.
+
+    Parameters:
+    - list_of_lists (list): A nested list.
+
+    Returns:
+    - dict: A dictionary containing count of each letter in the list.
+
+    Requirements:
+    - collections
+    - random
+    - string
+
+    Example:
+    >>> random.seed(42)
+    >>> task_func([['Pizza', 'Burger'], ['Pizza', 'Coke'], ['Pasta', 'Coke']])
+    {'O': 1, 'h': 1, 'b': 1}
+    """
+    result = []
+    for sublist in list_of_lists:
+        # Replace each sublist with a random letter
+        random_letter = ''.join(random.choice(LETTERS) for _ in range(len(sublist)))
+        result.append(random_letter)
+
+    # Count the occurrences of each letter
+    letter_count = collections.Counter(result)
+    return letter_count

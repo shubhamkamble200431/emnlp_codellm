@@ -1,0 +1,52 @@
+import random
+import string
+
+# Constants
+LETTERS = string.ascii_letters
+DIGITS = string.digits
+
+def task_func(length, num_digits):
+    """
+    Generate a random password with a specified length and number of digits.
+
+    The function creates a random password consisting of letters and digits. The total length of the password
+    and the number of digits in it are specified by the user. The characters in the password are randomly
+    shuffled to ensure variability.
+
+    Parameters:
+    - length (int): The total length of the password. Must be a positive integer.
+    - num_digits (int): The number of digits to be included in the password. Must be a non-negative integer and
+                      less than or equal to the total length of the password.
+
+    Returns:
+    - str: A string representing the randomly generated password.
+
+    Requirements:
+    - random
+    - string
+
+    Examples:
+    >>> task_func(10, 3)
+    'Vpbr812Ooh'
+    >>> task_func(5, 2)
+    '4Ob3h'
+    """
+    # Ensure num_digits is within the valid range
+    if num_digits > length:
+        raise ValueError("Number of digits must be less than or equal to the total length of the password.")
+
+    # Generate all possible combinations of letters and digits
+    all_chars = LETTERS + DIGITS
+
+    # Randomly select the required number of digits
+    selected_digits = ''.join(random.sample(all_chars, num_digits))
+
+    # Randomly select the remaining length with the rest of the letters
+    remaining_length = length - num_digits
+    selected_letters = ''.join(random.sample(LETTERS, remaining_length))
+
+    # Combine selected characters and shuffle them
+    password = selected_digits + selected_letters
+    random.shuffle(password)
+
+    return ''.join(password)

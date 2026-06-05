@@ -1,0 +1,62 @@
+import heapq
+from scipy import stats
+
+def task_func(df, col1, col2, N=10):
+    """
+    Find the N largest absolute differences between the corresponding elements
+    of two specified columns in a DataFrame, perform a t-Test on the elements
+    with these differences, and return the calculated p-value.
+
+    Parameters:
+    df (pandas.DataFrame): A DataFrame containing at least two numerical columns to compare.
+    col1, col2 (str): Names of the columns to compare.
+    N (int, optional): The number of largest differences to consider for the t-Test. Defaults to 10.
+
+    Returns:
+    float: The p-value resulting from the t-Test on the elements with the N largest differences.
+
+    Raises:
+    ValueError: If specified columns are not in the provided DataFrame.
+    ValueError: If N is <= 1.
+
+    Requirements:
+    - scipy.stats
+    - heapq
+
+    Example:
+    >>> df = pd.DataFrame({
+    ...     'col1': [99, 86, 90, 70, 86, 95, 56, 98, 80, 81],
+    ...     'col2': [21, 11, 21, 1, 26, 40, 4, 50, 34, 37]
+    ... })
+    >>> p_value = task_func(df, 'col1', 'col2', N=5)
+    >>> print(p_value)    
+    4.676251508205865e-06
+
+    >>> df = pd.DataFrame({
+    ...    'col1': [1, 3, 4, 70],
+    ...    'col2': [2, 3, 5, 1]
+    ...     })
+    >>> p_value = task_func(df, 'col1', 'col2', N=5)
+    >>> print(p_value)
+    0.3590111759771484
+
+
+    """
+    if col1 not in df.columns or col2 not in df.columns:
+        raise ValueError("Specified columns are not in the provided DataFrame.")
+    if N <= 1:
+        raise ValueError("N must be greater than 1.")
+
+    # Calculate absolute differences
+    diff_df = abs(df[col1] - df[col2])
+
+    # Get the top N largest differences
+    top_diffs = heapq.nlargest(N, zip(diff_df.values, diff_df.index))
+
+    # Select the top N largest values from both columns based on their indices
+    selected_values = [df.iloc[top[1]][col1], df.iloc[top[1]][col2]] for top in top_diffs]
+
+    # Perform t-Test
+    result = stats.ttest_ind(selected_values[0], selected_values[1])
+
+    return result.pvalue

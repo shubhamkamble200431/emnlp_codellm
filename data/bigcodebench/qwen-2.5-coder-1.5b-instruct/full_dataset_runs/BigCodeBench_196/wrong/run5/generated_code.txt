@@ -1,0 +1,46 @@
+import random
+import seaborn as sns
+import numpy as np
+from matplotlib import pyplot as plt
+
+def task_func(length, range_limit=100, seed=0):
+    """
+    Create a list of random numbers, sort them and record the distribution of the numbers in a histogram using 
+    default settings in a deterministic seaborn plot. Return the axes object and the list of random numbers.
+
+    Parameters:
+    length (int): The length of the list of random numbers.
+    range_limit (int, Optional): The range of the random numbers. Defaults to 100. Must be greater than 1.
+    seed (int, Optional): The seed value for the random number generator. Defaults to 0.
+
+    Returns:
+    Tuple[matplotlib.axes._axes.Axes, List[int]]: The axes object with the plot and the list of random numbers.
+
+    Requirements:
+    - random
+    - matplotlib.pyplot
+    - seaborn
+    - numpy
+
+    Raises:
+    ValueError: If range_limit is less than or equal to 1.
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> ax, data = task_func(1000, 100, 24) # Generate a list of 1000 random numbers between 1 and 100
+    >>> isinstance(ax, plt.Axes)
+    True
+    """
+    if range_limit <= 1:
+        raise ValueError("range_limit must be greater than 1")
+
+    np.random.seed(seed)
+    random_numbers = np.random.randint(1, range_limit + 1, length)
+    sorted_numbers = np.sort(random_numbers)
+
+    sns.histplot(data=sorted_numbers, kde=True, color='skyblue')
+    plt.title('Distribution of Random Numbers')
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+
+    return plt.gca(), random_numbers

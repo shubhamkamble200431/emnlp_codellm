@@ -1,0 +1,50 @@
+import pandas as pd
+from sklearn.feature_selection import SelectKBest, f_classif
+import seaborn as sns
+
+
+def task_func(df1, df2):
+    """Perform the feature selection with SelectKBest (k=2) and return a heatmap of the feature correlations.
+
+    Parameters:
+    - df1 (pd.DataFrame): The dataframe containing features.
+    - df2 (pd.DataFrame): The dataframe containing the target variable. Must have an 'id' column corresponding to df1.
+
+    Returns:
+    - tuple: A tuple containing:
+        - list: A list of the selected features.
+        - Axes: A heatmap showing the correlation between the selected features.
+
+    Requirements:
+    - pandas
+    - sklearn.feature_selection.SelectKBest
+    - sklearn.feature_selection.f_classif
+    - seaborn
+
+    Example:
+    >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'feature1': [1.2, 3.4, 5.6], 'feature2': [2.3, 4.5, 6.7], 'feature3': [3.4, 5.6, 7.8]})
+    >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'target': [4.5, 6.7, 8.9]})
+    >>> selected_features, heatmap = task_func(df1, df2)
+    >>> heatmap
+    <Axes: >
+    >>> selected_features
+    ['feature2', 'feature3']
+    """
+    # Perform feature selection using SelectKBest with f_classif
+    selector = SelectKBest(f_classif, k=2)
+    selected_features = selector.fit_transform(df1, df2['target'])
+
+    # Create a DataFrame from the selected features and the original target variable
+    df_selected = pd.DataFrame(selected_features, columns=df1.columns)
+    df_target = pd.DataFrame(df2['target'], columns=['target'])
+
+    # Merge the two DataFrames on the 'id' column
+    combined_df = pd.merge(df_selected, df_target, on='id')
+
+    # Plot a heatmap of the feature correlations
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(combined_df.corr(), annot=True, cmap='coolwarm')
+    plt.title('Heatmap of Feature Correlations')
+    plt.show()
+
+    return list(selector.get_support(indices=True)), plt.gca()

@@ -1,0 +1,45 @@
+import numpy as np
+import itertools
+
+def task_func(data_list):
+    """
+    Unzips a list of tuples and calculates the mean of the numeric values for 
+    each position.
+
+    The function accepts a list of tuples, where each tuple consists of 
+    alphanumeric values. It unzips the tuples, and calculates the mean of 
+    numeric values at each position using numpy, where non numeric values are
+    ignores. If all values at a position are non numeric, the mean at this
+    position is set to be np.nan.
+    If the provided tuples have different number of entries, missing values are 
+    treated as zeros.
+
+    Parameters:
+    - data_list (list of tuples): The data to process, structured as a list of tuples. Each tuple can contain alphanumeric values.
+
+    Returns:
+    - list: A list of mean values for each numeric position across the tuples. Non-numeric positions are ignored.
+            An empty list is returned if the input list (data_list) is empty.
+
+    Requirements:
+    - numpy
+    - itertools
+
+    Example:
+    >>> task_func([('a', 1, 2), ('b', 2, 3), ('c', 3, 4), ('d', 4, 5), ('e', 5, 6)])
+    [nan, 3.0, 4.0]
+    >>> task_func([(1, 'a', 2), ('a', 3, 5), ('c', 1, -2)])
+    [1.0, 2.0, 1.6666666666666667]
+    """
+    # Initialize the result list with zeros for each column in the tuples
+    means = [0] * len(data_list[0])
+
+    # Iterate over each row in the data list
+    for row in data_list:
+        # Extract numeric values from the row
+        numeric_values = [value for value in row if isinstance(value, (int, float))]
+        # Calculate the mean of numeric values (ignoring non-numeric)
+        if numeric_values:
+            means = [np.mean(np.array(numeric_values))]
+
+    return means

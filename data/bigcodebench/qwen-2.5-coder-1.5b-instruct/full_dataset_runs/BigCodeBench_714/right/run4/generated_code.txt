@@ -1,0 +1,39 @@
+import sys
+from pathlib import Path
+
+# Constants
+PATH_TO_APPEND = '/path/to/whatever'
+
+def task_func(path_to_append=PATH_TO_APPEND):
+    """
+    Add a specific path to sys.path and create a directory in that path if it does not exist.
+
+    Note:
+    - The function uses a constant PATH_TO_APPEND which defaults to '/path/to/whatever'.
+
+    Parameters:
+    - path_to_append (str): The path to append to sys.path and to create a directory. Default is '/path/to/whatever'.
+
+    Returns:
+    - path_to_append (str): The path that was appended and where the directory was created.
+
+    Requirements:
+    - sys
+    - pathlib
+ 
+    Examples:
+    >>> task_func("/new/path/to/append")
+    "/new/path/to/append"
+
+    >>> task_func()
+    "/path/to/whatever"
+
+    """
+    # Append the path to sys.path
+    sys.path.append(path_to_append)
+
+    # Create a directory at the given path
+    path = Path(path_to_append)
+    path.mkdir(parents=True, exist_ok=True)
+
+    return path_to_append

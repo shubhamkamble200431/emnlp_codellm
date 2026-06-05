@@ -1,0 +1,53 @@
+import re
+from scipy.stats import gaussian_kde
+from scipy import linalg
+import matplotlib.pyplot as plt
+
+
+def task_func(text):
+    """
+    This code takes a text input, calculates the lengths of the words, 
+    and visualizes the distribution of word lengths using a histogram and a KDE curve (if applicable) on a matplotlib subplot.
+
+    Parameters:
+    text (str): The text string to be analyzed. The function can handle strings with various types 
+                of characters and punctuation.
+
+    Returns:
+    matplotlib.axes._axes.Axes: An Axes object showing the histogram and optionally the KDE 
+                                           plot of word lengths. This visual representation helps in 
+                                           understanding the distribution of word lengths in the given text.
+
+    Requirements:
+    - re
+    - matplotlib
+    - scipy
+    - matplotlib
+
+    Example:
+    >>> ax = task_func('Hello world! This is a test.')
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    words = re.findall(r'\b\w+\b', text.lower())
+    word_lengths = [len(word) for word in words]
+
+    fig, axs = plt.subplots(1, 2, figsize=(14, 7))
+
+    # Histogram
+    axs[0].hist(word_lengths, bins=30, edgecolor='black')
+    axs[0].set_title('Word Length Distribution')
+    axs[0].set_xlabel('Word Length')
+
+    # KDE Curve if there are more than one unique word length
+    if len(set(word_lengths)) > 1:
+        kde = gaussian_kde(word_lengths)
+        xs = range(min(word_lengths), max(word_lengths) + 1)
+        axs[1].plot(xs, kde.pdf(xs), label='KDE', linestyle='--')
+        axs[1].set_title('Kernel Density Estimate')
+        axs[1].set_xlabel('Word Length')
+        axs[1].legend()
+    else:
+        axs[1].axis('off')  # Hide the KDE plot if there's only one unique word length
+
+    return axs

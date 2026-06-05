@@ -1,0 +1,47 @@
+import string
+import random
+import re
+
+
+def task_func(elements, pattern, seed=100):
+    """
+    Replace each character in each element of the Elements list with a random 
+    character and format the element into a pattern "%{0}%", where {0} is the
+    replaced element. Finally, concatenate all the formatted elements into a 
+    single string and search for the regex pattern specified in the parameter 
+    pattern. Return the true or false value based on the search result.
+        
+    Parameters:
+        elements (List[str]): The list of elements.
+        pattern (str): The pattern to format the elements.
+        seed (int, Optional): The seed for the random number generator. Defaults to 100.
+    
+    Returns:    
+        List[str]: The list of formatted elements with replaced characters.
+        bool: The search result based on the regex pattern.
+        
+    Requirements:
+        - re
+        - string
+        - random
+        
+    Example:
+    >>> ELEMENTS = ["abc", "def"]
+    >>> pattern = ".*"
+    >>> replaced_elements, result = task_func(ELEMENTS, pattern, 234)
+    >>> print(replaced_elements)
+    ['%vqd%', '%LAG%']
+    """
+    # Replace each character in each element of the elements list with a random character
+    replaced_elements = [pattern % ''.join(random.choices(replacements, k=len(elem))) for elem in elements]
+
+    # Format the element into a pattern "%{0}%" where {0} is the replaced element
+    formatted_elements = [pattern % replacement for replacement in replaced_elements]
+
+    # Concatenate all the formatted elements into a single string
+    concatenated_string = ''.join(formatted_elements)
+
+    # Search for the regex pattern specified in the parameter pattern
+    search_result = re.search(pattern, concatenated_string)
+
+    return replaced_elements, search_result is not None

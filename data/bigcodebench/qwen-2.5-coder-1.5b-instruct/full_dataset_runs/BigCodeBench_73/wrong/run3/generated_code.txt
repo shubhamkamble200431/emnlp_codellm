@@ -1,0 +1,55 @@
+import pandas as pd
+import sqlite3
+import numpy as np
+import matplotlib.pyplot as plt
+import ast
+
+def task_func(db_file):
+    """
+    Load e-mail data from an SQLite database and convert it into a Pandas DataFrame. 
+    Calculate the sum, mean, and variance of the list associated with each e-mail and then record these values.
+
+    - The function expects the SQLite database to have a table named "EmailData" with columns 'email' and 'list'.
+    - The column 'list' contains a string representation of the list. It should be converted before usage.
+    - The function will return a DataFrame with additional columns 'sum', 'mean', and 'var' representing the calculated sum, mean, and variance respectively for each e-mail.
+
+    Parameters:
+    - db_file (str): The path to the SQLite database file.
+
+    Returns:
+    - tuple: A tuple containing:
+      - DataFrame: A pandas DataFrame with email data including the calculated sum, mean, and variance.
+      - Axes: A matplotlib Axes object representing the plotted bar chart of sum, mean, and variance.
+
+    Requirements:
+    - pandas
+    - sqlite3
+    - numpy
+    - matplotlib.pyplot
+    - ast
+
+    Example:
+    >>> df, ax = task_func('data/task_func/db_1.db')
+    >>> print(df)
+    """
+    # Connect to the SQLite database
+    conn = sqlite3.connect(db_file)
+    
+    # Query the database to get the email data and their lists
+    query = "SELECT email, list FROM EmailData"
+    df = pd.read_sql_query(query, conn)
+    
+    # Convert the list strings to actual lists
+    df['list'] = df['list'].apply(ast.literal_eval)
+    
+    # Calculate sum, mean, and variance for each email's list
+    df[['sum', 'mean', 'var']] = df.groupby('email')['list'].transform([np.sum, np.mean, np.var])
+    
+    # Plotting part
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Create a bar chart for each statistic for each email
+    columns_to_plot = ['sum', 'mean', 'var']
+    colors = ['#ff7f0e', '#2ca02c', '#98df8a']
+    for col, color in zip(columns_to_plot, colors):
+        ax.bar(df.index, df[col], color=color, label=col)

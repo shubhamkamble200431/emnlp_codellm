@@ -1,0 +1,31 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+def task_func(df, target):
+    """
+    Perform a linear regression analysis on a given DataFrame.
+    
+    Parameters:
+    - df (pd.DataFrame): The pandas DataFrame.
+    - target (str): The target variable.
+    
+    Returns:
+    - score (float): The R-squared score of the model.
+
+    Requirements:
+    - pandas
+    - sklearn
+
+    Example:
+    >>> import numpy as np
+    >>> np.random.seed(42)
+    >>> df = pd.DataFrame({'feature': np.random.rand(100), 'target': np.random.rand(100)})  # Explicitly using pd
+    >>> r_squared = task_func(df, 'target')
+    >>> print(r_squared)
+    0.0011582111228732872
+    """
+    x = df['feature'].values.reshape(-1, 1)  # Reshape to match sklearn's requirements
+    y = df[target].values.reshape(-1, 1)
+    model = LinearRegression()
+    model.fit(x, y)
+    return model.score(x, y)

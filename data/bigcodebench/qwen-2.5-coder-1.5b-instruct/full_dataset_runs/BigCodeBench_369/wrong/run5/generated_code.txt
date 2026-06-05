@@ -1,0 +1,50 @@
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+def task_func(l):
+    '''
+    Draw a histogram of the given array with a Gaussian fit.
+
+    Parameters:
+    l (numpy array): The input array.
+
+    Returns:
+    ax (matplotlib.axes._axes.Axes): Axes object with the plot.
+
+    Note:
+    - This function use "Fit results: mu = {mean},  std = {standard deviation}" as the title of the plot, 
+    where the values are rounded to two decimal points.
+
+
+    Requirements:
+    - numpy
+    - scipy.stats
+    - matplotlib.pyplot
+
+    Example:
+    >>> l = np.array([5, 5, 5, 5, 5])
+    >>> ax = task_func(l)
+    >>> print(ax.get_title())
+    Fit results: mu = 5.00,  std = 0.00
+    >>> plt.close()
+    '''
+    # Calculate the mean and standard deviation of the input array
+    mean = np.mean(l)
+    std_dev = np.std(l)
+
+    # Create a histogram of the input array
+    ax = plt.hist(l, bins=30)
+
+    # Perform a Gaussian fit on the data
+    x = np.linspace(np.min(l), np.max(l), 1000)
+    popt, pcov = stats.gaussian_fit(l)
+
+    # Plot the fitted Gaussian curve
+    gaussian_curve = stats.norm.pdf(x, loc=popt[0], scale=popt[1])
+    ax.plot(x, gaussian_curve, 'r')
+
+    # Set the title of the plot with the calculated mean and standard deviation
+    ax.set_title(f'Fit results: mu = {mean:.2f},  std = {std_dev:.2f}')
+
+    return ax

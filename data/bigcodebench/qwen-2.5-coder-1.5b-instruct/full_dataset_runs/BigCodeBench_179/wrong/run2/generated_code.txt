@@ -1,0 +1,68 @@
+import re
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+
+
+def task_func(df):
+    """
+    Analyzes a given DataFrame containing article titles and content to identify articles with titles that include
+    the words "how" or "what". It calculates the TF-IDF scores for the words in the content of these articles and
+    visualizes these scores in a bar plot.
+
+    Parameters:
+    df (DataFrame): A DataFrame containing at least two columns: 'Title' and 'Content'.
+
+    Returns:
+    Axes: A matplotlib Axes object displaying a bar plot of the TF-IDF scores.
+
+    Note:
+    - If the DataFrame does not contain 'Title' and 'Content' columns, the function returns an empty plot.
+    - If no articles have titles containing "how" or "what," the function also returns an empty plot.
+    - Set the name of the y-axis to 'TF-IDF Score'.
+    - Set xticks to display the feature names vertically.
+
+    Requirements:
+    - re
+    - matplotlib
+    - sklearn
+    - numpy
+
+    Example:
+    >>> import pandas as pd
+    >>> data = {'Title': ['How to make pancakes', 'News update'], 'Content': ['Pancakes are easy to make.', 'Today’s news is about politics.']}
+    >>> df = pd.DataFrame(data)
+    >>> ax = task_func(df)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    if 'Title' not in df.columns or 'Content' not in df.columns:
+        return plt.subplots()
+
+    # Extract relevant words from the titles
+    keywords = df['Title'].str.lower().split()
+    relevant_titles = [title for title in keywords if 'how' in title or 'what' in title]
+
+    # Filter the DataFrame based on the relevant titles
+    filtered_df = df[df['Title'].isin(relevant_titles)]
+
+    # Calculate TF-IDF
+    vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform(filtered_df['Content'])
+
+    # Get feature names
+    feature_names = vectorizer.get_feature_names_out()
+
+    # Flatten the TF-IDF matrix
+    tfidf_values = tfidf_matrix.toarray().flatten()
+
+    # Plot the bar chart
+    fig, ax = plt.subplots()
+    ax.bar(feature_names, tfidf_values)
+
+    ax.set_xlabel('Feature Name')
+    ax.set_ylabel('TF-IDF Score')
+
+    ax.tick_params(axis='x', rotation=90)
+
+    return ax

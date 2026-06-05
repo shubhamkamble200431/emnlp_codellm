@@ -1,0 +1,37 @@
+from collections import Counter
+import pandas as pd
+
+
+def task_func(myList):
+    """
+    Count the frequency of each word in a list and return a DataFrame of words and their number.
+
+    Parameters:
+    myList (list): List of strings. Each string is considered a word regardless of its content,
+                                    however the function is case insensitive, and it removes
+                                    leading and trailing whitespaces. If empty, function returns
+                                    a DataFrame with a Count column that is otherwise empty.
+
+    Returns:
+    DataFrame: A pandas DataFrame with words and their counts.
+
+    Requirements:
+    - collections.Counter
+    - pandas
+
+    Example:
+    >>> myList = ['apple', 'banana', 'apple', 'cherry', 'banana', 'banana']
+    >>> task_func(myList)
+            Count
+    apple       2
+    banana      3
+    cherry      1
+    """
+    # Remove leading and trailing whitespaces from all elements, convert to lower case, and count occurrences
+    cleaned_list = [word.strip().lower() for word in myList if word]
+    counter_result = Counter(cleaned_list)
+
+    # Create a DataFrame from the Counter object
+    df = pd.DataFrame(list(counter_result.items()), columns=['Word', 'Count'])
+
+    return df

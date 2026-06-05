@@ -1,0 +1,33 @@
+import pandas as pd
+from sklearn.cluster import DBSCAN
+
+def task_func(data, cols):
+    """
+    Perform DBSCAN clustering on the data by transforming it into a DataFrame and recording the clusters in a new column named 'Cluster'.
+    Please choose the parameters eps=3 and min_samples=2.
+    
+    Parameters:
+    - data (list): List of lists with the data, where the length of the inner list equals the number of columns
+    - cols (list): List of column names
+    
+    Returns:
+    - df (DataFrame): The DataFrame with a new 'Cluster' column.
+
+    Requirements:
+    - pandas
+    - sklearn
+
+    Example:
+    >>> data = [[5.1, 3.5], [4.9, 3.0], [4.7, 3.2]]
+    >>> cols = ['x', 'y']
+    >>> df = task_func(data, cols)
+    >>> print(df)
+         x    y  Cluster
+    0  5.1  3.5        0
+    1  4.9  3.0        0
+    2  4.7  3.2        0
+    """
+data_df = pd.DataFrame(data, columns=cols)
+dbscan = DBSCAN(eps=3, min_samples=2)
+df['Cluster'] = dbscan.fit_predict(data_df).astype(int)
+return df

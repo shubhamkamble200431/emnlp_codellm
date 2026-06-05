@@ -1,0 +1,56 @@
+import sys
+import subprocess
+
+# Constants
+PYTHON_VERSION = '3.8'
+PATH_TO_APPEND = '/path/to/whatever'
+
+def task_func(python_version=PYTHON_VERSION, path_to_append=PATH_TO_APPEND):
+    """
+    Switch to a specific version of Python and add a specific path to sys.path.
+    
+    Note: This function changes the global Python version and should be used carefully.
+    
+    Parameters:
+    - python_version (str): The Python version to switch to. Default is '3.8'.
+    - path_to_append (str): The path to append to sys.path. Default is '/path/to/whatever'.
+
+    Returns:
+    - python_version (str): The Python version that was switched to.
+
+    Requirements:
+    - sys
+    - subprocess
+
+    Example:
+    >>> task_func('3.7', '/path/to/new_directory')
+    '3.7'
+    """
+    # Check if the specified Python version exists
+    try:
+        os.system(f"which python{python_version}")
+    except FileNotFoundError:
+        print(f"Python {python_version} is not installed.")
+        return python_version
+
+    # Change the current working directory to avoid issues with relative paths
+    current_dir = os.getcwd()
+    os.chdir(os.path.dirname(__file__))
+
+    # Install a virtual environment if it doesn't exist
+    if not os.path.exists('.env'):
+        subprocess.run(['virtualenv', '.env'], check=True)
+        os.chdir('.env')
+
+    # Activate the virtual environment
+    activate_script = f".\Scripts\activate" if sys.platform == 'win' else "./bin/activate"
+    subprocess.run(activate_script, shell=True)
+
+    # Set the PYTHONPATH environment variable
+    os.environ['PYTHONPATH'] += f"{os.pathsep}{path_to_append}"
+
+    # Verify the changes
+    new_python_version = sys.version[:3]
+    sys.stdout.write(f"Successfully switched to Python {new_python_version}\n")
+
+    return new_python_version

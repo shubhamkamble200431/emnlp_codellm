@@ -1,0 +1,33 @@
+from collections import Counter
+import itertools
+import operator
+
+def task_func(list_of_menuitems):
+    """
+    Faced with a nested list of menu items, flatten the list and return the most common menu item.
+
+    Parameters:
+    - list_of_menuitems (list): A nested list of menu items.
+
+    Returns:
+    - str: The most common menu item.
+
+    Requirements:
+    - collections
+    - itertools
+    - operator
+
+    Example:
+    >>> task_func([['Pizza', 'Burger'], ['Pizza', 'Coke'], ['Pasta', 'Coke']])
+    'Pizza'
+    """
+    # Flatten the nested list using itertools.chain
+    flat_items = list(itertools.chain.from_iterable(list_of_menuitems))
+
+    # Count the occurrences of each item using Counter
+    item_counts = Counter(flat_items)
+
+    # Find the most common item using max with key=operator.itemgetter(1) to sort by count in descending order
+    most_common_item, _ = max(item_counts.items(), key=operator.itemgetter(1))
+
+    return most_common_item

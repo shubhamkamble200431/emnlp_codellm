@@ -1,0 +1,37 @@
+import numpy as np
+import pandas as pd
+
+# Constants
+RANGE = (1, 100)
+
+def task_func(L):
+    '''
+    Generates a DataFrame filled with random integers. The dimensions of the DataFrame (number of rows and columns)
+    are determined by multiplying pairs of integers from nested lists within the input list of lists 'L'.
+    
+    Requirements:
+    - numpy
+    - pandas
+
+    Parameters:
+    L (list of lists): A list of lists where each sublist contains two integers.
+    
+    Returns:
+    DataFrame: A pandas DataFrame with random integers.
+    
+    Example:
+    >>> df = task_func([[2, 3], [5, 6]])
+    >>> type(df)
+    <class 'pandas.core.frame.DataFrame'>
+    '''
+    # Calculate dimensions based on the nested lists in L
+    num_rows = len(L)
+    num_cols = len(L[0])
+
+    # Generate random integers within the specified range
+    data = np.random.randint(*RANGE, size=(num_rows, num_cols))
+
+    # Create the DataFrame
+    df = DataFrame(data, columns=[f'C{i}' for i in range(num_cols)], index=[f'R{i}' for i in range(num_rows)])
+
+    return df

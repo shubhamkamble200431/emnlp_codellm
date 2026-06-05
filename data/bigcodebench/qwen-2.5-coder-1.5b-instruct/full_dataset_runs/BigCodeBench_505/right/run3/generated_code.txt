@@ -1,0 +1,33 @@
+import hashlib
+import hmac
+
+def task_func(secret, message):
+    """
+    Generates an HMAC (Hash-based Message Authentication Code) signature for a given message using a secret key.
+    The function uses SHA-256 as the hash function to create the HMAC signature.
+
+    Parameters:
+    secret (str): The secret key used for HMAC generation.
+    message (str): The message for which the HMAC signature is to be generated.
+
+    Returns:
+    str: The HMAC signature of the message, returned as a hexadecimal string.
+
+    Requirements:
+    - hashlib
+    - hmac
+
+    Examples:
+    Generate an HMAC signature for a message.
+    >>> len(task_func('mysecretkey', 'Hello, world!')) == 64
+    True
+
+    Generate an HMAC for a different message with the same key.
+    >>> len(task_func('mysecretkey', 'Goodbye, world!')) == 64
+    True
+    """
+    # Create a new HMAC object using SHA-256 and the provided secret
+    h = hmac.new(secret.encode(), message.encode(), hashlib.sha256)
+    
+    # Return the HMAC signature as a hexadecimal string
+    return h.hexdigest()

@@ -1,0 +1,30 @@
+import numpy as np
+from itertools import combinations
+
+def task_func(n):
+    """
+    Generate a list of all possible integer pairs within the range of 1 to n.
+
+    Parameters:
+    n (int): The upper bound of the range (inclusive) from which pairs are generated.
+
+    Returns:
+    list of tuples: A list of tuple pairs representing all possible combinations 
+                    of two numbers within the specified range.
+    
+    Raises:
+    - This function will raise Value Error if the input n is less than 1.
+    
+    Requirements:
+    - numpy
+    - itertools.combinations
+
+    Example:
+    >>> task_func(3)
+    [(1, 2), (1, 3), (2, 3)]
+    >>> task_func(4)
+    [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+    """
+    if n < 1:
+        raise ValueError("Input n must be greater than 0.")
+    return list(combinations(range(1, n + 1), 2))

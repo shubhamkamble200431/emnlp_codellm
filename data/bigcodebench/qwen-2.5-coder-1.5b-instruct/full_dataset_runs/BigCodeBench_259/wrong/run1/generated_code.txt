@@ -1,0 +1,58 @@
+import matplotlib
+import numpy as np
+
+
+def task_func(ax, num_points):
+    """
+    Plots "num_points" random points on the polar diagram represented by "ax."
+    The radial ticks on the plot are positioned based on the number of points divided by 10 degrees.
+
+    Parameters:
+    ax (matplotlib.axes._axes.Axes): The Axes object for the polar plot.
+    num_points (int): The number of random points to generate and plot.
+
+    Returns:
+    matplotlib.axes._axes.Axes: The modified Axes object with plotted points.
+
+    Raises:
+    - This function will raise a ValueError if the input ax is not and Axes.
+    - This function will raise a ValueError if it is use the negative number as num_points.
+
+    Requirements:
+    - matplotlib
+    - numpy
+
+    Example:
+    >>> np.random.seed(0)
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(111, polar=True)
+    >>> ax = task_func(ax, 100)
+    >>> ax.get_rlabel_position()
+    10.0
+    >>> plt.close()
+    """
+    # Ensure ax is an Axes object
+    if not isinstance(ax, plt.axes.Axes):
+        raise ValueError("The input ax must be an Axes.")
+
+    # Check if num_points is a positive integer
+    if not isinstance(num_points, int) or num_points <= 0:
+        raise ValueError("Number of points must be a positive integer.")
+
+    # Generate random points in polar coordinates
+    theta = np.linspace(0, 2 * np.pi, num_points)
+    r = np.random.rand(num_points)
+
+    # Convert polar coordinates to Cartesian coordinates
+    x = r * np.cos(theta)
+    y = r * np.sin(theta)
+
+    # Plot the points
+    ax.scatter(x, y, s=10, color='blue')
+
+    # Set radial ticks
+    max_ticks = int(np.ceil(num_points / 10))
+    ticks = np.linspace(0, max_ticks, max_ticks + 1)
+    ax.set_rticks(ticks * 10)
+
+    return ax

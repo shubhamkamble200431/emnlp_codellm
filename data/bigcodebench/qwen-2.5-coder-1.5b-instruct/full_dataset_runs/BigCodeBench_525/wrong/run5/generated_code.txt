@@ -1,0 +1,60 @@
+import json
+import numpy as np
+from collections import defaultdict
+import matplotlib.pyplot as plt
+
+
+def task_func(input_file):
+    """
+    Reads a JSON file containing a list of dictionaries. For each key across all dictionaries,
+    calculates the mean and median of its values using numpy. Visualizes the mean and median
+    using bar charts. Returns the results and plots.
+
+    Parameters:
+        - input_file (str): Path to the input JSON file containing a list of dictionaries.
+
+    Returns:
+        - result (dict): each key corresponds to those in the input dictionaries, and the corresponding
+          value is another dict with keys 'mean' and 'median', representing the calculated statistics.
+        - plots  (list[matplotlib.axes._axes.Axes]): A list of bar charts, one for
+          each key in the dictionaries, visualizing the mean and median values.
+
+    Requirements:
+        - json
+        - numpy
+        - collections.defaultdict
+        - matplotlib.pyplot
+
+    Example:
+    >>> results, plots = task_func("sample_data.json")
+    >>> type(plots[0])
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> results
+    {'a': {'mean': 3.0, 'median': 3.0}, 'b': {'mean': 6.0, 'median': 6.0}}
+    """
+with open(input_file, 'r') as file:
+    data = json.load(file)
+
+result = {}
+plots = []
+
+for key, value_list in data.items():
+    if isinstance(value_list[0], (int, float)):
+        values_array = np.array(value_list)
+        mean = np.mean(values_array)
+        median = np.median(values_array)
+        result[key] = {'mean': mean, 'median': median}
+        x = [key]
+        y = [mean]
+        z = [median]
+        ax = plt.bar(x, y, label='Mean')
+        ay = plt.bar(x, z, bottom=y, label='Median')
+        plt.xlabel('Key')
+        plt.ylabel('Value')
+        plt.title(f'Mean and Median for Key: {key}')
+        plt.legend()
+        plots.append(ax)
+
+plt.show()
+
+return result, plots

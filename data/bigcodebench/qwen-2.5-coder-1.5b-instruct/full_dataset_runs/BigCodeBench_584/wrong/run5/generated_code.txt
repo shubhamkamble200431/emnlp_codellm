@@ -1,0 +1,55 @@
+import rsa
+import urllib.request
+from hashlib import sha256
+
+def task_func(url):
+    """
+    Generates RSA public and private keys, retrieves the content from the specified URL, calculates
+    its SHA256 hash, and signs the hash with the private key. Returns the public key and the signed hash
+    as a hexadecimal string.
+
+    Parameters:
+    url (str): The URL whose content is to be fetched and signed.
+
+    Returns:
+    rsa.PublicKey: The RSA public key.
+    str: The hexadecimal string of the signed SHA256 hash of the URL content.
+    bytes: The hashed URL content, for verification purpose
+
+    Raises:
+    ValueError: If there's an issue reaching the server (e.g., network error, invalid URL)
+                or if the server returns an HTTP error.
+    rsa.pkcs1.VerificationError: If there's a failure in signing the hash with the RSA private key.
+    urllib.error.URLError: If the server is not reachable
+
+    Requirements:
+    - rsa
+    - urllib.request
+    - hashlib.sha256
+
+    Examples:
+    >>> pub_key, signed_hash, hash_value = task_func('https://www.example.com')
+    >>> isinstance(pub_key, rsa.PublicKey)
+    True
+    >>> isinstance(signed_hash, str)
+    True
+    >>> isinstance(hash_value, bytes)
+    True
+    """
+    # Step 1: Generate RSA public and private keys
+    public_key, private_key = rsa.newkeys(2048)
+
+    # Step 2: Retrieve the content from the specified URL
+    try:
+        response = urllib.request.urlopen(url)
+        data = response.read()
+    except (urllib.error.HTTPError, urllib.error.URLError) as e:
+        raise ValueError("Failed to reach the server or retrieve the URL content.")
+
+    # Step 3: Calculate the SHA256 hash of the URL content
+    sha256_hash = sha256(data).hexdigest()
+
+    # Step 4: Sign the hash with the private key
+    signature = private_key.sign(sha256_hash.encode())
+
+    return public_key, signature.hex(), data

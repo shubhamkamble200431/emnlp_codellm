@@ -1,0 +1,52 @@
+import pytz
+import numpy as np
+from dateutil.parser import parse
+import math
+
+
+SOLAR_CYCLE_YEARS = np.array([1986, 1996, 2008, 2019])
+
+def task_func(date_str, from_tz, to_tz):
+    """
+    Calculate solar activity based on the date and time, taking into account the solar cycle of 11 years.
+
+    Parameters:
+    date_str (str): The date string in "yyyy-mm-dd hh:mm:ss" format.
+    from_tz (str): The timezone of the given date string.
+    to_tz (str): The timezone to which the given date and time should be converted.
+
+    Returns:
+    float: The solar activity between 0 and 1. The value represents the solar activity 
+           calculated using a cosine function based on the years since the closest solar cycle year.
+
+    Requirements:
+    - pytz
+    - numpy
+    - dateutil.parser
+    - math
+
+    Example:
+    >>> task_func('1970-01-01 00:00:00', 'UTC', 'America/New_York')
+    0.14231483827328487
+    >>> task_func('1990-01-01 00:00:00', 'UTC', 'America/New_York')
+    0.6548607339452851
+    """
+    # Convert the input date string to a datetime object with the specified timezone
+    dt = parse(date_str, tzinfo=pytz.timezone(from_tz))
+
+    # Convert the datetime object to a UTC datetime object
+    utc_dt = dt.astimezone(pytz.utc)
+
+    # Get the year of the UTC datetime object
+    year = utc_dt.year
+
+    # Find the index of the closest solar cycle year before the given year
+    closest_cycle_year_index = np.searchsorted(SOLAR_CYCLE_YEARS, year, side='left') - 1
+
+    # Calculate the distance from the closest solar cycle year to the given year
+    distance_from_cycle_year = year - SOLAR_CYCLE_YEARS[closest_cycle_year_index]
+
+    # Calculate the solar activity using a cosine function based on the distance from the closest solar cycle year
+    solar_activity = np.cos(np.pi * distance_from_cycle_year / 5.5)
+
+    return solar_activity

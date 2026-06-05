@@ -1,0 +1,42 @@
+import pandas as pd
+from itertools import combinations
+
+# Constants
+MIN_PERCENTAGE = 0.75
+
+def task_func(data, cols, percentage):
+    """
+    Find all combinations of columns from a given DataFrame so that the absolute correlation between them is greater than a certain threshold.
+
+    Parameters:
+    - data (list): List of lists with the data, where the length of the inner list equals the number of columns
+    - cols (list): List of column names
+    - percentage (float): The threshold for the absolute correlation.
+
+    Returns:
+    - corr_combinations (list): A list of tuples where each tuple contains two column names.
+
+    Requirements:
+    - pandas
+    - itertools
+
+    Example:
+    >>> result = task_func([[5.1, 5.0, 1.4], [4.9, 4.8, 1.4], [4.7, 4.6, 2.0]], ['x', 'y', 'z'], 0.9)
+    >>> print(result)
+    [('x', 'y')]
+    """
+    # Calculate all unique pairs of columns
+    col_pairs = list(combinations(cols, 2))
+
+    # Initialize a list to store correlations
+    correlations = []
+
+    # Iterate through each pair of columns and calculate their correlation
+    for col1, col2 in col_pairs:
+        correlation = data[col1].corr(data[col2])
+
+        # Check if the absolute correlation is greater than the threshold
+        if abs(correlation) > percentage:
+            correlations.append((col1, col2))
+
+    return correlations

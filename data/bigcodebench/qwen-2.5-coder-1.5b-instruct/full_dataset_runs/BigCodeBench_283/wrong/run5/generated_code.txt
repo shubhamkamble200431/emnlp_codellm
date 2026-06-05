@@ -1,0 +1,48 @@
+import os
+import json
+from collections import Counter
+
+
+def task_func(json_files_path='./json_files/', key='name'):
+    """
+    Count the occurrence of a particular key in all json files in a specified directory 
+    and return a dictionary with the values of the specified key and their counts.
+    
+    Parameters:
+    - json_files_path (str): The path to the directory containing the JSON files. Default is './json_files/'.
+    - key (str): The key in the JSON files whose values need to be counted. Default is 'name'.
+    
+    Returns:
+    dict: A dictionary with values of the key as keys and their counts as values.
+    
+    Requirements:
+    - os
+    - json
+    - collections.Counter
+    
+    Example:
+    >>> import tempfile
+    >>> import json
+    >>> directory = tempfile.mkdtemp()
+    >>> data = [{'product': 'apple', 'quantity': 5}, {'product': 'banana', 'quantity': 3}]
+    >>> for i, d in enumerate(data):
+    ...     with open(f"{directory}/{i}.json", 'w') as file:
+    ...         json.dump(d, file)
+
+    >>> task_func(json_files_path=directory, key='product')
+    {'apple': 1, 'banana': 1}
+    """
+    result = {}
+    for root, dirs, files in os.walk(json_files_path):
+        for file in files:
+            if file.endswith('.json'):
+                file_path = os.path.join(root, file)
+                with open(file_path, 'r') as f:
+                    try:
+                        data = json.load(f)
+                        if key in data:
+                            value = data[key]
+                            result[value] = result.get(value, 0) + 1
+                    except json.JSONDecodeError:
+                        pass
+    return result

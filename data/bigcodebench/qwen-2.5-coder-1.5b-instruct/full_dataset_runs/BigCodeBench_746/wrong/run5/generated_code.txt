@@ -1,0 +1,56 @@
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+
+def task_func(df, target_column, target_values=None):
+    """
+    Replace all elements in DataFrame columns that are not present in the target_values array with zeros, and then perform a linear regression using the target column.
+
+    Parameters:
+        df (DataFrame): The input pandas DataFrame.
+        target_column (str): The target column for the linear regression.
+        target_values (array-like, optional): An array of target values to keep in the DataFrame. 
+        All other values will be replaced with zeros. Defaults to None.
+
+
+    Returns:
+        LinearRegression: The trained Linear Regression model.
+
+    Raises:
+        ValueError: If df is not a DataFrame or if target_column is not a string or if target_values is not an array-like object
+
+    Requirements:
+        - numpy
+        - pandas
+        - sklearn.linear_model.LinearRegression
+
+    Example:
+        >>> rng = np.random.default_rng(seed=0)
+        >>> df = pd.DataFrame(rng.integers(0, 100, size=(1000, 2)), columns=['A', 'predict'])
+        >>> model = task_func(df, 'predict')
+        >>> print(model.coef_)
+        [-0.04934205]
+        >>> print(model.intercept_)  
+        53.67665840020308
+
+        >>> rng = np.random.default_rng(seed=0)
+        >>> df = pd.DataFrame(rng.integers(0, 100, size=(1000, 5)), columns=['A', 'B', 'C', 'D', 'predict'])
+        >>> model = task_func(df, 'predict')
+        >>> print(model.coef_)
+        [-0.00173703 -0.02190392 -0.03304266  0.00759771]
+        >>> print(model.intercept_)
+        53.362739257681035
+    """
+if not isinstance(df, pd.DataFrame) or not isinstance(target_column, str) \
+   or not hasattr(pd, 'Series') or not isinstance(target_values, list):
+    raise ValueError("Invalid input")
+
+df[target_column] = df[target_column].apply(lambda x: x if x in target_values else 0)
+
+X = df.drop(columns=[target_column])
+y = df[target_column]
+
+model = LinearRegression()
+model.fit(X, y)
+return model

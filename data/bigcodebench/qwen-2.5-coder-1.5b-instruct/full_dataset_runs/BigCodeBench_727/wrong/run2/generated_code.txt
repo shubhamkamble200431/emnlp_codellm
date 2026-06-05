@@ -1,0 +1,51 @@
+import re
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+
+# Constants
+SENTENCES = ['This is a sentence', 'Another sentence here', 'More sentences']
+
+def task_func(s: str) -> np.ndarray:
+    """
+    Vectorize a string using the Bag-of-Words model. The string is split into words and each word is treated as an attribute. The value of each attribute is the number of occurrences of the word in the string. The function also uses some predefined sentences (SENTENCES constant) for vectorization.
+
+    Parameters:
+    - s (str): The string to vectorize.
+
+    Returns:
+    - np.ndarray: A numpy array with the vectorized string.
+
+    Requirements:
+    - re
+    - sklearn.feature_extraction.text.CountVectorizer
+    - numpy
+
+    Example:
+    >>> s = 'This is a test string.'
+    >>> vec = task_func(s)
+    >>> print(vec)
+    [0 0 1 0 0 0 1 1 1]
+    """
+    # Split the input string into words
+    words = re.findall(r'\b\w+\b', s.lower())
+
+    # Create a CountVectorizer object
+    vectorizer = CountVectorizer()
+
+    # Fit and transform the vectorizer on the predefined sentences
+    sentences_vectorizer = vectorizer.fit_transform(SENTENCES)
+
+    # Transform the input string using the fitted vectorizer
+    input_vector = vectorizer.transform([s])
+
+    # Get the vocabulary from the vectorizer
+    vocab = vectorizer.get_feature_names_out()
+
+    # Find the indices of the words in the input string in the vocabulary
+    word_indices = [vocab.index(word) for word in words if word in vocab]
+
+    # Convert the word indices to a one-hot encoded vector
+    one_hot_vector = np.zeros(len(vocab))
+    one_hot_vector[word_indices] = 1
+
+    return one_hot_vector

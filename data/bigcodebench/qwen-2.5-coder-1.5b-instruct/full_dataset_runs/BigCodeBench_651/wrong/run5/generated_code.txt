@@ -1,0 +1,42 @@
+import pandas as pd
+import time
+
+
+def task_func(df, target_value):
+    '''
+    Convert the input dic of list to DataFrame and searcher in this DataFrame for rows with cells equal to the
+    provided target_value. It then plots the count of such rows per column.
+
+    Parameters:
+    - df (dic of list): The input dict. It should have a 'Name' key.
+    - target_value (str): The target value to be searched in the DataFrame.
+
+    Returns:
+    tuple: A tuple containing:
+        - A pandas Series with counts of the target value per column.
+        - A matplotlib Axes object representing the plot (None if dataframe is empty).
+
+    Requirements:
+    - pandas
+    - time
+
+    Example:
+    >>> df = {'Column1': ['0', 'a', '332', '33']}
+    >>> series, ax = task_func(df, '332')
+    '''
+    start_time = time.time()  # Record the start time
+
+    if not df.get('Name'):
+        return pd.Series(), None  # Return empty series and None if no 'Name' key exists
+
+    # Convert the dictionary to a pandas DataFrame
+    df = pd.DataFrame(df)
+
+    # Count occurrences of the target value per column
+    result_series = df.apply(lambda col: col == target_value).sum()
+
+    end_time = time.time()  # Record the end time
+
+    print(f"Task completed in {end_time - start_time:.4f} seconds")
+
+    return result_series, df.plot(x='Name', y=target_series.name, kind='bar')  # Plotting the results

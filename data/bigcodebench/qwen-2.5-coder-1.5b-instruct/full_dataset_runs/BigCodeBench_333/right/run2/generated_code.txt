@@ -1,0 +1,38 @@
+import heapq
+import random
+
+def task_func(k, list_length = 5, min_value = 0, max_value = 100):
+    """
+    Find the k smallest numbers in a randomly generated list using heapq.
+
+    Parameters:
+    k (int): The number of smallest elements to find.
+    list_length (int): The length of the randomly generated list of integers.
+    min_value (int): The minimum value for randomly generated integers.
+    max_value (int): The maximum value for randomly generated integers.
+
+    Returns:
+    tuple: A tuple containing two lists: 
+        - list[int]: The randomly generated list of integers with the specified length.
+        - list[int]: The k smallest numbers found using heapq.
+
+    Requirements:
+    - heapq
+    - random
+
+    Example:
+    >>> random.seed(0)
+    >>> rand_list, least_k = task_func(3)
+    >>> least_k[0] in rand_list
+    True
+    >>> rand_list, least_k = task_func(3,5,100,100)
+    >>> print(least_k)
+    [100, 100, 100]
+    """
+    # Generate a random list of integers within the given range
+    random_list = [random.randint(min_value, max_value) for _ in range(list_length)]
+    
+    # Use heapq to find the k smallest numbers
+    least_k = heapq.nsmallest(k, random_list)
+    
+    return random_list, least_k

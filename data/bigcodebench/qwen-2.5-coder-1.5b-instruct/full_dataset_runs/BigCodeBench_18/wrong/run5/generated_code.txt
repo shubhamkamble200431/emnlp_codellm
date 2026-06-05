@@ -1,0 +1,61 @@
+import subprocess
+import csv
+import glob
+import random
+import os
+
+def task_func(file):
+    """
+    Divide a CSV file into several smaller files and shuffle the lines in each file.
+    
+    This function takes a CSV file path as input, divides it into smaller files using 
+    the shell 'split' command, and shuffles the rows in each of the resulting files.
+    The output files are named with a 'split_' prefix.
+
+    Parameters:
+    - file (str): The path to the CSV file.
+
+    Returns:
+    - list: The paths to the split files. Returns an empty list if the file does not exist, is not a CSV file, or if an error occurs during processing.
+    
+    Requirements:
+    - subprocess
+    - csv
+    - glob
+    - random
+    - os
+
+    Example:
+    >>> task_func('/path/to/file.csv')
+    ['/path/to/split_00', '/path/to/split_01', ...]
+    """
+    if not os.path.isfile(file) or not file.endswith('.csv'):
+        return []
+
+    base_name = os.path.splitext(os.path.basename(file))[0]
+    dir_path = os.path.dirname(file)
+
+    try:
+        # Create directories if they don't exist
+        os.makedirs(dir_path, exist_ok=True)
+
+        # Split the file into multiple parts using split command
+        subprocess.run(['split', '-b', '5MB', file, f"{dir_path}/split_{base_name}"])
+
+        # Shuffle the content of each split file
+        split_files = [f"{dir_path}/split_{base_name}{i}" for i in range(1, 6)]
+        for file_path in split_files:
+            with open(file_path, mode='r') as infile, open(f"{file_path}.shuffled", mode='w') as outfile:
+                reader = csv.reader(infile)
+                shuffled_lines = [random.choice(list(reader)) for _ in range(len(reader))]
+                writer = csv.writer(outfile)
+                writer.writerows(shuffled_lines)
+
+            # Remove the original file and rename the shuffled file
+            os.remove(file_path)
+            os.rename(f"{file_path}.shuffled", file_path)
+
+        return split_files
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return []

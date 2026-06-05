@@ -1,0 +1,48 @@
+from random import shuffle
+import pandas as pd
+import numpy as np
+
+# Constants
+
+
+
+def task_func(l, n_groups = 5):
+    """
+    Given a list `l`, this function shuffles the list, constructs a dataframe using the shuffled list,
+    and then for each row in the dataframe, moves the first n_groups elements to the end of the same row.
+
+    Parameters:
+    - l (list): A list of elements.
+    - n_groups (int): number of groups. Default value is 5.
+
+    Returns:
+    - DataFrame: A modified DataFrame constructed from the shuffled list.
+
+    Requirements:
+    - pandas
+    - numpy
+    - random
+
+    Example:
+    >>> df = task_func(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
+    >>> df.shape == (5, 10)
+    True
+    >>> set(df.iloc[0]) == set(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
+    True
+    """
+    # Shuffle the input list
+    shuffle(l)
+
+    # Convert the list to a DataFrame
+    df = pd.DataFrame(l, columns=[f"Col{i}" for i in range(1, len(l) + 1)])
+
+    # For each row, move the first n_groups elements to the end
+    for index, row in df.iterrows():
+        start = 0
+        end = n_groups
+        while end < len(row):
+            row[start], row[end] = row[end], row[start]
+            start += 1
+            end += 1
+
+    return df

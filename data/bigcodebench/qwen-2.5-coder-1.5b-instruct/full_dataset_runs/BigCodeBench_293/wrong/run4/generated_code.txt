@@ -1,0 +1,47 @@
+import itertools
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(elements, subset_size):
+    """
+    Generate all subsets of a given size from a tuple and draw a histogram of the sums of the subsets. Additionally,
+    return the Axes object of the plotted histogram and the combinations of the subsets and their sums.
+
+    Parameters:
+    - elements (tuple): A tuple of integers for which subsets will be generated.
+    - subset_size (int): Size of the subsets to be generated.
+
+    Returns:
+    - matplotlib.axes.Axes: Axes object of the plotted histogram.
+    - list: List of all the combinations of subsets.
+    - list: List of the sums of all the subsets.
+
+    Requirements:
+    - itertools
+    - numpy
+    - matplotlib
+
+    Example:
+    >>> ax, combs, sums = task_func((1, 2, 3, 4, 5, 6, 7, 8, 9, 10), 2)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> len(combs)
+    45
+    >>> len(sums)
+    45
+    """
+    # Generate all possible subsets of the given size with replacement
+    all_combinations = list(combinations_with_replacement(elements, subset_size))
+
+    # Calculate the sum of each subset and store them in a list
+    sums_of_subsets = [sum(comb) for comb in all_combinations]
+
+    # Create a histogram of the sums of the subsets
+    _, axes = plt.subplots()
+    axes.hist(sums_of_subsets, bins=np.linspace(min(sums_of_subsets), max(sums_of_subsets), 20))
+    axes.set_title('Histogram of Subset Sums')
+    axes.set_xlabel('Sum of Subsets')
+    axes.set_ylabel('Frequency')
+
+    return axes, all_combinations, sums_of_subsets

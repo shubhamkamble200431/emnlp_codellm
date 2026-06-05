@@ -1,0 +1,66 @@
+from random import choice
+import numpy as np
+import pandas as pd
+
+
+# Constants
+TEAMS = ['Team A', 'Team B', 'Team C', 'Team D', 'Team E']
+PENALTIES_COSTS = [100, 200, 300, 400, 500]
+
+
+def task_func(goals, penalties, teams=TEAMS, penalties_costs=PENALTIES_COSTS):
+    """
+    Generates a performance report DataFrame for teams, detailing goals and penalties. For each team, the function fetches
+    goal and penalty counts, calculates 'Penalties Cost' using a random multiplier from a predefined list, and computes
+    a 'Performance Score' as the non-negative difference between goals and penalties. Return a Dataframe with colomns 'Team',
+    'Goals', 'Penalties', 'Penalties Cost' and 'Performance Score'.
+
+    Parameters:
+    - goals (dict): Team names as keys, numbers of goals scored as values.
+    - penalties (dict): Team names as keys, numbers of penalties incurred as values.
+    - teams (list, optioanl): input teams. Default value is ['Team A', 'Team B', 'Team C', 'Team D', 'Team E']
+    - penalties_costs (list, optional): input penalties_costs. Default value is [100, 200, 300, 400, 500].
+
+    Returns:
+    - pd.DataFrame: DataFrame with Team, Goals, Penalties, Penalties Cost, Performance Score.
+
+    Requirements:
+    - pandas
+    - numpy
+    - random.choice
+
+    Example:
+    >>> goals = {'Team A': 3, 'Team B': 2}
+    >>> penalties = {'Team A': 1, 'Team B': 0}
+    >>> report = task_func(goals, penalties)
+    """
+    # Create a DataFrame to store results
+    data = {
+        'Team': [],
+        'Goals': [],
+        'Penalties': [],
+        'Penalties Cost': [],
+        'Performance Score': []
+    }
+
+    # Iterate over each team in the given list or all teams if none provided
+    for team in teams:
+        if team in goals and team in penalties:
+            # Fetch goal and penalty counts
+            goals_count = goals[team]
+            penalties_count = penalties[team]
+
+            # Calculate penalties cost using a random multiplier
+            penalties_cost = random.choice(penalties_costs) * np.random.uniform(1.5, 2.5)
+
+            # Compute performance score as non-negative difference between goals and penalties
+            performance_score = abs(goals_count - penalties_count)
+
+            # Append data to the DataFrame
+            data['Team'].append(team)
+            data['Goals'].append(goals_count)
+            data['Penalties'].append(penalties_count)
+            data['Penalties Cost'].append(penalties_cost)
+            data['Performance Score'].append(performance_score)
+
+    return pd.DataFrame(data)

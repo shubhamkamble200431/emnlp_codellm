@@ -1,0 +1,57 @@
+import os
+import glob
+import subprocess
+
+def task_func(directory, backup_dir='/path/to/backup'):
+    """
+    Backup all '.log' files in a specified directory to a tar.gz file and delete the original files after backup.
+    The backup file is named 'logs_backup.tar.gz' and placed in the specified backup directory.
+    
+    Parameters:
+    - directory (str): The directory that contains the log files to be backed up.
+    - backup_dir (str, optional): The directory where the backup file will be saved.
+                                  Default is '/path/to/backup'.
+    
+    Returns:
+    - str: The path to the backup file if logs are found, otherwise returns a message 'No logs found to backup'.
+    
+    Raises:
+    - FileNotFoundError: If the specified directory does not exist.
+    
+    Requirements:
+    - subprocess
+    - glob
+    - os
+    
+    Example:
+    >>> task_func('/path/to/logs')
+    '/path/to/backup/logs_backup.tar.gz'
+    >>> task_func('/path/to/logs', '/alternative/backup/dir')
+    '/alternative/backup/dir/logs_backup.tar.gz'
+    """
+    # Check if the directory exists
+    if not os.path.exists(directory):
+        raise FileNotFoundError(f"The directory {directory} does not exist.")
+    
+    # Find all .log files in the directory
+    log_files = glob.glob(os.path.join(directory, '*.log'))
+    
+    if not log_files:
+        return "No logs found to backup."
+    
+    # Create a temporary directory to store the log files while compressing them
+    temp_dir = tempfile.mkdtemp()
+    
+    # Move the log files to the temporary directory
+    for file_path in log_files:
+        shutil.move(file_path, temp_dir)
+    
+    # Compress the log files into a tar.gz file
+    output_file = os.path.join(backup_dir, 'logs_backup.tar.gz')
+    with tarfile.open(output_file, 'w:gz') as tar:
+        tar.add(temp_dir, arcname=os.path.basename(temp_dir))
+    
+    # Delete the temporary directory containing the log files
+    shutil.rmtree(temp_dir)
+    
+    return output_file

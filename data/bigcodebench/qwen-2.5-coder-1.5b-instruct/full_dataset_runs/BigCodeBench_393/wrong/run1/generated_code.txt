@@ -1,0 +1,52 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+
+def task_func(mu, sigma, num_samples=1000, seed=77):
+    """
+    Generate a normal distribution with the given mean and standard deviation. 
+    Creates a figure containing a histogram and a Q-Q plot of the generated samples.
+
+    Parameters:
+    mu (float): The mean of the normal distribution.
+    sigma (float): The standard deviation of the normal distribution.
+    num_samples (int, Optional): The number of samples to generate. Default is 1000.
+    seed (int, Optional): The seed for the random number generator. Default is 77.
+
+    Returns:
+    matplotlib.figure.Figure: A matplotlib figure containing the histogram and Q-Q plot.
+
+    Requirements:
+    - numpy for generating the samples.
+    - matplotlib.pyplot for plotting.
+    - scipy.stats for the Q-Q plot.
+
+    Example:
+    >>> fig = task_func(0, 1)
+    >>> type(fig)
+    <class 'matplotlib.figure.Figure'>
+    """
+    # Set the random seed for reproducibility
+    np.random.seed(seed)
+
+    # Generate normally distributed samples
+    samples = np.random.normal(mu, sigma, num_samples)
+
+    # Create a figure and a set of subplots
+    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 6))
+
+    # Plot the histogram
+    axs[0].hist(samples, bins=30, density=True, alpha=0.6, color='b')
+    axs[0].set_xlabel('Value')
+    axs[0].set_ylabel('Frequency')
+    axs[0].set_title('Histogram of Generated Samples')
+
+    # Compute the Q-Q plot
+    res = stats.probplot(samples, dist="norm", fit=True)
+    axs[1].plot(res[0], res[1], 'r-', label='Normal Distribution Fit')
+    axs[1].set_xlabel('Theoretical Quantiles')
+    axs[1].set_ylabel('Sample Quantiles')
+    axs[1].legend(loc='upper right')
+
+    return fig

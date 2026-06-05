@@ -1,0 +1,46 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+def task_func(s1, s2):
+    """
+    Visualize two Series using a swarm plot with a highlight on their intersecting data points.
+
+    This function creates a swarm plot to visually compare two pandas Series. 
+    It highlights the intersection points between these two series by drawing red dashed lines at the intersecting data points.
+
+    Parameters:
+    - s1 (pd.Series): The first series of data. This series must have a unique name that identifies it in the plot.
+    - s2 (pd.Series): The second series of data. Similar to s1, this series must also have a unique name.
+
+    Returns:
+    - ax (matplotlib.Axes): The Axes object of the plotted swarm chart. This object can be used for further customization of the plot if required.
+    intersection_count (int): The number of unique intersecting data points between s1 and s2. 
+    This count gives a quick numerical summary of the overlap between the two series.
+
+    Requirements:
+    - pandas
+    - seaborn
+    - matplotlib
+
+    Example:
+    >>> s1 = pd.Series([1, 2, 3, 4, 5], name='Series1')
+    >>> s2 = pd.Series([4, 5, 6, 7, 8], name='Series2')
+    >>> ax, count = task_func(s1, s2)
+    >>> ax.get_title()
+    'Overlap Between Series1 and Series2'
+    """
+    # Create the swarm plot
+    ax = sns.swarmplot(x=s1, y=s2, hue=s1.name)
+
+    # Highlight the intersecting data points by drawing dashed lines
+    intersects = set(s1[s1.isin(s2)])
+    for x_val in intersects:
+        x_min, x_max = ax.get_xlim()
+        ax.axvline(x=x_val, color='red', linestyle='--')
+
+    # Get the number of unique intersecting data points
+    intersection_count = len(intersects)
+
+    return ax, intersection_count

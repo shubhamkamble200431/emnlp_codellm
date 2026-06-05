@@ -1,0 +1,50 @@
+import os
+import csv
+import random
+from datetime import datetime
+
+def task_func():
+    """
+    Create and delete a CSV file "task_func_data/Output.txt" with sensor data for temperature and humidity.
+    The data is generated randomly, written in append mode, and the file is deleted after use.
+
+    Returns:
+    - Returns the path to the CSV file "task_func_data/Output.txt" before deletion.
+
+    Requirements:
+    - os
+    - csv
+    - random
+    - datatime
+
+    Example:
+    >>> task_func()
+    
+    """
+    # Define the output file path
+    output_path = 'task_func_data/Output.txt'
+
+    # Check if the file already exists and delete it if it does
+    if os.path.exists(output_path):
+        os.remove(output_path)
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists('task_func_data'):
+        os.makedirs('task_func_data')
+
+    # Open the output file in append mode
+    with open(output_path, 'a', newline='') as csvfile:
+        fieldnames = ['Timestamp', 'Temperature (Celsius)', 'Humidity (%)']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        # Generate random sensor data and write it to the CSV file
+        while True:
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            temperature = round(random.uniform(-20, 40), 1)
+            humidity = round(random.uniform(30, 80), 1)
+            row = {'Timestamp': timestamp, 'Temperature (Celsius)': temperature, 'Humidity (%)': humidity}
+            writer.writerow(row)
+
+    # Return the path to the CSV file before deletion
+    return output_path

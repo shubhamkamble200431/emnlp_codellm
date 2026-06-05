@@ -1,0 +1,59 @@
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
+
+def task_func(data_dict, data_keys):
+    """
+    Normalize data specified by keys in a dictionary using MinMax scaling and plot the results. This function is
+    useful for preprocessing data for machine learning models where data scaling can impact performance.
+
+    Parameters:
+    data_dict (dict): A dictionary where keys map to lists of numeric values.
+    data_keys (list): Keys within the dictionary whose corresponding values are to be normalized.
+
+    Returns:
+    tuple: A tuple containing a DataFrame of normalized values and a matplotlib Axes object representing a plot of the
+    normalized data.
+
+    Requirements:
+    - pandas
+    - sklearn
+
+    Raises:
+    ValueError: If no keys in `data_keys` are found in `data_dict`.
+
+    Example:
+    >>> data_dict = {'A': [1, 2, 3], 'B': [4, 5, 6]}
+    >>> data_keys = ['A', 'B']
+    >>> normalized_df, ax = task_func(data_dict, data_keys)
+    >>> print(normalized_df.to_string(index=False))
+      A   B
+    0.0 0.0
+    0.5 0.5
+    1.0 1.0
+    """
+    if not all(key in data_dict for key in data_keys):
+        raise ValueError("One or more keys from data_keys are not present in data_dict.")
+
+    # Extract specified columns from the dictionary
+    selected_data = {key: data_dict[key] for key in data_keys}
+
+    # Create a DataFrame
+    df = pd.DataFrame(selected_data)
+
+    # Initialize MinMaxScaler
+    scaler = MinMaxScaler()
+
+    # Fit and transform the DataFrame
+    scaled_df = scaler.fit_transform(df)
+
+    # Create a new DataFrame with the normalized values
+    normalized_df = pd.DataFrame(scaled_df, columns=df.columns)
+
+    # Plotting the normalized data
+    ax = normalized_df.plot(kind='line')
+    ax.set_xlabel('Index')
+    ax.set_ylabel('Normalized Value')
+    ax.set_title(f'Normalized Data ({", ".join(data_keys)})')
+
+    return normalized_df, ax

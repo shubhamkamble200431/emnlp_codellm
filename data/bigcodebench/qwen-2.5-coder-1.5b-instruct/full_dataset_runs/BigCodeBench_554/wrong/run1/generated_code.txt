@@ -1,0 +1,48 @@
+import numpy as np
+import random
+
+def task_func(MIN_WORDS, MAX_WORDS, WORDS_POOL):
+    """
+    Generates a palindrome sentence using random words from a specified pool. The sentence's length is randomly
+    chosen between a minimum (MIN_WORDS) and maximum (MAX_WORDS) number of words. The function ensures that the
+    sentence reads the same forwards and backwards.
+
+    Parameters:
+    MIN_WORDS (int): Minimum number of words in the palindrome sentence.
+    MAX_WORDS (int): Maximum number of words in the palindrome sentence.
+    WORDS_POOL (list): List of words to choose from for generating the palindrome.
+
+    Returns:
+    str: The generated palindrome sentence.
+
+    Requirements:
+    - numpy
+    - random
+
+    Examples:
+    Generate a palindrome sentence and check if it's indeed a palindrome.
+    >>> MIN_WORDS, MAX_WORDS, WORDS_POOL = 3, 10, ['apple', 'banana', 'racecar', 'world', 'level', 'madam', 'radar', 'rotor']
+    >>> sentence = task_func(MIN_WORDS, MAX_WORDS, WORDS_POOL)
+    >>> re_sentence = " ".join(sentence.split()[::-1])
+    >>> sentence == re_sentence
+    True
+
+    Check if the generated sentence length is within the specified range.
+    >>> sentence = task_func(MIN_WORDS, MAX_WORDS, WORDS_POOL)
+    >>> MIN_WORDS <= len(sentence.split()) <= MAX_WORDS
+    True
+    """
+    # Choose a random number of words between MIN_WORDS and MAX_WORDS
+    num_words = np.random.randint(MIN_WORDS, MAX_WORDS + 1)
+
+    # Select a random subset of words from the WORDS_POOL
+    selected_words = random.sample(WORDS_POOL, num_words)
+
+    # Ensure the selected words form a valid palindrome
+    while selected_words != selected_words[::-1]:
+        selected_words = random.sample(WORDS_POOL, num_words)
+
+    # Join the selected words into a palindrome sentence
+    palindrome_sentence = " ".join(selected_words)
+
+    return palindrome_sentence

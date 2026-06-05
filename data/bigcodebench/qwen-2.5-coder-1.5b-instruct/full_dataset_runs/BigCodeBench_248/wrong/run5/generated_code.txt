@@ -1,0 +1,43 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import itertools
+
+
+def task_func(data_list):
+    """
+    Unzips the provided list of tuples and plots the numerical values for each position.
+    
+    Parameters:
+    - data_list (list of tuples): A list containing tuples. Each tuple should contain a character and two numerical values.
+    
+    Returns:
+    - Axes: The plot with the unzipped numerical values.
+    
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - itertools
+
+    Raises:
+    - ValueError: If the data_list is empty.
+    
+    Example:
+    >>> plot = task_func([('a', 1, 2), ('b', 2, 3), ('c', 3, 4), ('d', 4, 5), ('e', 5, 6)])
+    >>> type(plot)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    if not data_list:
+        raise ValueError("data_list cannot be empty")
+
+    characters, values1, values2 = zip(*data_list)
+
+    plt.figure(figsize=(8, 6))
+    for char, value1, value2 in zip(characters, values1, values2):
+        plt.plot(value1, value2, label=char)
+
+    plt.xlabel('Values 1')
+    plt.ylabel('Values 2')
+    plt.title('Plot of Values 1 vs Values 2 for Different Characters')
+    plt.legend()
+    plt.grid(True)
+    return plt.gca()

@@ -1,0 +1,32 @@
+import random
+import string
+
+# Constants
+LETTERS = string.ascii_letters
+
+def task_func(num_words, word_length):
+    """
+    Create a list of random words of a certain length.
+
+    Parameters:
+    - num_words (int): The number of words to generate.
+    - word_length (int): The length of each word.
+
+    Returns:
+    - words (list): A list of random words.
+
+    Requirements:
+    - random
+    - string
+
+    Raises:
+    - ValueError: If num_words or word_length is negative.
+    
+    Example:
+    >>> task_func(5, 3)
+    ['Ohb', 'Vrp', 'oiV', 'gRV', 'IfL']
+    """
+    if num_words < 0 or word_length < 0:
+        raise ValueError("Both num_words and word_length must be non-negative.")
+
+    return [random.choice(LETTERS) * word_length for _ in range(num_words)]

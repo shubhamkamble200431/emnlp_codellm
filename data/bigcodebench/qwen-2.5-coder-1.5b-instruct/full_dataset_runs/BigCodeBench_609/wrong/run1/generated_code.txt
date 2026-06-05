@@ -1,0 +1,44 @@
+from itertools import combinations
+from random import sample
+
+
+def task_func(df, tuples, n_plots):
+    """
+    Removes rows from a DataFrame based on a list of tuples, each representing row values to match and remove.
+    Generates up to 'n_plots' scatter plots for random combinations of two columns from the remaining DataFrame.
+
+    Parameters:
+    - df (pd.DataFrame): The input DataFrame.
+    - tuples (list): A list of tuples, where each tuple contains values that, if matched, should result in the row being removed.
+    - n_plots (int): The maximum number of scatter plots to generate from the remaining data.
+
+    Returns:
+    - pd.DataFrame: The DataFrame after specified rows have been removed.
+    - list: A list of tuples, each containing a pair of column names used for the plot and the corresponding plot object.
+
+    Requirements:
+    - random
+    - itertools
+
+    Example:
+    >>> import numpy as np, pandas as pd
+    >>> df = pd.DataFrame(np.random.rand(10, 5), columns=['A', 'B', 'C', 'D', 'E'])
+    >>> tuples = [(0.1, 0.2, 0.3, 0.4, 0.5)]
+    >>> modified_df, plots = task_func(df, tuples, 3)
+    """
+    # Remove rows matching the given tuples
+    df_cleaned = df[~df.isin(tuples).all(axis=1)]
+
+    # Generate scatter plots for random combinations of two columns
+    plots = []
+    for _ in range(min(n_plots, len(df_cleaned.columns) * (len(df_cleaned.columns) - 1) // 2)):
+        cols = sample(df_cleaned.columns.tolist(), 2)
+        x_col, y_col = cols
+        plt.scatter(df_cleaned[x_col], df_cleaned[y_col])
+        plt.title(f'Scatter Plot of {x_col} vs. {y_col}')
+        plt.xlabel(x_col)
+        plt.ylabel(y_col)
+        plots.append((x_col, y_col))
+        plt.show()
+
+    return df_cleaned, plots

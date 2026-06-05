@@ -1,0 +1,43 @@
+import subprocess
+from ipaddress import IPv4Network
+
+def task_func(ip_range):
+    """
+    Scans the specified IP address range and pings each IP to check if it is active.
+    The function returns a dictionary with IP addresses as keys and a boolean value indicating
+    their active status (True if the ping is successful, False otherwise).
+
+    Parameters:
+        ip_range (str): The IP range to scan, in CIDR notation (e.g., '192.168.0.0/24').
+
+    Requirements:
+    - ipaddress
+    - subprocess
+
+    Returns:
+        dict: A dictionary mapping IP addresses to their active status.
+
+    Raises:
+        subprocess.CalledProcessError: If a ping command fails due to a subprocess error.
+
+    Examples:
+    >>> result = task_func('192.168.1.0/24')
+    >>> isinstance(result, dict)
+    True
+    >>> all(isinstance(key, str) and isinstance(value, bool) for key, value in result.items())
+    True
+    """
+    ip_network = IPv4Network(ip_range)
+    active_ips = {}
+
+    for ip in ip_network:
+        try:
+            response = subprocess.run(['ping', '-c', '1', str(ip)], capture_output=True, text=True, check=True)
+            if 'bytes from' in response.stdout:
+                active_ips[str(ip)] = True
+            else:
+                active_ips[str(ip)] = False
+        except subprocess.CalledProcessError:
+            active_ips[str(ip)] = False
+
+    return active_ips

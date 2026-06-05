@@ -1,0 +1,59 @@
+import os
+import shutil
+import string
+
+# Constants
+INVALID_CHARACTERS = string.punctuation + string.whitespace
+
+def task_func(directory_path):
+    """
+    Scan a directory and organize the files according to their endings. Files with invalid characters in the name will be moved to a new directory called "Invalid."
+    
+    The invalid characters are defined by the constant INVALID_CHARACTERS, which includes all punctuation and whitespace characters.
+
+    Parameters:
+    - directory_path (str): The path to the directory.
+
+    Returns:
+    - summary (dict): A summary dictionary containing the count of files moved to each directory.
+
+    Requirements:
+    - os
+    - shutil
+    - string
+
+    Example:
+    >>> task_func('path_to_directory')
+    {'txt': 2, 'jpg': 1, 'Invalid': 1}
+    """
+    try:
+        # Create the "Invalid" directory if it doesn't exist
+        if not os.path.exists(os.path.join(directory_path, "Invalid")):
+            os.makedirs(os.path.join(directory_path, "Invalid"))
+
+        # Initialize the summary dictionary
+        summary = {'txt': 0, 'jpg': 0}
+
+        # Iterate over each file in the directory
+        for filename in os.listdir(directory_path):
+            # Check if the file name contains any invalid characters
+            if any(char in INVALID_CHARACTERS for char in filename):
+                # Move the file to the "Invalid" directory
+                src_path = os.path.join(directory_path, filename)
+                dst_path = os.path.join(directory_path, "Invalid", filename)
+                shutil.move(src_path, dst_path)
+                summary['Invalid'] += 1
+            else:
+                # Move the file to its appropriate directory based on the file extension
+                _, ext = os.path.splitext(filename)
+                dir_name = f"{ext.lstrip('.')}"
+                if not os.path.exists(os.path.join(directory_path, dir_name)):
+                    os.makedirs(os.path.join(directory_path, dir_name))
+                dst_path = os.path.join(directory_path, dir_name, filename)
+                shutil.move(src_path, dst_path)
+                summary[dir_name] += 1
+
+        return summary
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None

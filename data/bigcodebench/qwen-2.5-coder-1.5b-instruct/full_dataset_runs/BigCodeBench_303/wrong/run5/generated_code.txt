@@ -1,0 +1,61 @@
+import pytz
+import numpy as np
+from dateutil.parser import parse
+import math
+
+
+MOON_PHASES_YEARS = np.array([1987, 1994, 2001, 2008, 2015, 2022])
+
+def task_func(date_str, from_tz, to_tz):
+    """
+    Calculate the moon phase by the date and time taking into account the lunar phase cycle of 7 years. The 
+    function uses a constant array `MOON_PHASES_YEARS` to determine the reference years for the moon phases.
+
+    Parameters:
+    date_str (str): The date string in "yyyy-mm-dd hh:mm:ss" format.
+    from_tz (str): The timezone of the given date string.
+    to_tz (str): The timezone to which the given date and time should be converted.
+
+    Returns:
+    float: The moon phase between 0 and 1. A value of 0 indicates a new moon and a value of 1 indicates a full moon.
+
+    Requirements:
+    - pytz
+    - numpy
+    - dateutil.parser
+    - math
+
+    Example:
+    >>> task_func('1970-01-01 00:00:00', 'UTC', 'America/New_York')
+    0.9749279121818237
+    """
+    tz_from = pytz.timezone(from_tz)
+    tz_to = pytz.timezone(to_tz)
+
+    date = tz_from.localize(parse(date_str))
+    date_in_to_tz = date.astimezone(tz_to)
+
+    year = date_in_to_tz.year
+
+    if year < MOON_PHASES_YEARS[0]:
+        index = 0
+    elif year > MOON_PHASES_YEARS[-1]:
+        index = len(MOON_PHASES_YEARS) - 1
+    else:
+        index = np.searchsorted(MOON_PHASES_YEARS, year, side='right') - 1
+
+    current_year_phase = MOON_PHASES_YEARS[index]
+    next_year_phase = MOON_PHASES_YEARS[index + 1]
+
+    months_elapsed = (year - current_year_phase) * 12
+    month_offset = date_in_to_tz.month - (current_year_phase % 12)
+    total_months_passed = months_elapsed + month_offset
+
+    if month_offset == 11:
+        next_year_phase += 1
+    elif month_offset == 0:
+        next_year_phase -= 1
+
+    ratio = (total_months_passed / (next_year_phase - current_year_phase)) % 1
+
+    return ratio

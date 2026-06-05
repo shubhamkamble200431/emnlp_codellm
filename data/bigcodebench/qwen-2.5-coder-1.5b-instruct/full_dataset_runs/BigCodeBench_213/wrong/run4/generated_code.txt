@@ -1,0 +1,53 @@
+import time
+import random
+import matplotlib.pyplot as plt
+from scipy.stats import kurtosis
+
+
+def task_func(intervals=100, seed=0):
+    """
+    Generates a series of random numbers over a specified number of intervals with a delay of 1 second between 
+    each interval. It then plots these numbers as a function of elapsed time and returns the Axes object along
+    with the kurtosis value of the generated numbers.
+    
+    Parameters:
+    - intervals (int, optional): Number of intervals for generating random numbers. Default is 100.
+
+    Returns:
+    - matplotlib.axes.Axes: The Axes object representing the plot.
+    - float: The kurtosis value of the generated numbers.
+
+    Requirements:
+    - time
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax, kurtosis = task_func(5)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Set the random seed for reproducibility
+    random.seed(seed)
+
+    # Initialize lists to store time and data
+    time_points = []
+    data = []
+
+    # Generate random numbers over the specified number of intervals
+    for _ in range(intervals):
+        time_points.append(time.time())
+        data.append(random.gauss(0, 1))  # Gaussian distribution for simplicity
+        time.sleep(1)  # Delay of 1 second between each interval
+
+    # Plot the data points
+    fig, ax = plt.subplots()
+    ax.plot(time_points, data, label='Random Numbers')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Value')
+    ax.legend()
+
+    # Calculate the kurtosis of the data
+    kurtosis_value = kurtosis(data)
+
+    return ax, kurtosis_value

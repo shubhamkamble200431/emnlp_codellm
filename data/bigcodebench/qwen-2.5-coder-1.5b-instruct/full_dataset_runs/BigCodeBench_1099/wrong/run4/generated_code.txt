@@ -1,0 +1,54 @@
+import re
+from collections import Counter
+
+# Predefined list of common stopwords
+PREDEFINED_STOPWORDS = {
+    "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", 
+    "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", 
+    "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", 
+    "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", 
+    "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", 
+    "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", 
+    "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", 
+    "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", 
+    "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "more"
+}
+
+def task_func(text):
+    """
+    Count the stopwords found in the text after you have removed URLs.
+
+    Parameters:
+    text (str): The text to summarize.
+
+    Returns:
+    list: A list of tuples where each tuple contains a word and its frequency.
+
+    Requirements:
+    - re
+    - collection.Counter
+
+    Example:
+    >>> task_func('Visit https://www.python.org for more info. Python is great, we love Python.')
+    [('for', 1), ('more', 1), ('is', 1), ('we', 1)]
+    >>> task_func('Visit https://www.python.org for more info. Python is great, we love Python, and we also love Rust.')
+    [('for', 1), ('more', 1), ('is', 1), ('we', 2), ('and', 1)]
+
+    Note:
+    - Valid url is start with http or https
+    - The capitilization need to macth the stopwords
+    """
+    # Remove URLs from the text
+    cleaned_text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', text)
+
+    # Convert text to lowercase
+    cleaned_text = cleaned_text.lower()
+
+    # Split the text into words
+    words = cleaned_text.split()
+
+    # Filter out stopwords and count the remaining words
+    filtered_words = [word for word in words if word not in PREDEFINED_STOPWORDS]
+    word_counts = Counter(filtered_words)
+
+    return list(word_counts.items())

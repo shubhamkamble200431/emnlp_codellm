@@ -1,0 +1,56 @@
+from itertools import combinations
+import pandas as pd
+
+
+def task_func(number_list, element):
+    """
+    Find all unique combinations of 3 numbers from a list that add up to a certain element.
+
+    If the number_list is empty, or there is no combination that adds up to the element,
+    an empty dataframe is returned.
+    
+
+    Parameters:
+    number_list (list): The list of numbers.
+    element (int): The number to which the combination of 3 numbers should add up.
+
+    Returns:
+    Pandas DataFrame: A pandas Dataframe with the column 'Combinations',
+         where each row contains a tuple containing a unique combination of 3 numbers that add up to the element.
+
+    Requirements:
+    - itertools
+    - pandas:
+
+    Example:
+    >>> result = task_func([1, 2, 3, 4, 5], 6)
+    >>> print(result)    
+      Combinations
+    0    (1, 2, 3)
+
+    >>> result = task_func([-1, 1, 0, -2, 2, 3], 0)
+    >>> print(result) 
+      Combinations
+    0  (-1, -2, 3)
+    1   (-1, 1, 0)
+    2   (0, -2, 2)
+
+    >>> result = task_func([], 0)
+    >>> print(result)
+    Empty DataFrame
+    Columns: [Combinations]
+    Index: []
+    """
+    if len(number_list) == 0:
+        return pd.DataFrame()
+
+    # Generate all possible combinations of 3 numbers from the list
+    all_combinations = list(combinations(number_list, 3))
+
+    # Filter combinations that sum up to the element
+    filtered_combinations = [combo for combo in all_combinations if sum(combo) == element]
+
+    # Create a pandas DataFrame with the filtered combinations
+    result_df = pd.DataFrame(filtered_combinations, columns=['Combinations'])
+
+    return result_df

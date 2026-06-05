@@ -1,0 +1,39 @@
+from random import randint
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def task_func(array_length=100):
+    """
+    Generate two arrays of random integers and draw a line diagram with the 
+    maximum values of the respective elements of the two arrays. Set 'Maximum Values' on its y-axis.
+
+    Parameters:
+    - array_length (int): Length of the random arrays to be generated. Default is 100.
+
+    Returns:
+    - matplotlib.axes.Axes: Axes object with the plot.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - random
+
+    Example:
+    >>> ax = task_func(100)
+    """
+    x = np.arange(array_length)
+    y1 = np.random.randint(-100, 100, size=array_length)
+    y2 = np.random.randint(-100, 100, size=array_length)
+
+    max_y1 = np.max(y1)
+    max_y2 = np.max(y2)
+
+    fig, ax = plt.subplots()
+    ax.plot(x, y1, label='Array 1')
+    ax.plot(x, y2, label='Array 2')
+
+    ax.set_title('Maximum Values')
+    ax.legend()
+
+    return ax

@@ -1,0 +1,44 @@
+import json
+import csv
+import os
+import base64
+
+def task_func(raw_string, filename, output_dir):
+    """
+    Processes a base64-encoded JSON string, stores the data in a CSV file, and returns the path of the file.
+
+    Parameters:
+    - raw_string (str): The base64 encoded JSON string.
+    - filename (str): The name of the file to which the data should be saved (without extension).
+    - output_dir (str): The path of the directory in which the file should be saved.
+
+    Returns:
+    - file_path (str): The path of the file.
+
+    Requirements:
+    - json
+    - csv
+    - os
+    - base64
+
+    Example:
+    >>> task_func('eyJrZXkiOiAiVmFsdWUifQ==', 'data', './output')
+    './output/data.csv'
+    """
+    # Decode the base64 string into bytes
+    decoded_bytes = base64.b64decode(raw_string)
+
+    # Load the JSON data from bytes
+    data = json.loads(decoded_bytes)
+
+    # Create the full file path
+    file_path = os.path.join(output_dir, f'{filename}.csv')
+
+    # Write the JSON data to a CSV file
+    with open(file_path, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.DictWriter(file)
+        writer.writeheader()  # Write header if necessary
+        for item in data:
+            writer.writerow(item)
+
+    return file_path

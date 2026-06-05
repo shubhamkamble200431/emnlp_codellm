@@ -1,0 +1,54 @@
+import pandas as pd
+import itertools
+from random import shuffle
+
+def task_func(letters=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'], categories=['Category 1', 'Category 2', 'Category 3']):
+    """
+    Create a Pandas DataFrame by associating each element from a list of letters to a category from a list of categories.
+    The categories are randomly shuffled.
+
+    Parameters:
+    letters (List[str]): A list of letters to be included in the DataFrame. Default is ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].
+    categories (List[str]): A list of categories to be included in the DataFrame. Default is ['Category 1', 'Category 2', 'Category 3'].
+
+    Returns:
+    DataFrame: A Pandas DataFrame with two columns: 'Letter' and 'Category'. Each letter is randomly associated with a category.
+
+    Requirements:
+    - pandas
+    - itertools
+    - random.shuffle
+
+    Example:
+    >>> import random
+    >>> random.seed(0)
+    >>> df = task_func(['A', 'B'], ['Cat 1', 'Cat 2'])
+    >>> print(df)
+      Letter Category
+    0      A    Cat 2
+    1      B    Cat 1
+    2      A    Cat 1
+    3      B    Cat 2
+    >>> random.seed(1)
+    >>> df = task_func()
+    >>> print(df.head())
+      Letter    Category
+    0      A  Category 3
+    1      B  Category 3
+    2      C  Category 2
+    3      D  Category 2
+    4      E  Category 3
+    """
+    # Shuffle the categories
+    shuffle(categories)
+    
+    # Create pairs of letters and categories
+    paired_data = list(itertools.product(letters, categories))
+    
+    # Create a dictionary for easy access
+    paired_dict = dict(paired_data)
+    
+    # Create the DataFrame
+    df = pd.DataFrame(list(paired_dict.items()), columns=['Letter', 'Category'])
+    
+    return df

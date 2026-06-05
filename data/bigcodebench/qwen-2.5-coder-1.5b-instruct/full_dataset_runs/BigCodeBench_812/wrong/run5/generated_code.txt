@@ -1,0 +1,54 @@
+import re
+from pathlib import Path
+import tarfile
+
+# Constants
+PATTERN = r"(?<!Distillr)\\\\AcroTray\.exe"
+DIRECTORY = r"C:\\SomeDir\\"
+
+def task_func(directory=DIRECTORY, file_pattern=PATTERN):
+    """
+    Look for files that match the pattern of the regular expression '(? <! Distillr)\\\\ AcroTray\\.exe' in the directory 'C:\\ SomeDir\\'. If found, archive these files in a tar file.
+
+    Parameters:
+    - directory: The directory to search for files matching a specified pattern. The function will iterate over all files within this directory, including subdirectories.
+    - file_pattern: A regular expression pattern used to match filenames. Files whose names match this pattern will be added to an archive (tar file).
+
+    Returns:
+    - str: Path to the created tar file.
+
+    Requirements:
+    - re
+    - pathlib
+    - tarfile
+
+    Example:
+    >>> f_680('/path/to/source', '/path/to/target')
+    """
+    # List to store matched filenames
+    matched_files = []
+
+    # Iterate over all files in the directory and its subdirectories
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            # Check if the filename matches the pattern
+            if re.match(file_pattern, file):
+                matched_files.append(os.path.join(root, file))
+
+    # Create a temporary tar file for storing matched files
+    with tempfile.NamedTemporaryFile(delete=False) as temp_tar:
+        # Add each matched file to the tar file
+        for file in matched_files:
+            shutil.copy2(file, temp_tar.name)
+
+        # Rename the temporary tar file to the desired output name
+        tar_file_path = os.path.join(tempfile.gettempdir(), 'matched_files.tar.gz')
+
+        # Compress the tar file using gzip
+        with tarfile.open(tar_file_path, 'w:gz') as tar:
+            tar.add(temp_tar.name, arcname=os.path.basename(temp_tar.name))
+
+        # Remove the temporary tar file
+        os.remove(temp_tar.name)
+
+        return tar_file_path

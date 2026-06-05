@@ -1,0 +1,32 @@
+import random
+import matplotlib.pyplot as plt
+
+
+def task_func(points: int):
+    """
+    Generate a plot of random numbers such that indices are on the x-axis and generated numbers are on the y-axis.
+
+    Parameters:
+    - points (int): Number of random points to generate.
+
+    Returns:
+    - Returns a tuple containing:
+        - A list of generated random numbers.
+        - A matplotlib Axes object representing the plot.
+
+    Requirements:
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> import random
+    >>> random.seed(0)
+    >>> task_func(5)
+    ([0.8444218515250481, 0.7579544029403025, 0.420571580830845, 0.25891675029296335, 0.5112747213686085], <Axes: >)
+    >>> task_func(3)
+    ([0.4049341374504143, 0.7837985890347726, 0.30331272607892745], <Axes: >)
+    """
+    numbers = [random.random() for _ in range(points)]
+    fig, ax = plt.subplots()
+    ax.plot(range(points), numbers)
+    return numbers, ax

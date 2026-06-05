@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+
+def task_func(df):
+    """
+    Scale the 'Age' and 'Income' columns between 0 and 1 for each group by 'id' in the provided pandas DataFrame. 
+    Additionally, create a histogram of the 'Income' column after scaling and return both the scaled DataFrame 
+    and the histogram data.
+
+    Parameters:
+    df (DataFrame): The pandas DataFrame with columns ['id', 'age', 'income'].
+
+    Returns:
+    tuple: A tuple containing the scaled DataFrame and the histogram data for the 'income' column.
+
+    Requirements:
+    - pandas
+    - sklearn.preprocessing.MinMaxScaler
+    - numpy
+
+    Example:
+    >>> df = pd.DataFrame({'id': [1, 1, 2, 2, 3, 3], 'age': [25, 26, 35, 36, 28, 29],'income': [50000, 60000, 70000, 80000, 90000, 100000]})
+    >>> df_scaled, income_hist = task_func(df)
+    >>> print(df_scaled.iloc[0]['age'])
+    0.0
+    >>> print(df_scaled.iloc[0]['income'])
+    0.0
+    """
+    # Create a copy of the DataFrame to avoid modifying the original
+    df_copy = df.copy()
+
+    # Define the columns to scale
+    columns_to_scale = ['age', 'income']
+
+    # Initialize MinMaxScaler for each column
+    scaler = MinMaxScaler(feature_range=(0, 1))
+
+    # Fit and transform the specified columns
+    for col in columns_to_scale:
+        df_copy[col] = scaler.fit_transform(df_copy[[col]])
+
+    # Create a histogram of the 'income' column after scaling
+    income_hist = df_copy['income'].hist()
+
+    # Return the scaled DataFrame and the histogram data
+    return df_copy, income_hist

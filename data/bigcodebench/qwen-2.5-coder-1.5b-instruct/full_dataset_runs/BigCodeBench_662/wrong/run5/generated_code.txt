@@ -1,0 +1,52 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+
+def task_func(x, y, labels):
+    """ 
+    Perform Principal Component Analysis (PCA) on "x" as x-values and "y" as y-values and record the results with labels.
+
+    Parameters:
+    x (list): List of numpy arrays representing the x-values of the data points.
+    y (list): List of numpy arrays representing the y-values of the data points.
+    labels (list): List of strings representing the labels for the chemical compounds.
+
+    Returns:
+    fig: Matplotlib figure object.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - sklearn.decomposition
+
+    Example:
+    >>> x = [np.array([1,2,3]), np.array([4,5,6]), np.array([7,8,9])]
+    >>> y = [np.array([4,5,6]), np.array([7,8,9]), np.array([10,11,12])]
+    >>> labels = ['H₂O', 'O₂', 'CO₂']
+    >>> fig = task_func(x, y, labels)
+    """
+    # Concatenate x and y values along axis 1 to form a single array of data points
+    combined_data = np.hstack((x, y))
+
+    # Create a PCA object
+    pca = PCA(n_components=2)
+
+    # Fit the PCA model to the data
+    pca.fit(combined_data)
+
+    # Extract principal components
+    principal_components = pca.transform(combined_data)
+
+    # Separate the principal components into their respective dimensions
+    principal_x = principal_components[:, 0]
+    principal_y = principal_components[:, 1]
+
+    # Create a scatter plot
+    fig, ax = plt.subplots()
+    ax.scatter(principal_x, principal_y, c=labels, cmap='viridis')
+
+    # Add gridlines
+    ax.grid(True)
+
+    return fig

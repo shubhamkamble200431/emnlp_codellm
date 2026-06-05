@@ -1,0 +1,56 @@
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+
+def task_func(n_rows, scale_cols, columns=['A', 'B', 'C', 'D', 'E'], random_seed=None):
+    """
+    Generate a DataFrame with columns 'columns' and fill them with random
+    values. Scale the columns at the provided indexes with sklearn StandardScaler.
+    If scale_cols is empty no column is scaled
+        
+    Parameters:
+    n_rows (int): The number of rows in the DataFrame.
+    scale_cols (list of int): The indices of columns to be scaled. The indices are based on the predefined column names.
+    columns (list of str, optional): The columns to be included in the DataFrame. Defaults to ['A', 'B', 'C', 'D', 'E'].
+    random_seed (int): Seed used in rng. Default is None.
+
+    Returns:
+    DataFrame: The resulting DataFrame after scaling the selected columns.
+
+    Requirements:
+    - numpy
+    - pandas
+    - sklearn
+    
+    Example:
+    >>> df = task_func(3, [1], columns=['test', 'scale'], random_seed=1)
+    >>> print(df)
+       test     scale
+    0    37  1.162476
+    1    72  0.116248
+    2    75 -1.278724
+
+    >>> df = task_func(5, [1, 2, 3], random_seed=12)
+    >>> print(df)
+        A         B         C         D   E
+    0  75 -0.840307 -0.791926 -1.462784   3
+    1  67  0.673481  1.517859 -0.855820  49
+    2  52 -1.519967 -0.406962  1.177511  34
+    3  75  0.611694 -1.121896  0.782984  13
+    4  82  1.075099  0.802925  0.358109  35
+    """
+    # Create the DataFrame
+    data = np.random.rand(n_rows, len(columns))
+    df = pd.DataFrame(data, columns=columns)
+
+    # Set the seed if specified
+    if random_seed is not None:
+        np.random.seed(random_seed)
+
+    # Perform the scaling
+    scaler = StandardScaler()
+    if scale_cols:
+        df[scale_cols] = scaler.fit_transform(df[scale_cols])
+
+    return df

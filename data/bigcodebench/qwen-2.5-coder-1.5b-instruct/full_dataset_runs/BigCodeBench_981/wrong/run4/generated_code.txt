@@ -1,0 +1,75 @@
+import pandas as pd
+from datetime import datetime
+import random
+
+
+def task_func(start_date, end_date, num_series, seed=None):
+    """
+    Generates a DataFrame with multiple random integer time series (each ranging
+    from 0 to 100) from a start date to an end date, then returns the generated time series
+    on a line plot.
+
+    Parameters:
+    - start_date (str): The start date in "yyyy-mm-dd" format.
+    - end_date (str): The end date in "yyyy-mm-dd" format.
+    - num_series (int): The number of random time series to generate.
+    - seed (int, optional): Seed for the random number generator. Defaults to None (not set).
+
+    Returns:
+    - pandas.DataFrame: A pandas DataFrame containing the generated time series, indexed by date.
+    - plt.Axes: A matplotlib line plot of the time series.
+
+    Raises:
+    - ValueError: If start_date is later than end_date; or if num_series is less than 1.
+
+    Requirements:
+    - pandas
+    - datetime
+    - random
+
+    Notes:
+    - The line plot's title is set to "Random Time Series", the x-axis label to "Date",
+      and the y-axis label to "Value".
+    - Each time series is plotted as a separate line with automatic coloring and legend
+      entry labeled as "series_x" where x is the series number.
+
+    Example:
+    >>> df, ax = task_func('2020-01-01', '2020-12-31', 3, 42)
+    >>> df.head(2)
+                series_1  series_2  series_3
+    2020-01-01        81        67        19
+    2020-01-02        14        20        29
+    """
+    # Check input parameters
+    if start_date > end_date:
+        raise ValueError("Start date cannot be later than end date")
+    if num_series < 1:
+        raise ValueError("Number of series must be at least 1")
+
+    # Set seed if provided
+    if seed is not None:
+        random.seed(seed)
+
+    # Generate dates
+    start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
+    end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
+    delta = end_date_obj - start_date_obj
+    periods = delta.days + 1
+    dates = pd.date_range(start=start_date_obj, periods=periods)
+
+    # Initialize a DataFrame
+    data = {
+        f'series_{i+1}': [random.randint(0, 100) for _ in range(periods)]
+        for i in range(num_series)
+    }
+    df = pd.DataFrame(data, index=dates)
+
+    # Plotting
+    fig, ax = plt.subplots()
+    ax.plot(df.index, df.values, marker='o')
+    ax.set_title("Random Time Series")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Value")
+    plt.legend(loc="upper right")
+
+    return df, ax

@@ -1,0 +1,44 @@
+import re
+import glob
+from docx import Document
+
+
+def task_func(directory_path: str) -> int:
+    """
+    Processes all Word (.docx) files in the provided directory, searching for double quotes in the text 
+    and adding a backslash before each double quote to "protect" it.
+    
+    Parameters:
+    - directory_path (str): Path to the directory containing .docx files to be processed.
+    
+    Returns:
+    - int: Number of .docx files processed.
+
+    Requirements:
+    - re
+    - docx
+    - glob
+
+    Example:
+    >>> import tempfile
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> doc = Document()
+    >>> _ = doc.add_paragraph("This is a sample text with double quotes.")
+    >>> doc.save(temp_dir + '/sample.docx')
+    >>> task_func(temp_dir)
+    1
+    """
+    count = 0
+    for file_path in glob.glob(f"{directory_path}/*.docx"):
+        try:
+            doc = Document(file_path)
+            for paragraph in doc.paragraphs:
+                text = paragraph.text
+                if '"' in text:
+                    text = re.sub(r'"', r'\\\\"', text)
+                    paragraph.text = text
+            doc.save(file_path)
+            count += 1
+        except Exception as e:
+            print(f"Error processing {file_path}: {e}")
+    return count

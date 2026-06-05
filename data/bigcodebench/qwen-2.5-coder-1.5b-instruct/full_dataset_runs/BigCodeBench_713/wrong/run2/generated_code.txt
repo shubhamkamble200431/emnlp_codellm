@@ -1,0 +1,36 @@
+import os
+import re
+
+def task_func(log_file_path: str, keywords: list):
+    '''
+    Check a log file and format the lines that contain certain keywords. This code reads the log file specified by log_file_path; searches for lines containing any of the keywords provided in the list;
+    and formats each line to display the keyword, the timestamp, and the message separated by 20 spaces.
+    
+    Parameters:
+    - log_file_path (str): The path to the log file to be checked.
+    - keywords (list): A list of keywords to be searched for in the log file.
+    
+    Returns:
+    - formatted_lines (list): Returns a list of formatted strings containing the relevant information.
+    
+    Requirements:
+    - os
+    - re
+    
+    Example:
+    >>> task_func('/path/to/log_file.log', ['ERROR', 'WARNING'])
+    ['    ERROR :    11:30:10 : This is an error message', '    WARNING :    11:35:10 : This is a warning message']
+    '''
+    with open(log_file_path, 'r') as file:
+        lines = file.readlines()
+
+    formatted_lines = []
+    for line in lines:
+        if any(keyword.lower() in line.lower() for keyword in keywords):
+            timestamp_match = re.search(r'\d{2}:\d{2}:\d{2}', line)
+            if timestamp_match:
+                timestamp = timestamp_match.group()
+                formatted_line = f'    {keyword.upper()} :    {timestamp} :    {line.strip().replace(timestamp, "")}'
+                formatted_lines.append(formatted_line)
+
+    return formatted_lines

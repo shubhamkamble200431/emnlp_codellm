@@ -1,0 +1,34 @@
+import subprocess
+import random
+
+# Constants
+SCRIPTS = ['script1.sh', 'script2.sh', 'script3.sh']
+SCRIPTS_DIR = '/path/to/scripts'  
+
+def task_func():
+    """
+    Run a random bash script from a list of scripts.
+
+    Parameters:
+    - None
+
+    Returns:
+    - script (str): The full path of the script that was executed.
+
+    Requirements:
+    - subprocess
+    - random
+
+    Example:
+    >>> task_func()
+    """
+    # Select a random script
+    selected_script = random.choice(SCRIPTS)
+
+    # Construct the full path to the script
+    full_path = f"{SCRIPTS_DIR}/{selected_script}"
+
+    # Run the script using subprocess
+    subprocess.run(['bash', full_path], check=True)
+
+    return full_path

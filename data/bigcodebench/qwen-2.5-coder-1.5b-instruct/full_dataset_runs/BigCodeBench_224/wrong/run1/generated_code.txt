@@ -1,0 +1,61 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.fft import fft
+
+
+def task_func(range_start=-10, range_end=10, step=0.1):
+    """
+    Create a generator object that generates a sequence of tuples. Each tuple contains x, sin(x), and cos(x) 
+    values. The function then plots the sine and cosine functions using these values along with the absolute 
+    difference between the two functions and returns the plot. Finally, it returns the magnitude of the mean 
+    and median of the 1D fft of the absolute difference between the two functions.
+
+    Parameters:
+    - range_start: The starting value of the x range.
+    - range_end: The ending value of the x range.
+    - step: The step size for the x values.
+
+    Returns:
+    tuple: A tuple containing two items:
+        - generator: A generator object producing tuples in the format (x, sin(x), cos(x), abs(sin(x) - cos(x)).
+        - ax: An Axes object representing the plot.
+        - float: The abs of the mean of the 1D fft of the absolute difference between sin(x) and cos(x).
+        - float: The abs of the median of the 1D fft of the absolute difference between sin(x) and cos(x).
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - scipy.fft
+
+    Example:
+    >>> data, ax, fft_mean, fft_median = task_func()
+    >>> print(next(data))
+    (-10.0, 0.5440211108893698, -0.8390715290764524, 1.383092639965822)
+    """
+    def generate_data():
+        xs = np.arange(range_start, range_end + 1, step)
+        for x in xs:
+            yield (x, np.sin(x), np.cos(x), np.abs(np.sin(x) - np.cos(x)))
+
+    data = generate_data()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(xs, np.sin(xs), label='sin(x)')
+    ax.plot(xs, np.cos(xs), label='cos(x)', linestyle='--')
+    ax.plot(xs, np.abs(np.sin(xs) - np.cos(xs)), label='abs(sin(x) - cos(x))')
+
+    ax.legend()
+    ax.set_title('Sine and Cosine Functions and Their Differences')
+
+    # Calculate FFTs
+    fft_sin = fft(np.sin(xs))
+    fft_cos = fft(np.cos(xs))
+
+    # Get the 1D fft of the absolute difference
+    fft_diff = fft(np.abs(np.sin(xs) - np.cos(xs)))
+
+    # Calculate the magnitude of the mean and median of the fft
+    fft_mean = np.abs(fft_diff.mean())
+    fft_median = np.abs(np.median(fft_diff))
+
+    return data, ax, fft_mean, fft_median

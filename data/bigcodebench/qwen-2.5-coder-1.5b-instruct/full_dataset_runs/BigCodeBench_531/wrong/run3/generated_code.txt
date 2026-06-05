@@ -1,0 +1,55 @@
+from collections import Counter
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+
+def task_func(df, n_clusters=3, random_state=None, n_init=10):
+    """
+    Identify duplicate points in a DataFrame, perform KMeans clustering on the unique points,
+    and record the clusters.
+
+    Parameters:
+    df (pd.DataFrame): A DataFrame containing at least two columns 'x' and 'y' representing points.
+    n_clusters (int, optional): Number of clusters for KMeans clustering. Default is 3.
+    random_state (int, optional): The seed used by the random number generator for reproducibility. Default is None.
+    n_init (int, optional): Number of time the k-means algorithm will be run with different centroid seeds.
+                            The final results will be the best output of n_init consecutive runs in terms of
+                            within-cluster sum of squares. Default is 10.
+
+    Returns:
+    tuple: A tuple containing:
+        - Counter: A Counter object with the count of duplicate points.
+        - pd.DataFrame: A DataFrame with an additional column 'cluster' representing cluster assignments for unique points.
+        - Axes: A scatter plot of the clustered data.
+
+    Requirements:
+    - collections.Counter
+    - sklearn.cluster.KMeans
+    - matplotlib.pyplot
+
+    Example:
+    >>> df = pd.DataFrame({\
+            'x': [1, 2, 2, 2, 3, 4],\
+            'y': [1, 1, 1, 1, 3, 3]\
+        })
+    >>> duplicates, df_clustered, ax = task_func(df, random_state=42)
+    >>> df_clustered
+       x  y  cluster
+    0  1  1        2
+    1  2  1        0
+    4  3  3        1
+    5  4  3        1
+    >>> duplicates
+    Counter({(2, 1): 3})
+    """
+    # Identify duplicate points
+    duplicates = (df.duplicated() & df.drop_duplicates().index).value_counts()
+
+    # Drop duplicates to get unique points
+    unique_df = df.drop_duplicates()
+
+    # Perform KMeans clustering on unique points
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=n_init)
+    unique_df['cluster'] = kmeans.fit_predict(unique_df[['x', 'y']])
+
+    return duplicates,

@@ -1,0 +1,51 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from random import randint
+
+
+def task_func(num_types=5, integer_range=(0, 100)):
+    """
+    Generate a DataFrame containing random integer values across a specified number of categories,
+    and visualize these data as a horizontal stacked bar chart.
+
+    Parameters:
+    num_types (int, optional): The number of distinct categories for which data will be generated. Defaults to 5.
+    integer_range (tuple, optional): The inclusive range from which random integers are drawn. Defaults to (0, 100).
+
+    Returns:
+    tuple: A tuple containing a matplotlib Figure and Axes objects for the generated plot.
+
+    Requirements:
+    - pandas
+    - matplotlib
+    - random
+
+    Note:
+    The plot displays categories on the y-axis and their corresponding values on the x-axis, with
+    data segmented by category.
+
+    Example:
+    >>> fig, ax = task_func(3, (0, 50))
+    >>> isinstance(fig, plt.Figure)
+    True
+    """
+    # Create a list of unique categories
+    categories = [f"Category {i+1}" for i in range(num_types)]
+
+    # Generate random integer values within the given range
+    values = [randint(*integer_range) for _ in range(len(categories))]
+
+    # Create a DataFrame
+    df = pd.DataFrame({
+        'Category': categories,
+        'Value': values
+    })
+
+    # Plot the data as a horizontal stacked bar chart
+    fig, ax = plt.subplots()
+    ax.barh(categories, values, color='skyblue')
+    ax.set_xlabel('Value')
+    ax.set_ylabel('Category')
+    ax.grid(True)
+
+    return fig, ax

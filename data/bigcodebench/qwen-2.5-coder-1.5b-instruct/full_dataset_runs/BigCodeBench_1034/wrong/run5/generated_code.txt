@@ -1,0 +1,63 @@
+import pandas as pd
+import numpy as np
+
+
+CATEGORIES = ["Electronics", "Clothing", "Home Decor", "Automotive", "Books"]
+
+
+def task_func(s1, s2):
+    """
+    Compares and visualizes the sales data of two stores for predefined categories.
+    The function generates a bar plot for categories where both stores have sales exceeding a specified threshold.
+    The Euclidean distance between the two series is also computed.
+    
+    Parameters:
+    s1 (pd.Series): Sales data for store 1, indexed by categories.
+    s2 (pd.Series): Sales data for store 2, indexed by categories.
+
+    Returns:
+    matplotlib.axes.Axes or None: A bar plot for categories where both stores' sales exceed the threshold of 200,
+    or None if no such categories exist.
+    float: The Euclidean distance between the two series or 0.0 if no categories meet the threshold.
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> np.random.seed(seed=32)
+    >>> s1 = pd.Series(np.random.randint(100, 500, size=5), index=CATEGORIES)
+    >>> s2 = pd.Series(np.random.randint(150, 600, size=5), index=CATEGORIES)
+    >>> ax, edit_distance = task_func(s1, s2)
+    >>> ax.get_title()
+    'Sales Comparison Above Threshold in Categories'
+    >>> edit_distance
+    387.5590277622236
+    """
+    # Check if both stores have sales above the threshold of 200
+    threshold = 200
+    matching_categories = [cat for cat in CATEGORIES if s1[cat] > threshold and s2[cat] > threshold]
+
+    if not matching_categories:
+        return None, 0.0
+
+    # Create a DataFrame to compare the two stores' sales
+    df = pd.DataFrame({
+        'Store 1': s1[matching_categories],
+        'Store 2': s2[matching_categories]
+    })
+
+    # Compute the mean of the absolute differences for each category
+    means = df.abs().mean(axis=1)
+
+    # Plot the bar chart
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(matching_categories, means, color=['blue', 'red'])
+    ax.set_xlabel('Categories')
+    ax.set_ylabel('Mean Absolute Difference')
+    ax.set_title('Sales Comparison Above Threshold in Categories')
+
+    # Calculate the Euclidean distance between the two series
+    edit_distance = euclidean(s1[matching_categories], s2[matching_categories])
+
+    return ax, edit_distance

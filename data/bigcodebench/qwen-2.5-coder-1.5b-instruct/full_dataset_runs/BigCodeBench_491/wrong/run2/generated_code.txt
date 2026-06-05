@@ -1,0 +1,59 @@
+import random
+from datetime import datetime
+import matplotlib.pyplot as plt
+
+def task_func(epoch_milliseconds, seed=None):
+    """
+    Generate and draw a sales trend for different categories from a particular epoch milliseconds
+    to the current UTC time.
+
+    The function selects category from ['Electronics', 'Clothing', 'Home', 'Books', 'Sports'].
+    Each day's sales are randomly determined between 10 and 50 units for each category.
+    The plot's x-axis represents 'Days since (the start date)', and the y-axis represents 'Sales' units.
+
+    Parameters:
+    - epoch_milliseconds (int): Start time. Must be positive and before current time.
+    - seed (int, optional): Seed for random number generation. Default is None (no seed).
+
+    Returns:
+    - sales_data (dict): Sales data for different categories over days.
+    - ax (plt.Axes): The plot depicting the sales trend.
+
+    Raises:
+    - ValueError: If the start time is negative or after the current time.
+    
+    Requirements:
+    - random
+    - datetime.datetime
+    - matplotlib
+
+    Example:
+    >>> random.seed(42)
+    >>> sales_data, ax = task_func(1236472051807, seed=42)
+    >>> type(sales_data)
+    <class 'dict'>
+    >>> list(sales_data['Electronics'])[:3]
+    [50, 24, 47]
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Check if the start time is valid
+    if epoch_milliseconds <= 0 or datetime.fromtimestamp(epoch_milliseconds) >= datetime.now():
+        raise ValueError("Invalid start time")
+
+    # Initialize sales data dictionary
+    sales_data = {category: [] for category in ['Electronics', 'Clothing', 'Home', 'Books', 'Sports']}
+
+    # Set the random seed if provided
+    if seed is not None:
+        random.seed(seed)
+
+    # Calculate the duration in seconds
+    end_time = datetime.now().timestamp()
+    duration_seconds = end_time - epoch_milliseconds
+
+    # Generate sales data over the specified duration
+    for i in range(int(duration_seconds)):
+        day = i // 24
+        category = random.choice(['Electronics', 'Clothing', 'Home', 'Books', 'Sports'])
+        sales_data[category].append(random.randint(1

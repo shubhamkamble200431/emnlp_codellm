@@ -1,0 +1,58 @@
+import os
+import glob
+import hashlib
+
+def task_func(source_dir, target_dir, prefix='#Hash: '):
+    """
+    Computes the MD5 hash of each file's content in the specified `source_dir`, prepends the hash along with a prefix 
+    to the original content, and writes the modified content to new files in the `target_dir`. 
+    Existing files with the same name in `target_dir` are overwritten.
+
+    Parameters:
+    - source_dir (str): The directory containing the files to be processed. Must exist.
+    - target_dir (str): The directory where the processed files will be written. Created if it does not exist.
+    - prefix (str): The prefix to prepend before the hash in each new file. Default is '#Hash: '.
+
+    Returns:
+    - list: A list of paths to the newly created files in the `target_dir`, each with the hash prepended.
+
+    Requirements:
+    - os
+    - glob
+    - hashlib
+
+    Raises:
+    FileNotFoundError if the source directory does not exist.
+
+    Example:
+    >>> task_func(source_dir='samples', target_dir='hashed_samples', prefix='#MD5: ')
+    ['hashed_samples/file1.txt', 'hashed_samples/file2.txt']
+    """
+    # Ensure the source directory exists
+    if not os.path.exists(source_dir):
+        raise FileNotFoundError(f"Source directory '{source_dir}' does not exist.")
+
+    # Create the target directory if it does not exist
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+
+    # List all files in the source directory
+    files = glob.glob(os.path.join(source_dir, '*'))
+
+    # Process each file
+    for file_path in files:
+        # Read the contents of the file
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+
+        # Compute the MD5 hash of the file content
+        md5_hash = hashlib.md5(file_content).hexdigest()
+
+        # Construct the output filename
+        output_filename = os.path.join(target_dir, f"{prefix}{md5_hash}{os.path.splitext(file_path)[1]}")
+
+        # Write the modified content to the output file
+        with open(output_filename, 'wb') as f:
+            f.write(file_content)
+
+    return [f"{output_filename}" for output_filename in glob.glob(os.path.join(target_dir, '*.txt'))]

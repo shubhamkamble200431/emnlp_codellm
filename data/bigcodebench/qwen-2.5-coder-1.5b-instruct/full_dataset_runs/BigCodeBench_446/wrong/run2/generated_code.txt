@@ -1,0 +1,39 @@
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+
+def task_func(n_samples=100, centers=3, n_features=2, random_seed=42):
+    """
+    Create isotropic Gaussian blobs to form clusters and visualize them.
+
+    Parameters:
+    - n_samples (int): The total number of points divided among clusters.
+    - centers (int): The number of centers to generate.
+    - n_features (int): The number of features for each sample.
+    - random_seed (int): The seed for the random number generator.
+
+    Returns:
+    tuple: A tuple containing:
+        - X (numpy.ndarray): The matrix of blob points.
+        - y (numpy.ndarray): The vector of blob labels.
+        - ax (matplotlib.axes.Axes): The Axes object with the scatter plot.
+
+    Requirements:
+    - matplotlib.pyplot
+    - sklearn
+
+    Example:
+    >>> X, y, ax = task_func(n_samples=500, centers=5, random_seed=0)
+    >>> type(X), type(y), type(ax)
+    (<class 'numpy.ndarray'>, <class 'numpy.ndarray'>, <class 'matplotlib.axes._axes.Axes'>)
+    >>> ax
+    <Axes: >
+    """
+X, y = make_blobs(n_samples=n_samples, centers=centers, n_features=n_features, random_state=random_seed)
+
+ax = plt.subplots(1, 1)[0]
+scatter = ax.scatter(X[:, 0], X[:, 1], c=y, cmap='viridis')
+plt.title('Gaussian Blobs Clustering')
+plt.show()
+
+return X, y, ax

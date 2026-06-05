@@ -1,0 +1,66 @@
+import random
+import string
+
+
+def task_func(length: int, predicates: list, seed: int = None):
+    """
+    Generates a random string of specified length and evaluates it for specific characteristics.
+
+    Parameters:
+    - length (int): Desired length of the generated string.
+    - predicates (list of strings): Conditions to evaluate the string.
+        Must contain options from 'has_uppercase', 'has_lowercase', 'has_special_chars', 'has_numbers'.
+    - seed (int, optional): Seed for the random number generator for reproducibility.
+
+    Returns:
+    - tuple:
+        - string: the generated random text
+        - dict: the text's characteristics
+
+    Raises:
+    - ValueError: If the specified length is negative.
+    - KeyError: If any predicate is not recognized.
+
+    Notes:
+    - Predicates are deduplicated.
+    - Characters are randomly sampled from string ascii_letters, digits, and punctuation with replacement.
+    - Any invalid predicates provided will result in a KeyError.
+    - If no predicates are provided, the result dictionary will be empty.
+
+    Requirements:
+    - string
+    - random
+
+    Example:
+    >>> task_func(10, ['has_uppercase', 'has_numbers'], seed=42)[0]
+    '8czu("@iNc'
+    >>> task_func(5, ['has_lowercase'], seed=123)
+    ('eiMk[', {'has_lowercase': True})
+    """
+    if length < 0:
+        raise ValueError("Length cannot be negative")
+
+    if seed is not None:
+        random.seed(seed)
+
+    characters = string.ascii_letters + string.digits + string.punctuation
+
+    selected_characters = []
+    unique_predicates = set(predicates)  # Deduplicate
+
+    for predicate in unique_predicates:
+        if predicate == 'has_uppercase':
+            selected_characters.append(random.choice(string.ascii_uppercase))
+        elif predicate == 'has_lowercase':
+            selected_characters.append(random.choice(string.ascii_lowercase))
+        elif predicate == 'has_special_chars':
+            selected_characters.append(random.choice(string.punctuation))
+        elif predicate == 'has_numbers':
+            selected_characters.append(random.choice(string.digits))
+        else:
+            raise KeyError(f"Invalid predicate: {predicate}")
+
+    return ''.join(selected_characters), {'has_uppercase': 'uppercase' in unique_predicates,
+                                            'has_lowercase': 'lowercase' in unique_predicates,
+                                            'has_special_chars': 'special_chars' in unique_predicates,
+                                            'has_numbers': 'numbers' in unique_predicates}

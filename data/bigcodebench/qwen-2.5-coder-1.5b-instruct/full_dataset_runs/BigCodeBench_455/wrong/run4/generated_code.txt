@@ -1,0 +1,57 @@
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+def task_func(mean, std_dev, n):
+    """
+    Generates a set of samples from a normal distribution with a specified mean and standard deviation.
+    It also visualizes the generated samples by plotting their histogram and the probability density function.
+
+    Parameters:
+    mean (float): The mean (mu) of the normal distribution.
+    std_dev (float): The standard deviation (sigma) of the distribution.
+    n (int): The number of samples to generate.
+
+    Returns:
+    numpy.ndarray: An array of generated samples from the normal distribution.
+
+    Requirements:
+    - numpy
+    - scipy.stats
+    - matplotlib.pyplot
+
+    Examples:
+    Generate 1000 samples from a normal distribution with mean 0 and standard deviation 1.
+    >>> len(task_func(0, 1, 1000))
+    1000
+
+    Generate 500 samples from a normal distribution with mean 5 and standard deviation 2.
+    >>> len(task_func(5, 2, 500))
+    500
+    """
+    # Generate random samples
+    samples = np.random.normal(mean, std_dev, n)
+    
+    # Plotting the histogram and the probability density function
+    plt.figure(figsize=(12, 6))
+    
+    # Histogram plot
+    plt.subplot(1, 2, 1)
+    plt.hist(samples, bins=30, density=True, alpha=0.7, color='blue')
+    plt.title('Histogram of Samples')
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    
+    # Probability density function plot
+    plt.subplot(1, 2, 2)
+    x = np.linspace(min(samples), max(samples), 400)
+    y = stats.norm.pdf(x, mean, std_dev)
+    plt.plot(x, y, 'r-', lw=2, label=f'Normal Distribution ({mean}, {std_dev})')
+    plt.title('Probability Density Function')
+    plt.xlabel('Value')
+    plt.ylabel('Density')
+    plt.legend()
+    
+    plt.show()
+
+    return samples

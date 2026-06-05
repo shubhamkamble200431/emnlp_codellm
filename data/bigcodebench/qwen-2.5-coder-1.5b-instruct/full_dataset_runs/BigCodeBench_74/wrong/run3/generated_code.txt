@@ -1,0 +1,59 @@
+import socket
+import requests
+
+def task_func(host):
+    """
+    This function resolves the IP address of the given host and then uses the IP address 
+    to fetch geolocation information from the ipinfo.io API. The function is robust against
+    various common errors, such as invalid hostnames, network issues, or problems with the 
+    geolocation service.
+
+    Parameters:
+    host (str): The hostname to be resolved.
+
+    Returns:
+    dict: A dictionary containing the IP address and geolocation information if successful.
+
+    Raises:
+    ValueError: If 'host' is None or an empty string.
+    ConnectionError: If there is a problem connecting to the geolocation service.
+
+    Example:
+    >>> result = task_func('google.com')
+    >>> 'ip_address' in result and 'geolocation' in result
+    True
+    >>> task_func('')
+    Traceback (most recent call last):
+       ...
+    ValueError: Host must be a non-empty string.
+    
+    Requirements:
+    - socket
+    - requests
+    """
+    if host is None or host == '':
+        raise ValueError("Host must be a non-empty string.")
+
+    try:
+        # Resolve the IP address using DNS
+        ip_address = socket.gethostbyname(host)
+
+        # Make a request to ipinfo.io to get geolocation data
+        response = requests.get(f'https://ipinfo.io/{ip_address}?token=YOUR_API_KEY')
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+
+        # Parse the JSON response
+        geo_data = response.json()
+
+        return {
+            'ip_address': ip_address,
+            'geolocation': geo_data
+        }
+
+    except socket.gaierror as e:
+        print(f"Failed to resolve {host}: {e}")
+        return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch geolocation data: {e}")
+        return None

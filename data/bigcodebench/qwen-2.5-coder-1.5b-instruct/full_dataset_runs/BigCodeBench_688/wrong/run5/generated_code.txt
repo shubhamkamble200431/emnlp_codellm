@@ -1,0 +1,27 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+def task_func(df):
+    """
+    Given a Pandas DataFrame with random numeric values, standardize it with the standard scaler from sklearn.
+
+    Parameters:
+    - df (DataFrame): The DataFrame to be standardized.
+    
+    Returns:
+    - df_standardized (DataFrame): The standardized DataFrame.
+
+    Requirements:
+    - pandas
+    - sklearn
+
+    Example:
+    >>> df = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})
+    >>> task_func(df)
+              a         b
+    0 -1.224745 -1.224745
+    1  0.000000  0.000000
+    2  1.224745  1.224745
+    """
+df_standardized = StandardScaler().fit_transform(df.values)
+return pd.DataFrame(df_standardized, columns=df.columns)

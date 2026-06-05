@@ -1,0 +1,52 @@
+import re
+import string
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+nltk.download('vader_lexicon')
+# Constants
+ALPHANUMERIC = re.compile('[\W_]+')
+PUNCTUATIONS = string.punctuation
+
+
+def task_func(text: str, sia: SentimentIntensityAnalyzer) -> dict:
+    """Analyze the sentiment of a text using the provided SentimentIntensityAnalyzer.
+    The text is first cleaned by:
+    - Removing all non-alphanumeric characters except spaces.
+    - Converting to lowercase.
+    - Removing punctuation.
+    
+    Parameters:
+    text (str): The string to analyze.
+    sia (SentimentIntensityAnalyzer): An instance of the SentimentIntensityAnalyzer for sentiment analysis.
+    
+    Returns:
+    dict: A dictionary with sentiment scores. The dictionary contains four scores:
+          - 'compound': The overall sentiment score.
+          - 'neg': Negative sentiment score.
+          - 'neu': Neutral sentiment score.
+          - 'pos': Positive sentiment score.
+    
+    Requirements:
+    - re
+    - string
+    - nltk
+    - nltk.sentiment.vader
+    
+    Example:
+    >>> from nltk.sentiment import SentimentIntensityAnalyzer
+    >>> sia = SentimentIntensityAnalyzer()
+    >>> task_func("I love Python!", sia)
+    {'neg': 0.0, 'neu': 0.192, 'pos': 0.808, 'compound': 0.6369}
+    """
+    def clean_text(text):
+        # Remove all non-alphanumeric characters except spaces
+        cleaned_text = ALPHANUMERIC.sub(r' ', text.lower())
+        # Remove punctuation
+        cleaned_text = ''.join([char for char in cleaned_text if char not in PUNCTUATIONS])
+        return cleaned_text
+
+    cleaned_text = clean_text(text)
+    sentiment_scores = sia.polarity_scores(cleaned_text)
+
+    return sentiment_scores

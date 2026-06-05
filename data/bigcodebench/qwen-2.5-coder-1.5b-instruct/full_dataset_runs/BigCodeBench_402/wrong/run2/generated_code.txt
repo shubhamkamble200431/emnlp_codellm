@@ -1,0 +1,57 @@
+import re
+import requests
+import json
+import csv
+import os  
+
+# Constants
+API_URL = 'https://api.example.com/data'
+
+def task_func(pattern):
+    """
+    Make a GET request to an API, extract data that matches a RegEx pattern, and write it to a CSV file.
+
+    Parameters:
+    pattern (str): The regex pattern to match.
+
+    Returns:
+    str: The absolute path to the CSV file containing matched data. If no data is matched, the file will be empty.
+
+    Note:
+    - The CSV file generated name is "matched_data.csv"
+    - The JSON response from the GET request in the API contains a key named "data", from which the data is extracted.
+
+    Requirements:
+    - requests
+    - json
+    - csv
+    - re
+    - os
+
+    Example:
+    >>> task_func(r'\\\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\\\.[A-Z]{2,}\\\\b')
+    '/absolute/path/to/matched_data.csv'
+    >>> task_func(r'\\\\d{3}-\\\\d{2}-\\\\d{4}')  # For matching SSN format
+    '/absolute/path/to/matched_data.csv'
+    """
+    try:
+        # Make a GET request to the API
+        response = requests.get(API_URL)
+        response.raise_for_status()  # Raise an exception for bad responses
+
+        # Extract data that matches the regex pattern
+        data = response.json().get('data', [])
+        matched_data = [item for item in data if re.search(pattern, item)]
+
+        # Write matched data to a CSV file
+        file_path = os.path.join(os.getcwd(), 'matched_data.csv')
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Matched Data'])  # Write header
+            writer.writerows(matched_data)  # Write data rows
+
+        return file_path
+
+    except requests.RequestException as e:
+        print(f"Error making request: {e}")
+        return None

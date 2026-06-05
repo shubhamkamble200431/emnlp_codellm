@@ -1,0 +1,79 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def task_func(df: pd.DataFrame, column_name: str) -> (str, plt.Axes):
+    """
+    This function assesses whether the distribution of values in a specified column of a DataFrame is
+    uniform and visualizes this distribution using a histogram.
+
+    Parameters:
+    - df (pd.DataFrame): The DataFrame containing the data.
+    - column_name (str): The name of the column to be evaluated.
+
+    Returns:
+    - str: A message indicating whether the distribution in the column is uniform or not. The message is one of the following:
+        - "The distribution of values is uniform."
+        - "The distribution of values is not uniform."
+    - plt.Axes: An Axes object displaying the histogram of the value distribution in the specified column.
+
+    The function handles the following cases:
+    - If the DataFrame is empty, the specified column does not exist in the DataFrame, or
+        if the specified column contains only null values, the function returns a message
+        "The DataFrame is empty or the specified column has no data."
+        In this case, a blank histogram with a title "Distribution of values in [column_name] (No Data)" is generated.
+    - If the DataFrame and column are valid, the function calculates if the distribution of values is uniform.
+        It returns a message stating whether the distribution is uniform or not.
+        A histogram is generated to visualize the distribution of values in the specified column.
+        This histogram displays the frequency of each value, with the number of bins set to the number
+        of unique values in the column, an edge color of black, and a transparency alpha value of 0.7.
+        The x-axis is labeled "Values", the y-axis is labeled "Frequency", and
+        the title of the plot is "Distribution of values in [column_name]".
+
+    Requirements:
+    - pandas
+    - matplotlib
+
+    Example:
+    >>> df = pd.DataFrame({'Category': ['A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'D', 'E', 'E']})
+    >>> message, ax = task_func(df, 'Category')
+    >>> print(message)
+    The distribution of values is not uniform.
+    """
+    # Check if the DataFrame and column are valid
+    if len(df) == 0 or column_name not in df.columns:
+        return "The DataFrame is empty or the specified column has no data.", None
+
+    # Calculate the frequency of each value in the column
+    value_counts = df[column_name].value_counts()
+
+    # Get the number of unique values in the column
+    n_unique_values = len(value_counts)
+
+    # If there is only one unique value, the distribution is uniform
+    if n_unique_values == 1:
+        return "The distribution of values is uniform.", None
+
+    # Calculate the probability density function (PDF) for the values
+    pdf = value_counts / len(df)
+
+    # Calculate the expected frequency assuming uniform distribution
+    expected_freq = n_unique_values * pdf.mean()
+
+    # Calculate the chi-squared test statistic
+    chi_squared_statistic = ((pdf - expected_freq) ** 2) / expected_freq
+
+    # Determine if the distribution is uniform based on the chi-squared test
+    p_value = stats.chi2.sf(chi_squared_statistic, n_unique_values - 1)
+
+    # Generate the histogram
+    ax = df[column_name].hist(bins=n_unique_values, edgecolor='black', alpha=0.7)
+    ax.set_xlabel('Values')
+    ax.set_ylabel('Frequency')
+    ax.set_title(f"Distribution of values in {column_name}")
+
+    # Print the result based on the chi-squared test
+    if p_value < 0.05:
+        return "The distribution of values is not uniform.", ax
+    else:
+        return "The distribution of values is uniform.", ax

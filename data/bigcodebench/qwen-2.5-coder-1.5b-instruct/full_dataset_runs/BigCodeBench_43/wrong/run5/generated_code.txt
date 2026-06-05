@@ -1,0 +1,41 @@
+import numpy as np
+import seaborn as sns
+
+def task_func(df):
+    """
+    Describe a dataframe and draw a distribution chart for each numeric column after replacing the NaN values with the average of the column.
+
+    Parameters:
+    df (DataFrame): The pandas DataFrame.
+
+    Returns:
+    tuple: A tuple containing:
+        - DataFrame: A pandas DataFrame with statistics. This includes count, mean, standard deviation (std), min, 25%, 50%, 75%, and max values for each numeric column.
+        - List[Axes]: A list of matplotlib Axes objects representing the distribution plots for each numeric column.
+                    Each plot visualizes the distribution of data in the respective column with 10 bins.
+
+    Requirements:
+    - numpy
+    - seaborn
+
+    Example:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame([[1,2,3],[4,5,6],[7.0,np.nan,9.0]], columns=["c1","c2","c3"])
+    >>> description, plots = task_func(df)
+    >>> print(description)
+            c1    c2   c3
+    count  3.0  3.00  3.0
+    mean   4.0  3.50  6.0
+    std    3.0  1.50  3.0
+    min    1.0  2.00  3.0
+    25%    2.5  2.75  4.5
+    50%    4.0  3.50  6.0
+    75%    5.5  4.25  7.5
+    max    7.0  5.00  9.0
+    """
+    stats = df.fillna(df.mean()).describe()
+    fig, axes = plt.subplots(ncols=len(stats.columns), figsize=(len(stats.columns)*2, 6))
+    for i, col in enumerate(stats.columns):
+        sns.histplot(data=df, x=col, ax=axes[i], kde=True, bins=10)
+    return stats, axes

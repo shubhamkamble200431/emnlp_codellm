@@ -1,0 +1,33 @@
+import os
+import random
+
+def task_func(directory, n_files):
+    """
+    Create n random txt files in a specific directory, write only a single digit random integer into each file, and then reset the cursor to the beginning of each file.
+    The file names start from 'file_1.txt' and increment by 1 for each file.
+    
+    Parameters:
+    - directory (str): The directory in which to generate the files.
+    - n_files (int): The number of files to generate.
+
+    Returns:
+    - n_files (int): The number of files generated.
+
+    Requirements:
+    - os
+    - random
+
+    Example:
+    >>> random.seed(2)
+    >>> task_func('/path/to/directory', 5)
+    5
+    """
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    for i in range(n_files):
+        filename = os.path.join(directory, f"file_{i+1}.txt")
+        with open(filename, "w") as file:
+            file.write(str(random.randint(0, 9)))
+
+    return n_files

@@ -1,0 +1,47 @@
+import json
+import urllib.parse
+import hmac
+import hashlib
+
+def task_func(req_data, secret_key):
+    """
+    Signs the specified request data with a secret key using HMAC SHA256, then URL encodes the signature and replace spaces with '+'.
+
+    Parameters:
+        req_data (dict): The request data to be signed. It should be a dictionary.
+        secret_key (str): The secret key used for signing the request data.
+
+    Returns:
+        str: The URL encoded HMAC signature of the request data.
+
+    Raises:
+        TypeError: If `req_data` is not a dictionary.
+
+    Requirements:
+    - json
+    - urllib.parse
+    - hmac
+    - hashlib
+
+    Examples:
+    >>> secret_key = 'my_secret_key'
+    >>> isinstance(task_func({'test': 'just a test'}, secret_key), str)
+    True
+    >>> isinstance(task_func({'another': 'data', 'key': 123}, secret_key), str)
+    True
+    """
+    if not isinstance(req_data, dict):
+        raise TypeError("req_data must be a dictionary")
+
+    # Serialize the dictionary into a JSON string
+    json_string = json.dumps(req_data)
+
+    # Create a sha256 hash object
+    hash_object = hashlib.sha256(json_string.encode('utf-8'))
+    # Get the hexadecimal digest of the hash
+    hex_digest = hash_object.hexdigest()
+
+    # Encode the hexadecimal digest
+    encoded_signature = urllib.parse.quote(hex_digest)
+
+    return encoded_signature.replace(" ", "+")

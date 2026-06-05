@@ -1,0 +1,53 @@
+import inspect
+import types
+import json
+
+def task_func(f):
+    """
+    Inspects the given function 'f' and returns its specifications as a JSON string. This includes
+    the function's name, arguments, default values, annotations in a string format, and a boolean
+    indicating if it's a lambda function.
+
+    Parameters:
+    f (function): The function to inspect.
+
+    Returns:
+    str: A JSON string containing the function's specifications.
+
+    Requirements:
+    - inspect
+    - types
+    - json
+
+    Examples:
+    >>> def sample_function(x, y=2): return x + y
+    >>> 'sample_function' in task_func(sample_function)
+    True
+    >>> def sample_function2(x, y=2): return x * y
+    >>> 'sample_function2' in task_func(sample_function2)
+    True
+    """
+    specs = {
+        "name": f.__name__,
+        "args": [],
+        "default_values": {},
+        "annotations": {}
+    }
+
+    # Extract arguments from function signature
+    argspec = inspect.signature(f)
+    for param_name, param in argspec.parameters.items():
+        specs["args"].append(param_name)
+        specs["default_values"][param_name] = param.default
+
+    # Extract annotations
+    for name, annotation in f.__annotations__.items():
+        specs["annotations"][name] = str(annotation)
+
+    # Check if it's a lambda function
+    if isinstance(f, types.LambdaType):
+        specs["is_lambda"] = True
+    else:
+        specs["is_lambda"] = False
+
+    return json.dumps(specs)

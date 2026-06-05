@@ -1,0 +1,64 @@
+import re
+import requests
+import json
+import csv
+import os  
+
+# Constants
+API_URL = 'https://api.example.com/data'
+
+def task_func(pattern):
+    """
+    Make a GET request to an API, extract data that matches a RegEx pattern, and write it to a CSV file.
+
+    Parameters:
+    pattern (str): The regex pattern to match.
+
+    Returns:
+    str: The absolute path to the CSV file containing matched data. If no data is matched, the file will be empty.
+
+    Note:
+    - The CSV file generated name is "matched_data.csv"
+    - The JSON response from the GET request in the API contains a key named "data", from which the data is extracted.
+
+    Requirements:
+    - requests
+    - json
+    - csv
+    - re
+    - os
+
+    Example:
+    >>> task_func(r'\\\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\\\.[A-Z]{2,}\\\\b')
+    '/absolute/path/to/matched_data.csv'
+    >>> task_func(r'\\\\d{3}-\\\\d{2}-\\\\d{4}')  # For matching SSN format
+    '/absolute/path/to/matched_data.csv'
+    """
+    # Make the GET request to the API
+    response = requests.get(API_URL)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+        
+        # Extract data using the given pattern
+        matched_data = [item for item in data['data'] if re.search(pattern, item)]
+        
+        # Create a temporary CSV file to store the matched data
+        temp_file_path = 'temp_matched_data.csv'
+        
+        # Write the matched data to the CSV file
+        with open(temp_file_path, mode='w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Matched Data'])
+            for item in matched_data:
+                writer.writerow([item])
+        
+        # Return the path to the temp CSV file
+        return temp_file_path
+    
+    else:
+        # Handle the case where the request failed
+        print(f"Failed to retrieve data from API. Status code: {response.status_code}")
+        return None

@@ -1,0 +1,52 @@
+import matplotlib
+import numpy as np
+
+
+def task_func(ax, num_points):
+    """
+    Plots "num_points" random points on the polar diagram represented by "ax."
+    The radial ticks on the plot are positioned based on the number of points divided by 10 degrees.
+
+    Parameters:
+    ax (matplotlib.axes._axes.Axes): The Axes object for the polar plot.
+    num_points (int): The number of random points to generate and plot.
+
+    Returns:
+    matplotlib.axes._axes.Axes: The modified Axes object with plotted points.
+
+    Raises:
+    - This function will raise a ValueError if the input ax is not and Axes.
+    - This function will raise a ValueError if it is use the negative number as num_points.
+
+    Requirements:
+    - matplotlib
+    - numpy
+
+    Example:
+    >>> np.random.seed(0)
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(111, polar=True)
+    >>> ax = task_func(ax, 100)
+    >>> ax.get_rlabel_position()
+    10.0
+    >>> plt.close()
+    """
+    if not isinstance(ax, matplotlib.axes.Axes):
+        raise ValueError("Input must be an instance of matplotlib.axes.Axes.")
+
+    if num_points < 0:
+        raise ValueError("Number of points cannot be negative.")
+
+    theta = np.linspace(0, 2 * np.pi, num_points + 1)[:-1]  # Generate angles from 0 to 2*pi
+
+    r = np.random.rand(num_points)  # Generate random radii between 0 and 1
+
+    ax.plot(theta, r, 'o', markersize=5)  # Plot random points in polar coordinates
+
+    # Calculate the tick positions based on the number of points divided by 10 degrees
+    tick_positions = [angle / 10 for angle in range(0, 360, 10)]
+
+    # Set the radial ticks at the calculated positions
+    ax.set_thetagrids(tick_positions, labels=[f"{pos:.0f}°" for pos in tick_positions])
+
+    return ax

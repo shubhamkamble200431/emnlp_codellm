@@ -1,0 +1,51 @@
+import random
+from itertools import combinations
+import math
+
+def task_func(n):
+    """
+    Generate n random dots within a unit square (0 to 1 on both axes) in a 2D space 
+    and find the pair that comes closest to each other.
+
+    Parameters:
+    n (int): The number of points to generate. If n is less than 2, the function returns None.
+
+    Returns:
+    tuple or None: A tuple of the form ((x1, y1), (x2, y2)), which are the coordinates of the closest pair,
+                   or None if n is less than 2.
+    
+    Note:
+    - This function will return None if the input n less than 2.
+    
+    Requirements:
+    - random
+    - itertools.combinations
+    - math
+
+    Example:
+    >>> random.seed(0)
+    >>> print(task_func(2))
+    ((0.8444218515250481, 0.7579544029403025), (0.420571580830845, 0.25891675029296335))
+    """
+    if n < 2:
+        return None
+
+    # Generate n random points within a unit square
+    points = [(random.random(), random.random()) for _ in range(n)]
+
+    # Sort points by their x-coordinates
+    points.sort(key=lambda p: p[0])
+
+    closest_pair = None
+
+    # Iterate through the sorted list to find the closest pair
+    for i in range(len(points) - 1):
+        for j in range(i + 1, len(points)):
+            dx = points[j][0] - points[i][0]
+            dy = points[j][1] - points[i][1]
+            distance = math.sqrt(dx**2 + dy**2)
+
+            if closest_pair is None or distance < closest_distance:
+                closest_pair = ((points[i], points[j]), distance)
+
+    return closest_pair

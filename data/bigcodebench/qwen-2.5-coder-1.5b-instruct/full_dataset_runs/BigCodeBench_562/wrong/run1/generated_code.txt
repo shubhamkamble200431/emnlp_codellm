@@ -1,0 +1,68 @@
+import os
+import ctypes
+import sys
+import subprocess
+
+
+def task_func(filepath):
+    """
+    Loads a DLL file specified by the given filepath, then retrieves and prints system information
+    including system name, node name, release, version, machine, Python version, and PIP version.
+    This function demonstrates the use of various system-related libraries in Python.
+
+    The format of the printed message is:
+    System: <system-name-here>
+    Node Name: <node-name-here>
+    Release: <release-here>
+    Version: <version-here>
+    Machine: <type-of-the-machine-here>
+    Python Version: <python-version-here> 
+    PIP Version: <pip-version-here>
+
+    Parameters:
+    filepath (str): The path of the DLL file to be loaded.
+
+    Returns:
+    str: The name of the loaded DLL file.
+
+    Raises:
+    OSError: if the input filepath is invalid or empty
+    TypeError: if the input filepath is not a string
+    
+    Requirements:
+    - ctypes
+    - os
+    - sys
+    - subprocess
+
+    Examples:
+    >>> task_func('libc.so.6') # Doctest will vary based on the system and DLL file.
+    'libc.so.6'
+    >>> isinstance(task_func('libc.so.6'), str)
+    True
+    """
+    if not filepath or not isinstance(filepath, str):
+        raise TypeError("Invalid input filepath.")
+    
+    try:
+        lib = ctypes.CDLL(filepath)
+        system_name = lib.sys_info(0)[1]
+        node_name = lib.sys_info(2)[1]
+        release = lib.sys_info(3)[1]
+        version = lib.sys_info(4)[1]
+        machine = lib.sys_info(5)[1]
+        python_version = sys.version
+        pip_version = subprocess.check_output(['pip', '--version']).decode().split('\n')[0].strip()
+        
+        print(f"System: {system_name}")
+        print(f"Node Name: {node_name}")
+        print(f"Release: {release}")
+        print(f"Version: {version}")
+        print(f"Machine: {machine}")
+        print(f"Python Version: {python_version}")
+        print(f"PIP Version: {pip_version}")
+        
+        return filepath
+    except Exception as e:
+        print(f"Error loading DLL: {e}")
+        return None

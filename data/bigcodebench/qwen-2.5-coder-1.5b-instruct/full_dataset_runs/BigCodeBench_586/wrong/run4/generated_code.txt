@@ -1,0 +1,53 @@
+import rsa
+from cryptography.fernet import Fernet
+from base64 import b64encode
+
+def task_func(file_path):
+    """
+    Generates RSA public and private keys and uses Fernet symmetric encryption to encrypt the contents
+    of a specified file. The Fernet key is then encrypted with the public RSA key. The encrypted file
+    contents and the encrypted Fernet key are saved in separate files.
+
+    This method demonstrates a hybrid encryption approach where symmetric encryption is used for the file
+    contents and asymmetric encryption for the encryption key.
+
+    Parameters:
+    file_path (str): The path to the file to be encrypted.
+
+    Returns:
+    PublicKey: The RSA public key.
+    str: The filename of the encrypted file.
+    str: The filename of the file containing the encrypted Fernet key.
+
+    Requirements:
+    - rsa
+    - cryptography.fernet.Fernet
+    - base64.b64encode
+
+    Examples:
+    >>> pub_key, encrypted_file, encrypted_key_file = task_func('my_file.txt')
+    >>> len(pub_key.save_pkcs1()) > 100
+    True
+    >>> encrypted_file.endswith('.encrypted')
+    True
+    >>> encrypted_key_file.endswith('.encrypted')
+    True
+    """
+    # Generate RSA public and private keys
+    (public_key, private_key) = rsa.newkeys(2048)
+
+    # Encrypt the file content using Fernet
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
+    fernet = Fernet(b64encode(private_key.exportKey()))
+    encrypted_file_content = fernet.encrypt(file_content)
+
+    # Save the encrypted file content and the encrypted Fernet key to separate files
+    encrypted_file = f'{file_path}.encrypted'
+    with open(encrypted_file, 'wb') as f:
+        f.write(encrypted_file_content)
+    encrypted_key_file = f'{file_path}_key.encrypted'
+    with open(encrypted_key_file, 'wb') as f:
+        f.write(b64encode(public_key.exportKey()))
+
+    return public_key, encrypted_file, encrypted_key_file

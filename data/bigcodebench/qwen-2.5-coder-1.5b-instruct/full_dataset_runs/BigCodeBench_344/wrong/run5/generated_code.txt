@@ -1,0 +1,42 @@
+import os
+import shutil
+
+
+def task_func(src_folder, backup_dir):
+    """
+    Backs up a given source folder to the specified backup directory, then deletes the source folder.
+    
+    Parameters:
+    src_folder (str): The path of the source folder to be backed up and deleted.
+    backup_dir (str): The path of the directory where the source folder will be backed up.
+    
+    Returns:
+    bool: True if the operation is successful, False otherwise.
+    
+    Requirements:
+    - os
+    - shutil
+    
+    Raises:
+    - ValueError: If the source folder does not exist.
+    - Exception: If an error occurs while deleting the source folder.
+    
+    Example:
+    >>> import tempfile
+    >>> src_folder = tempfile.mkdtemp()
+    >>> backup_dir = tempfile.mkdtemp()
+    >>> with open(os.path.join(src_folder, 'sample.txt'), 'w') as f:
+    ...     _ = f.write('This is a sample file.')
+    >>> task_func(src_folder, backup_dir)
+    True
+    """
+    if not os.path.exists(src_folder):
+        raise ValueError("Source folder does not exist.")
+
+    try:
+        shutil.copytree(src_folder, os.path.join(backup_dir, os.path.basename(src_folder)))
+        os.rmdir(src_folder)
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False

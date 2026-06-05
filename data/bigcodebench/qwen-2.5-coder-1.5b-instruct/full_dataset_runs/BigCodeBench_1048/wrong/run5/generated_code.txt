@@ -1,0 +1,47 @@
+from datetime import datetime
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(date_str):
+    """
+    Plot a sine wave whose frequency is determined by the day of the month from the given date.
+
+    Parameters:
+    date_str (str): A date in "yyyy-mm-dd" format, used to determine the frequency of the sine wave.
+
+    Returns:
+    matplotlib.axes.Axes: An Axes object containing the plotted sine wave.
+
+    Requirements:
+    - datetime.datetime
+    - numpy
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax = task_func('2023-06-15')
+    >>> print(ax.get_title())
+    Sine Wave for 2023-06-15 (Frequency: 15)
+    """
+    # Parse the date string into a datetime object
+    date_obj = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+
+    # Calculate the number of days in the month
+    days_in_month = date_obj.month
+
+    # Generate x values representing the time (in seconds since epoch)
+    t = np.linspace(0, 86400 * days_in_month, num=1000)  # 1 second per second, assuming 24 hours per day
+
+    # Calculate y values as a sine wave with a frequency that corresponds to the day of the month
+    y = np.sin(np.pi * days_in_month * t / (24 * 60 * 60))  # 2π radians per day
+
+    # Create a figure and axis object
+    fig, ax = plt.subplots()
+
+    # Plot the sine wave
+    ax.plot(t, y)
+
+    # Set the title of the plot
+    ax.set_title(f"Sine Wave for {date_str} (Frequency: {days_in_month})")
+
+    return ax

@@ -1,0 +1,45 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import itertools
+
+def task_func(n_walks, n_steps, seed=None):
+    """
+    Create and plot `n_walks` number of random walks, each with `n_steps` steps.
+
+    The function checks for valid n_walks and n_steps, then generates walks via numpy.
+    Each walk is plotted in a different color cycling through a predefined set of colors:
+    ['b', 'g', 'r', 'c', 'm', 'y', 'k'].
+
+    Parameters:
+    - n_walks (int): The number of random walks to be generated and plotted.
+    - n_steps (int): The number of steps in each random walk.
+    - seed (int, optional): Seed for random number generation. Default is None.
+
+    Returns:
+    - ax (plt.Axes): A Matplotlib Axes containing the plotted random walks.
+
+    Requirements:
+    - numpy
+    - matplotlib
+    - itertools
+
+    Example:
+    >>> ax = task_func(5, 100, seed=42)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(-20.0, 0, '−20'), Text(0.0, 0, '0'), Text(20.0, 0, '20'), Text(40.0, 0, '40'), Text(60.0, 0, '60'), Text(80.0, 0, '80'), Text(100.0, 0, '100'), Text(120.0, 0, '120')]
+    """
+    if not isinstance(n_walks, int) or not isinstance(n_steps, int):
+        raise ValueError("Both n_walks and n_steps must be integers.")
+    
+    # Check if both n_walks and n_steps are non-negative
+    if n_walks <= 0 or n_steps <= 0:
+        raise ValueError("n_walks and n_steps must be positive integers.")
+    
+    # Set the seed for reproducibility
+    if seed is not None:
+        np.random.seed(seed)
+    
+    # Define the set of colors to cycle through
+    colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])

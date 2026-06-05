@@ -1,0 +1,47 @@
+import collections
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+# Constants
+WORDS = ['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'I']
+
+def task_func(sentences_dict, word_keys):
+    """
+    Calculate the occurrence of certain words in a collection of sentences and return a bar chart.
+
+    Parameters:
+    sentences_dict (dict): The dictionary containing sentences.
+    word_keys (list): The list of words.
+
+    Returns:
+    - matplotlib.axes._axes.Axes: Axes object of the bar chart displaying the frequencies.
+
+    Requirements:
+    - collections
+    - matplotlib.pyplot
+    - pandas
+
+    Example:
+    >>> sentences_dict = {'Sentence1': 'the quick brown fox', 'Sentence2': 'jumps over the lazy dog', 'Sentence3': 'the dog is brown'}
+    >>> word_keys = ['the', 'dog']
+    >>> type(task_func(sentences_dict, word_keys))
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Count the occurrences of each word in the specified sentences
+    word_counts = {word: sentences_dict[sent].count(word) for sent in sentences_dict if word in sentences_dict}
+
+    # Create a DataFrame from the word counts
+    df = pd.DataFrame.from_dict(word_counts, orient='index').reset_index()
+    df.columns = ['Word', 'Frequency']
+
+    # Plotting the bar chart
+    fig, ax = plt.subplots(figsize=(8, 6))
+    bars = ax.bar(df['Word'], df['Frequency'], color='blue')
+
+    # Adding labels and title
+    ax.set_xlabel('Words')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Word Frequency Distribution')
+
+    return ax

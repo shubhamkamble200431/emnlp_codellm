@@ -1,0 +1,34 @@
+import re
+import numpy as np
+from scipy.stats import ttest_rel
+
+def task_func(text1, text2):
+    """
+    Perform a paired t-test for the number of words in two strings, only if the strings produce the same number of words.
+    
+    Parameters:
+    - text1 (str), text2 (str): The two text strings.
+    
+    Returns:
+    - t_statistic (float): The t-statistic, or NaN if tests cannot be performed due to unequal lengths.
+    - p_value (float): The p-value, or NaN if tests cannot be performed due to unequal lengths.
+    
+    Requirements:
+    - re
+    - numpy
+    - scipy
+    
+    Example:
+    >>> task_func('Words, words, words.', 'And more words!')
+    (1.7320508075688774, 0.22540333075851657)
+    """
+    # Use regular expressions to count the number of words
+    word_count_text1 = len(re.findall(r'\b\w+\b', text1))
+    word_count_text2 = len(re.findall(r'\b\w+\b', text2))
+
+    # Perform the paired t-test only if both texts have the same number of words
+    if word_count_text1 == word_count_text2:
+        t_statistic, p_value = ttest_rel(text1.split(), text2.split())
+        return t_statistic, p_value
+    else:
+        return float('nan'), float('nan')

@@ -1,0 +1,50 @@
+import subprocess
+import shlex
+from datetime import datetime
+
+def task_func(script_path: str) -> dict:
+    '''
+    Run an R script and return the start time, end time, decoded stdout, and decoded stderr as a dictionary.
+    
+    Requirements:
+    - subprocess
+    - shlex
+    - datetime
+    
+    Parameters:
+    - script_path (str): Path to the R script to be executed.
+    
+    Returns:
+    - dict: A dictionary containing the start time, end time, stdout, and stderr of the script run.
+    
+    Example:
+    >>> task_func("/path/to/script.r")
+    {
+        'Start Time': '2023-09-26 14:30:00',
+        'End Time': '2023-09-26 14:32:00',
+        'Stdout': 'Script output here...',
+        'Stderr': 'Any errors here...'
+    }
+    '''
+    # Start time
+    start_time = datetime.now().isoformat()
+
+    # Execute R script using subprocess
+    process = subprocess.Popen(["Rscript", script_path], capture_output=True, text=True)
+
+    # Wait for the script to finish
+    _, stderr = process.communicate()
+
+    # End time
+    end_time = datetime.now().isoformat()
+
+    # Combine stdout and stderr into one string
+    combined_output = stdout + stderr
+
+    # Return the results as a dictionary
+    return {
+        'Start Time': start_time,
+        'End Time': end_time,
+        'Stdout': combined_output,
+        'Stderr': ""
+    }

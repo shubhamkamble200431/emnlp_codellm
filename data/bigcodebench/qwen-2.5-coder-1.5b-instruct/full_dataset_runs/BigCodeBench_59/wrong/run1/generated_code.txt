@@ -1,0 +1,31 @@
+import wikipedia
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+
+def task_func(page_title):
+    """
+    Create a word cloud from the text of a Wikipedia page.
+
+    Parameters:
+    page_title (str): The title of the Wikipedia page.
+
+    Returns:
+    matplotlib.axes.Axes: The Axes object of the plotted data. Is None if there is no wikipedia page with the title given as input.
+
+    Requirements:
+    - wikipedia
+    - wordcloud.WordCloud
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax = task_func('Python (programming language)')
+    """
+wiki_page = wikipedia.page(page_title)
+if wiki_page.exists():
+    text = wiki_page.content
+    wordcloud = WordCloud(width=800, height=400).generate(text)
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    return plt.gca()
+else:
+    return None

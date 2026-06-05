@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(dataframe):
+    """
+    Calculate the correlation matrix of a DataFrame and plot a scatter plot for the pair of columns with the highest absolute correlation.
+
+    Parameters:
+    - dataframe (pd.DataFrame): The DataFrame containing numeric columns for correlation calculation.
+
+    Returns:
+    - ax (plt.Axes): The scatter plot of the pair of columns with the highest absolute correlation.
+
+    Requirements:
+    - pandas
+    - numpy
+    - matplotlib
+
+    Exception Handling:
+    - Raises ValueError if the input DataFrame is empty.
+    - Raises TypeError if any column in the DataFrame is non-numeric.
+    - Raises ValueError if the DataFrame has fewer than two columns.
+
+    Example:
+    >>> df = pd.DataFrame({
+    ...     'A': np.random.rand(100),
+    ...     'B': np.random.rand(100),
+    ...     'C': np.random.rand(100)
+    ... })
+    >>> ax = task_func(df)
+    >>> print(ax)
+    Axes(0.125,0.11;0.775x0.77)
+    """
+    if dataframe.empty:
+        raise ValueError("The input DataFrame cannot be empty.")
+
+    if dataframe.isnull().values.any():
+        raise ValueError("The DataFrame contains missing values.")
+
+    if dataframe.shape[1] < 2:
+        raise ValueError("The DataFrame must contain at least two columns.")
+
+    correlations = dataframe.corr()
+    max_correlation = correlations.abs().unstack().max()
+
+    # Find the pair of columns with the highest absolute correlation
+    max_abs_corr_pair = max_correlation.idxmax()
+    column1, column2 = max_abs_corr_pair.split(',')
+
+    # Plot the scatter plot
+    ax = dataframe[[column1, column2]].plot(kind='scatter', title=f'Highest Correlation: {column1} vs {column2}')
+
+    return ax

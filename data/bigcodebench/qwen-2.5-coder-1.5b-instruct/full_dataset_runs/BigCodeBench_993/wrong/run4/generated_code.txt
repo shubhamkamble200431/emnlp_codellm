@@ -1,0 +1,62 @@
+import re
+from scipy.stats import gaussian_kde
+from scipy import linalg
+import matplotlib.pyplot as plt
+
+
+def task_func(text):
+    """
+    This code takes a text input, calculates the lengths of the words, 
+    and visualizes the distribution of word lengths using a histogram and a KDE curve (if applicable) on a matplotlib subplot.
+
+    Parameters:
+    text (str): The text string to be analyzed. The function can handle strings with various types 
+                of characters and punctuation.
+
+    Returns:
+    matplotlib.axes._axes.Axes: An Axes object showing the histogram and optionally the KDE 
+                                           plot of word lengths. This visual representation helps in 
+                                           understanding the distribution of word lengths in the given text.
+
+    Requirements:
+    - re
+    - matplotlib
+    - scipy
+    - matplotlib
+
+    Example:
+    >>> ax = task_func('Hello world! This is a test.')
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Remove non-alphabetic characters and split into words
+    words = re.findall(r'\b\w+\b', text.lower())
+
+    # Calculate the lengths of the words
+    lengths = [len(word) for word in words]
+
+    # Plotting
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+    # Histogram of word lengths
+    ax[0].hist(lengths, bins=30, edgecolor='black')
+    ax[0].set_title('Histogram of Word Lengths')
+    ax[0].set_xlabel('Length of Word')
+    ax[0].set_ylabel('Frequency')
+
+    # Check if the data has enough points to perform a KDE analysis
+    if len(lengths) > 5:
+        # Estimate the kernel density
+        kde = gaussian_kde(lengths)
+
+        # Evaluate the KDE at specific points
+        x_values = range(min(lengths), max(lengths) + 1)
+        y_values = kde(x_values)
+
+        # Plot the KDE curve
+        ax[1].plot(x_values, y_values, color='red', linewidth=2)
+        ax[1].set_title('Kernel Density Estimation (KDE)')
+        ax[1].set_xlabel('Length of Word')
+        ax[1].set_ylabel('Density')
+
+    return axes

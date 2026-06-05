@@ -1,0 +1,42 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Combine a list of dictionaries with the same keys (fruit names) into a single pandas dataframe
+    where NA/NaN values are filled with 0, then generate a line chart of sales.
+    The chart should have title 'Fruit Sales over Time', x-axis 'Time', and y-axis 'Sales Quantity'.
+
+    Parameters:
+    - data (list): A list of dictionaries. Each element correspond to sales quantities at a point in time,
+                   where keys are fruit names (str) and values are sales quantities (int). If values
+                   are not the expected type, this function raises TypeError.
+
+    Returns:
+    - matplotlib.axes._axes.Axes: The generated plot's Axes object.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> task_func([{'apple': 10, 'banana': 15, 'cherry': 12, 'durian': 0}])
+    <Axes: title={'center': 'Fruit Sales over Time'}, xlabel='Time', ylabel='Sales Quantity'>
+    >>> task_func([{'apple': 10, 'banana': 15, 'cherry': 12}, {'apple': 12, 'banana': 20, 'cherry': 14}])
+    <Axes: title={'center': 'Fruit Sales over Time'}, xlabel='Time', ylabel='Sales Quantity'>
+    """
+    if not all(isinstance(entry.values(), int) for entry in data):
+        raise TypeError("All values in each dictionary must be integers")
+
+    # Convert the list of dictionaries to a DataFrame, filling NaNs with 0
+    df = pd.DataFrame(data)
+
+    # Generate the line chart
+    fig, ax = plt.subplots()
+    df.plot(kind='line', legend=True)
+    ax.set_title('Fruit Sales over Time')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Sales Quantity')
+
+    return ax

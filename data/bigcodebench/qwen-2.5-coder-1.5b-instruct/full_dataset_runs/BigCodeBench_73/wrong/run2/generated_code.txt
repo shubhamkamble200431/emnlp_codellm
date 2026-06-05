@@ -1,0 +1,66 @@
+import pandas as pd
+import sqlite3
+import numpy as np
+import matplotlib.pyplot as plt
+import ast
+
+def task_func(db_file):
+    """
+    Load e-mail data from an SQLite database and convert it into a Pandas DataFrame. 
+    Calculate the sum, mean, and variance of the list associated with each e-mail and then record these values.
+
+    - The function expects the SQLite database to have a table named "EmailData" with columns 'email' and 'list'.
+    - The column 'list' contains a string representation of the list. It should be converted before usage.
+    - The function will return a DataFrame with additional columns 'sum', 'mean', and 'var' representing the calculated sum, mean, and variance respectively for each e-mail.
+
+    Parameters:
+    - db_file (str): The path to the SQLite database file.
+
+    Returns:
+    - tuple: A tuple containing:
+      - DataFrame: A pandas DataFrame with email data including the calculated sum, mean, and variance.
+      - Axes: A matplotlib Axes object representing the plotted bar chart of sum, mean, and variance.
+
+    Requirements:
+    - pandas
+    - sqlite3
+    - numpy
+    - matplotlib.pyplot
+    - ast
+
+    Example:
+    >>> df, ax = task_func('data/task_func/db_1.db')
+    >>> print(df)
+    """
+    # Connect to the SQLite database
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    # Query the database to get email data
+    query = '''
+    SELECT email, list FROM EmailData
+    '''
+    cursor.execute(query)
+    rows = cursor.fetchall()
+
+    # Convert the list strings to actual lists
+    data = {row[0]: ast.literal_eval(row[1]) for row in rows}
+
+    # Create a DataFrame
+    df = pd.DataFrame.from_dict(data, orient='index')
+
+    # Calculate sum, mean, and variance
+    df['sum'] = df.iloc[:, 0].sum(axis=1)
+    df['mean'] = df.iloc[:, 0].mean(axis=1)
+    df['var'] = df.iloc[:, 0].var(axis=1)
+
+    # Close the connection
+    conn.close()
+
+    # Plotting
+    ax = df[['sum', 'mean', 'var']].plot(kind='bar', stacked=True)
+    ax.set_xlabel('Email')
+    ax.set_ylabel('Value')
+    ax.set_title('Sum, Mean, and Variance by E-Mail')
+
+    return df, ax

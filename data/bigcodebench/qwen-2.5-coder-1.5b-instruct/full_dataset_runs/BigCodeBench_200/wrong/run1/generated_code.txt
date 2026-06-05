@@ -1,0 +1,44 @@
+import random
+import bisect
+import statistics
+import matplotlib.pyplot as plt
+
+
+def task_func(n, value):
+    """
+    Generates 'n' random numbers between 0 and 1, finds those greater than their average,
+    and counts how many are greater than or equal to a specified value, then plots 
+    the sorted numbers.
+
+    Parameters:
+        n (int): The number of random numbers to generate.
+        value (float): The value to compare against the random numbers.
+
+    Returns:
+        list: Numbers greater than the average of all generated numbers.
+        int: The count of numbers greater than or equal to the specified value.
+
+    Requirements:
+    - random
+    - bisect
+    - statistics
+    - matplotlib.pyplot
+
+    Examples:
+    >>> greater_avg, count = task_func(10, 0.5)
+    >>> isinstance(greater_avg, list) and isinstance(count, int)
+    True
+    >>> len(greater_avg) <= 10
+    True
+    """
+    nums = [random.random() for _ in range(n)]
+    avg = mean(nums)
+    greater_than_avg = [num for num in nums if num > avg]
+    count_greater_than_or_equal_to_value = sum(1 for num in greater_than_avg if num >= value)
+    greater_than_avg.sort()
+    plt.hist(greater_than_avg, bins=20, edgecolor='black')
+    plt.xlabel('Numbers')
+    plt.ylabel('Frequency')
+    plt.title(f'Histogram of {n} Random Numbers Greater Than or Equal to {value}')
+    plt.show()
+    return greater_than_avg, count_greater_than_or_equal_to_value

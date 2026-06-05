@@ -1,0 +1,86 @@
+# Importing the required libraries
+import re
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+
+
+def task_func(text, n=2):
+    """
+    Analyzes a text string, removing duplicate consecutive words and stopwords defined by nltk.corpus,
+    generates a square co-occurrence matrix of words, and plots this matrix.
+
+    Parameters:
+    - text (str): Input text to be analyzed.
+    - n (int, optional): Size of n-grams for the co-occurrence matrix. Defaults to 2.
+
+    Returns:
+    - tuple:
+        - pd.DataFrame: Square co-occurrence matrix of words.
+        - matplotlib.axes.Axes: Plot object of the co-occurrence matrix.
+
+    Requirements:
+        - re
+        - pandas
+        - matplotlib.pyplot
+        - numpy
+        - sklearn.feature_extraction.text
+        - nltk.corpus
+
+    Example:
+    >>> import matplotlib
+    >>> text = "hello hello world world"
+    >>> df, ax = task_func(text, n=2)
+    >>> df.columns.tolist()
+    ['hello world']
+    >>> df.index.tolist()
+    ['hello world']
+    >>> df.iloc[0, 0]
+    0
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    # Convert input text to lowercase
+    text = text.lower()
+
+    # Remove punctuation using regular expressions
+    cleaned_text = re.sub(r'[^\w\s]', '', text)
+
+    # Tokenize the text into words
+    tokens = cleaned_text.split()
+
+    # Filter out stop words
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [word for word in tokens if word not in stop_words]
+
+    # Generate n-grams
+    vectorizer = CountVectorizer(ngram_range=(1, n))
+    matrix = vectorizer.fit_transform(filtered_tokens)
+
+    # Create a dictionary to store co-occurrences
+    co_occurrences = defaultdict(int)
+
+    # Calculate co-occurrences
+    for i in range(matrix.shape[0]):
+        for j in range(i + 1, matrix.shape[0]):
+            co_occurrences[(filtered_tokens[i], filtered_tokens[j])] += 1
+
+    # Convert the dictionary to a DataFrame
+    data = [(key, value) for key, value in co_occurrences.items()]
+    df = pd.DataFrame(data, columns=['Word Pair', 'Co-Occurrence'])
+
+    # Ensure the DataFrame is square
+    df['Word Pair'] = df['Word Pair'].apply(lambda x: ' '.join(sorted(x)))
+    df['Word Pair'] = df['Word Pair'].str.strip()
+
+    # Pivot the DataFrame to create a square matrix
+    pivot_df = df.pivot(index='Word Pair', columns='Word Pair', values='Co-Occurrence')
+
+    # Get the plot axis
+    ax = pivot_df.plot(kind='imshow', cmap='Blues')
+    ax.set_xticks(np.arange(len(pivot_df.columns)))
+    ax.set_yticks(np.arange(len(pivot_df.columns)))
+
+    return pivot_df, ax

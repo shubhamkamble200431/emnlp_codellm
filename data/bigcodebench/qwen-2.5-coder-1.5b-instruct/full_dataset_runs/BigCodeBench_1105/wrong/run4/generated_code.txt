@@ -1,0 +1,53 @@
+import subprocess
+import os
+import time
+import glob
+
+def task_func(r_script_path: str, output_path: str, duration: int) -> (bool, str):
+    """
+    This function executes an R script and verifies if the output file is generated within a given duration.
+    
+    Parameters:
+    - r_script_path (str): The absolute path to the R script to be executed.
+    - output_path (str): The absolute path where the output CSV file is expected to be generated.
+    - duration (int): The time, in seconds, within which the output file should be generated.
+    
+    Returns:
+    - tuple containing:
+      - bool: True if the output file is generated within the specified duration, False otherwise.
+      - str: A message indicating whether the file was generated successfully or not. If the generation is successful, the message will be 'File generated successfully within the specified duration.'; otherwise, it will be 'File not generated within the specified duration.'
+    
+    Requirements:
+    - subprocess
+    - os
+    - time
+    - glob
+    
+    Example:
+    >>> task_func('/path_to_script/MyrScript.r', '/path_to_output/', 10)
+    (True, 'File generated successfully within the specified duration.')
+    >>> task_func('/path_to_script/InvalidScript.r', '/path_to_output/', 5)
+    (False, 'File not generated within the specified duration.')
+    """
+    try:
+        # Start the R script process
+        process = subprocess.Popen(['Rscript', r_script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # Wait for the process to finish or reach the timeout
+        end_time = time.time() + duration
+        while process.poll() is None and time.time() < end_time:
+            time.sleep(1)
+
+        # Check if the process has finished
+        if process.poll() == 0:
+            # Check if the output file exists
+            if os.path.exists(output_path):
+                return True, 'File generated successfully within the specified duration.'
+            else:
+                return False, 'File not generated within the specified duration.'
+        else:
+            # The process failed
+            error_message = process.stderr.read().decode('utf-8').strip()
+            return False, f'Error executing R script: {error_message}'
+    except Exception as e:
+        return False, f'An error occurred: {e}'

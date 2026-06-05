@@ -1,0 +1,33 @@
+from collections import Counter
+import math
+
+def task_func(nested_dict):
+    """
+    Aggregate the values of the same keys from a nested dictionary and remove the "ele" key. For each remaining key take the sine.
+    
+    Parameters:
+    - nested_dict (dict): The nested dictionary. Default is NESTED_DICT constant.
+    
+    Returns:
+    - dict: A dictionary with aggregated values.
+
+    Requirements:
+    - math
+    - collections
+
+    Example:
+    >>> task_func({
+    ...     'dict1': {'ale': 1, 'ele': 2, 'ile': 3},
+    ...     'dict2': {'ele': 4, 'ole': 5, 'ule': 6},
+    ...     'dict3': {'ile': 7, 'ale': 8, 'ele': 9}
+    ... })
+    {'ale': 0.4121184852417566, 'ile': -0.5440211108893698, 'ole': -0.9589242746631385, 'ule': -0.27941549819892586}
+    """
+from collections import Counter
+import math
+
+NESTED_DICT = {
+    'dict1': {'ale': 1, 'ele': 2, 'ile': 3},
+    'dict2': {'ele': 4, 'ole': 5, 'ule': 6},
+    'dict3': {'ile': 7, 'ale': 8, 'ele': 9}
+}

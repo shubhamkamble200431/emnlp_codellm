@@ -1,0 +1,57 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import numpy as np
+
+def task_func(data_url="http://lib.stat.cmu.edu/datasets/boston", seed=42):
+    """
+    Draw the correlation heatmap of the Boston Housing dataset using Seaborn, with an option to save it to a specified file.
+
+    Parameters:
+        seed (int, optional): Random seed for reproducibility. Defaults to 42.
+    The font should be in the family of sans-serif and Arial.
+
+    Returns:
+        matplotlib.axes.Axes: The Axes object containing the heatmap plot.
+
+    Raises:
+        ValueError: If an error occurs in generating or saving the plot.
+
+    Requirements:
+        - matplotlib
+        - os
+        - pandas
+        - seaborn
+        - numpy 
+
+    Example:
+        >>> ax = task_func()
+        >>> type(ax)
+        <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Set random seed for reproducibility
+    np.random.seed(seed)
+
+    # Load the Boston Housing dataset
+    data = pd.read_csv(data_url, header=None, sep=' ')
+    column_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT']
+    data.columns = column_names
+
+    # Calculate the correlation matrix
+    corr_matrix = data.corr()
+
+    # Generate a figure and a set of subplots
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Create a heatmap using Seaborn
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+
+    # Save the heatmap to a file if desired
+    save_file = "boston_housing_correlation_heatmap.png"
+    try:
+        plt.savefig(save_file)
+        print(f"Saved the heatmap to {save_file}")
+    except Exception as e:
+        raise ValueError(f"Error saving the heatmap: {e}")
+
+    return ax

@@ -1,0 +1,62 @@
+import subprocess
+import os
+import shutil
+from glob import glob
+
+
+def task_func(src_folder, dst_folder):
+    """Compress all files in the specified source folder and move the compressed files to a destination folder.
+    This operation is executed as a background process using the 'gzip' command.
+
+    Parameters:
+    src_folder (str): The path of the source folder containing the files to be compressed.
+    dst_folder (str): The path of the destination folder where the compressed files will be moved.
+
+    Returns:
+    dict: A dictionary containing:
+        - 'success': A boolean indicating if all files were compressed and moved successfully.
+        - 'message': A descriptive message about the operation's result.
+        - 'failed_files': A list of filenames that failed to compress or move.
+
+    Requirements:
+    - subprocess
+    - os
+    - shutil
+    - glob
+    - gzip
+
+    Example:
+    >>> import tempfile
+    >>> import os
+    >>> src_folder = tempfile.mkdtemp()
+    >>> dst_folder = tempfile.mkdtemp()
+    >>> for i in range(3):
+    ...     with open(os.path.join(src_folder, f'file{i}.txt'), 'w') as f:
+    ...         _ = f.write(f'This is file {i}.')
+    >>> task_func(src_folder, dst_folder)
+    {'success': True, 'message': 'All files compressed and moved successfully.', 'failed_files': []}
+    """
+    success = True
+    failed_files = []
+
+    # Iterate through all files in the source folder
+    for filename in glob(os.path.join(src_folder, '*.txt')):
+        try:
+            # Compress the file using gzip
+            gzip_file = filename + '.gz'
+            with open(gzip_file, 'wb') as gz_f:
+                with open(filename, 'rb') as f:
+                    shutil.copyfileobj(f, gz_f)
+
+            # Move the compressed file to the destination folder
+            shutil.move(gzip_file, os.path.join(dst_folder, filename.replace('.txt', '.gz')))
+        except Exception as e:
+            print(f"Failed to compress or move {filename}: {e}")
+            success = False
+            failed_files.append(filename)
+
+    return {
+        'success': success,
+        'message': 'All files compressed and moved successfully.' if success else 'Failed to compress or move some files.',
+        'failed_files': failed_files
+    }

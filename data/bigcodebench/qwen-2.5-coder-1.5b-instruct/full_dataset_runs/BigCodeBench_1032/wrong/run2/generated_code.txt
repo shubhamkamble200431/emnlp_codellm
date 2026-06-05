@@ -1,0 +1,79 @@
+import matplotlib.pyplot as plt
+import random
+import string
+import pandas as pd
+import seaborn as sns
+
+# Constants
+LETTERS = list(string.ascii_lowercase)
+
+
+def task_func(rows=1000, string_length=3):
+    """
+    Generate a dataframe of random strings and create a heatmap showing the correlation
+    in the frequency of each letter in these strings.
+
+    This function generates a specified number of random strings, each of a given length,
+    and calculates the frequency of each letter in these strings. A heatmap of the 
+    correlation matrix is then displayed, showing the co-occurrence frequencies of different 
+    letters within these strings.
+
+    If the number of rows specified is zero, the function will print a message indicating
+    that no data is available to generate the heatmap and will return None. Otherwise, 
+    it processes the DataFrame to convert the generated strings into a one-hot encoded format
+    and then sums up these encodings to calculate the frequency of each letter.
+
+    Parameters:
+    - rows (int, optional): Number of random strings to generate. Must be non-negative. 
+      Default is 1000. If set to 0, the function returns None after printing a message.
+    - string_length (int, optional): Length of each random string. Must be non-negative. 
+      Default is 3. A value of 0 results in the generation of empty strings.
+
+    Returns:
+    - matplotlib.axes._axes.Axes or None: A seaborn heatmap plot object if 
+      data is generated; otherwise, None.
+
+    Requirements:
+    - random
+    - string
+    - pandas
+    - seaborn
+    - matplotlib
+
+    Note
+    - If no strings are generated (e.g., rows = 0), the 
+       DataFrame will be empty. In this case, the function prints a message "No data to generate heatmap." and returns None.
+    - If the DataFrame is not empty, each string is split into its 
+       constituent letters, converted into one-hot encoded format, and then the frequency 
+       of each letter is calculated by summing these encodings.
+       
+    Example:
+    >>> ax = task_func(1000, 3)
+    >>> ax.get_xlim()
+    (0.0, 26.0)
+    """
+    if rows == 0:
+        print("No data to generate heatmap.")
+        return None
+
+    # Generate random strings
+    strings = [''.join(random.choices(LETTERS, k=string_length)) for _ in range(rows)]
+
+    # Convert strings to one-hot encoded format
+    encoded_strings = np.array([[1 if ch in s else 0 for ch in LETTERS] for s in strings])
+
+    # Calculate the frequency of each letter
+    letter_frequencies = np.sum(encoded_strings, axis=0)
+
+    # Create a DataFrame from the letter frequencies
+    df = pd.DataFrame(letter_frequencies.T, index=LETTERS, columns=['Frequency'])
+
+    # Plot the heatmap
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(df, annot=True, cmap='coolwarm', fmt='.2f')
+    plt.xlabel('Letters')
+    plt.ylabel('Rows')
+    plt.title('Correlation Matrix of Letter Frequencies')
+    plt.show()
+
+    return plt.gca()

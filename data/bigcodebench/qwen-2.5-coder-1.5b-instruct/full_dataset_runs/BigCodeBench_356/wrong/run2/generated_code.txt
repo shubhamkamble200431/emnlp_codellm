@@ -1,0 +1,56 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import cmath
+
+def task_func(x, y):
+    """
+    Draw the phase of a complex function over a range of x and y and return the matplotlib axes object
+    along with the 2D array of calculated phase values.
+
+    Parameters:
+    x (numpy.ndarray): The range of x values.
+    y (numpy.ndarray): The range of y values.
+
+    Returns:
+    tuple: containing
+        - matplotlib.axes.Axes: The axes object with the phase plot.
+        - numpy.ndarray: The 2D array of calculated phase values.
+    
+    Raises:
+    TypeError: If either `x` or `y` is not a numpy.ndarray.
+    ValueError: If `x` and `y` do not have the same length.
+    
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - cmath
+
+    Examples:
+    >>> ax, Z = task_func(np.array([1, 2, 3]), np.array([1, 2, 3]))
+    >>> isinstance(ax, plt.Axes), isinstance(Z, np.ndarray)
+    (True, True)
+    >>> ax, Z = task_func(np.array([0]), np.array([0]))  # Test with single point
+    >>> isinstance(ax, plt.Axes), isinstance(Z, np.ndarray)
+    (True, True)
+    """
+    if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
+        raise TypeError("Both x and y must be numpy arrays.")
+    if len(x) != len(y):
+        raise ValueError("The x and y arrays must have the same length.")
+    x_len = len(x)
+
+    Z = np.zeros((x_len, x_len))
+    for i in range(x_len):
+        for j in range(x_len):
+            Z[i, j] = cmath.phase(complex(x[i], y[j]))
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(Z.T, cmap='coolwarm')  # Transpose to match imshow's expectations
+    fig.colorbar(im)
+    ax.set_xticks(x)
+    ax.set_yticks(y)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title('Phase of Complex Function')
+
+    return ax, Z

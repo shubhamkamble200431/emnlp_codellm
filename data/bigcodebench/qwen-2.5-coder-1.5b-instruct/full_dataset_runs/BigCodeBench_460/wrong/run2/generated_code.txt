@@ -1,0 +1,52 @@
+import subprocess
+import pandas as pd
+
+def task_func(script_path, output_file_path):
+    """
+    Executes a script to produce a CSV, reads the CSV, and plots a bar graph from the data.
+
+    This function runs the provided script, which should generate a CSV file at the specified output path.
+    The CSV must have exactly two columns. It then reads this CSV into a DataFrame and plots a bar graph,
+    setting the first column as the x-axis labels and the second column as the bar heights.
+    It will raise ValueError if the script fails to execute, or if the produced CSV is not valid.
+
+    Parameters:
+    - script_path (str): Path to the script to be executed.
+    - output_file_path (str): Path where the script outputs the CSV.
+
+    Returns:
+    - df (pd.DataFrame): DataFrame containing the data from the CSV.
+    - ax (matplotlib.axes._axes.Axes): Axes object of the plotted bar graph.
+
+    Raises:
+    - ValueError: If the script fails to execute, the CSV is invalid, or the CSV does not contain exactly 2 columns.
+    
+    Requirements:
+    - pandas
+    - subprocess
+
+    Examples:
+    >>> df, ax = task_func("generate_data.sh", "data.csv")
+    >>> type(df)
+    <class 'pandas.core.frame.DataFrame'>
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    try:
+        # Execute the script
+        subprocess.run([script_path], check=True)
+
+        # Read the generated CSV into a DataFrame
+        df = pd.read_csv(output_file_path)
+
+        # Check if the CSV contains exactly two columns
+        if len(df.columns) != 2:
+            raise ValueError("CSV file must have exactly two columns.")
+
+        # Plotting part
+        import matplotlib.pyplot as plt
+        ax = df.plot(kind='bar')
+        return df, ax
+
+    except subprocess.CalledProcessError:
+        raise ValueError("The script failed to execute.")

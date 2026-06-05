@@ -1,0 +1,59 @@
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+import matplotlib.pyplot as plt
+
+# Constants
+STOP_WORDS = ["a", "an", "the", "in", "on", "at", "and", "or"]
+
+
+def task_func(file_path, save_path=None):
+    """
+    This function processes a text dataset from a CSV file, performs text vectorization while excluding specific
+    stopwords, and creates a histogram of the ten most common words. The function is robust to different input
+    scenarios, such as empty data or data containing only stopwords.
+
+    Parameters:
+    - file_path (str): Path to the CSV file containing the text data. The CSV should have a single text column named "Text".
+    - save_path (str, optional): Path where the histogram plot will be saved. If not provided, the plot is displayed.
+
+    Returns:
+    - matplotlib Axes object: If save_path is not provided and valid words are found in the input, the function
+      displays the histogram plot and returns the matplotlib Axes object.
+    - None: In two scenarios:
+      1. If save_path is provided, saves the plot to the specified location and returns None.
+      2. If the input file is empty or contains only stop words, prints a message and returns None.
+
+    Requirements:
+    - pandas
+    - scikit-learn
+    - matplotlib
+
+    Examples:
+    >>> ax = task_func('text_data.csv')
+    # ax is the matplotlib Axes object for the plot
+    >>> result = task_func('text_data.csv', 'output_plot.png')
+    # result is None, and the plot is saved to 'output_plot.png'
+    """
+    if not file_path.endswith('.csv') or not 'Text' in pd.read_csv(file_path).columns:
+        print("The input file must be a CSV with a column named 'Text'.")
+        return None
+
+    df = pd.read_csv(file_path)
+    corpus = df['Text'].tolist()
+
+    if all(word in STOP_WORDS for word in corpus):
+        print("The text data only contains stopwords. No useful information.")
+        return None
+
+    vectorizer = CountVectorizer(stop_words=STOP_WORDS, ngram_range=(1, 2))
+    X = vectorizer.fit_transform(corpus)
+
+    top_n_words = X.sum(axis=0).argsort()[-n_words:]
+    top_words = [vectorizer.get_feature_names_out()[i] for i in top_n_words]
+
+    plt.hist(top_words, bins=10)
+    if save_path:
+        plt.savefig(save_path)
+    else:
+        plt.show()
+        return plt.gca()

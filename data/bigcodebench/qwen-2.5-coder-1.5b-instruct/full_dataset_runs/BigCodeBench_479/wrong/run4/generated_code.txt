@@ -1,0 +1,56 @@
+import random
+import string
+import pandas as pd
+
+
+def task_func(data_list, seed=0):
+    """
+    Replace a random substring (a sequence of characters between two commas or at the beginning/end of the string)
+    in a list of strings with a random string (comprising ascii lowercase characters) with the same length as
+    the substituted characters.
+
+    Parameters:
+    data_list (list): Input list of strings.
+                      Within each string, each substring's leading and trailing whitespaces are removed.
+                      If empty, it will return a DataFrame with the Original String and Modified String
+                      columns that is otherwise empty.
+    seed (int, optional): The seed for random operations to ensure reproducibility. Defaults to 0.
+
+    Returns:
+    DataFrame: A pandas DataFrame with two columns - 'Original String' and 'Modified String'.
+               'Original String' contains the original strings from the input list, and 'Modified String'
+               contains the modified strings where a random substring has been replaced.
+
+    Requirements:
+    - pandas
+    - random
+    - string
+
+    Example:
+    >>> task_func(['lamp, bag, mirror', 'table, chair, bag, lamp'])
+               Original String          Modified String
+    0        lamp, bag, mirror        lamp, tkg, mirror
+    1  table, chair, bag, lamp  table, chair, bag, kuhm
+    """
+    df = pd.DataFrame()
+    for i, line in enumerate(data_list):
+        if line:
+            words = line.split(', ')
+            modified_words = []
+            for word in words:
+                # Remove leading/trailing whitespace
+                word = word.strip()
+                if len(word) > 3:
+                    # Choose random starting index within the word's length
+                    start_index = random.randint(0, len(word)-3)
+                    # Generate a random substring with the same length
+                    random_substring = ''.join(random.choices(string.ascii_lowercase, k=len(word)))
+                    # Create a new word with the randomly chosen substring inserted
+                    new_word = word[:start_index] + random_substring + word[start_index+len(random_substring):]
+                else:
+                    new_word = word
+                modified_words.append(new_word)
+            modified_line = ', '.join(modified_words)
+            df.loc[i, 'Original String'] = line
+            df.loc[i, 'Modified String'] = modified_line
+    return df

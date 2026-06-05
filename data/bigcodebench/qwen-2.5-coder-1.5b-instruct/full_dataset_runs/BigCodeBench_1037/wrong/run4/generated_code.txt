@@ -1,0 +1,66 @@
+import pandas as pd
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+
+def task_func(s1, s2, n_clusters=3):
+    """
+    Perform K-Means clustering on data points from two pandas Series and visualize the clusters.
+
+    Parameters:
+    - s1 (pandas.Series): The first series of data. Each value in the series represents a data point's coordinate along one dimension.
+    - s2 (pandas.Series): The second series of data. Each value corresponds to a data point's coordinate along another dimension. The length of s2 must match that of s1.
+    - n_clusters (int, optional): The number of clusters to form as well as the number of centroids to generate. Defaults to 3.
+
+    Returns:
+    - tuple: A tuple containing the following elements:
+        - ndarray: An array of cluster labels indicating the cluster each data point belongs to.
+        - matplotlib.axes.Axes: The Axes object of the plot, which shows the data points colored according to their cluster labels.
+
+    Raises:
+    - ValueError: If either s1 or s2 is not a pandas Series, raise "s1 and s2 must be pandas Series"
+    - ValueError: If s1 and s2 have different lengths, raise "s1 and s2 must have the same length"
+
+    Requirements:
+    - pandas
+    - scikit-learn
+    - matplotlib
+
+    Notes:
+    - The function needs to ensure that s1 and s2 are pandas Series of equal length. 
+    - It then performs K-Means clustering on the combined data points from s1 and s2. 
+    - After clustering, it creates a scatter plot where each cluster is visualized with a different color. 
+    - The plot title is set to "K-Means Clustering" to describe the visualization technique. 
+    - A legend is added, which uses elements from the scatter plot to describe each cluster.
+        
+    Example:
+    >>> s1 = pd.Series(np.random.rand(100), name='feature1')
+    >>> s2 = pd.Series(np.random.rand(100), name='feature2')
+    >>> labels, ax = task_func(s1, s2, n_clusters=4)
+    >>> print(ax.get_title())
+    K-Means Clustering
+
+   
+    """
+    if not isinstance(s1, pd.Series) or not isinstance(s2, pd.Series):
+        raise ValueError("s1 and s2 must be pandas Series")
+    if len(s1) != len(s2):
+        raise ValueError("s1 and s2 must have the same length")
+
+    # Combine the data points into a single DataFrame
+    data = pd.DataFrame({
+        'feature1': np.concatenate([s1.values, s2.values]),
+        'feature2': np.concatenate([s1.index.values, s2.index.values])  # Assuming index values can serve as coordinates
+    })
+
+    # Initialize and fit the K-means model
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    labels = kmeans.fit_predict(data[['feature1', 'feature2']])
+
+    # Create a scatter plot with different colors for each cluster
+    fig, ax = plt.subplots()
+    ax.scatter(data['feature1'], data['feature2'], c=labels)
+    ax.set_title('K-Means Clustering')
+    ax.legend(handles=plt.legend_elements()[0], labels=np.unique(labels))
+
+    return labels, ax

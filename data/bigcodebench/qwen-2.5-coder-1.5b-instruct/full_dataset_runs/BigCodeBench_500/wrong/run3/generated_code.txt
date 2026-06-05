@@ -1,0 +1,57 @@
+import xlwt
+import os
+
+# Constants
+FIELDS = ['ID', 'Name', 'Age']
+
+def task_func(values, filename):
+    """
+    Writes a list of OrderedDicts to an Excel file. Each OrderedDict in the list represents a row in the Excel sheet,
+    and each key in the OrderedDict corresponds to a column defined in the FIELDS constant comprising column names 
+    'ID', 'Name', and 'Age'.
+
+    Parameters:
+    values (list of OrderedDict): A list where each element is an OrderedDict with keys matching the FIELDS constant.
+    filename (str): The filename for the Excel file to be created. It should include the '.xls' extension.
+
+    Returns:
+    str: The absolute path of the created Excel file.
+
+    Requirements:
+    - xlwt
+    - os
+
+    Examples:
+    Create an Excel file with data from a list of OrderedDicts.
+    >>> data = [OrderedDict([('ID', 1), ('Name', 'John Doe'), ('Age', 30)]),
+    ...         OrderedDict([('ID', 2), ('Name', 'Jane Doe'), ('Age', 28)])]
+    >>> path = task_func(data, 'test_data.xls')
+    >>> os.path.exists(path) and 'test_data.xls' in path
+    True
+
+    Create an Excel file with no data.
+    >>> empty_data = []
+    >>> path = task_func(empty_data, 'empty_data.xls')
+    >>> os.path.exists(path) and 'empty_data.xls' in path
+    True
+    """
+    # Create a new workbook
+    wb = xlwt.Workbook()
+
+    # Add a sheet named 'Sheet1'
+    ws = wb.add_sheet('Sheet1')
+
+    # Write field headers to the first row
+    for i, field in enumerate(FIELDS):
+        ws.write(0, i, field)
+
+    # Write data rows to the second row onwards
+    if values:
+        for i, value_dict in enumerate(values):
+            for j, field in enumerate(FIELDS):
+                ws.write(i + 1, j, value_dict[field])
+
+    # Save the workbook to the specified filename
+    wb.save(filename)
+
+    return os.path.abspath(filename)

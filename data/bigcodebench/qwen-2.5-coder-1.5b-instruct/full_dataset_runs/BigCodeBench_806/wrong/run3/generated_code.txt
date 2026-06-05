@@ -1,0 +1,47 @@
+import re
+import nltk
+nltk.download('stopwords')
+
+from nltk.corpus import stopwords
+
+from collections import Counter
+
+# Constants
+STOPWORDS = set(stopwords.words('english'))
+
+def task_func(text, n=2):
+    """
+    Remove duplicate and stopwords from a string "text."
+    Then, generate a count of n-grams (default is bigrams) in the text.
+
+    Parameters:
+    - text (str): The text string to analyze.
+    - n (int): The size of the n-grams.
+
+    Returns:
+    - dict: The count of the n-grams in the text.
+
+    Requirements:
+    - re
+    - nltk.corpus.stopwords
+    - collections.Counter
+
+    Example:
+    >>> text = "The quick brown fox jumps over the lazy dog and the dog was not that quick to respond."
+    >>> ngrams = task_func(text)
+    >>> print(ngrams)
+    Counter({('quick', 'brown'): 1, ('brown', 'fox'): 1, ('fox', 'jumps'): 1, ('jumps', 'lazy'): 1, ('lazy', 'dog'): 1, ('dog', 'dog'): 1, ('dog', 'quick'): 1, ('quick', 'respond'): 1})
+    """
+    # Remove duplicate words
+    unique_words = sorted(set(re.findall(r'\b\w+\b', text)))
+
+    # Remove stopwords
+    filtered_words = [word for word in unique_words if word.lower() not in STOPWORDS]
+
+    # Generate n-grams
+    n_grams = ngrams(filtered_words, n)
+
+    # Count n-grams
+    ngram_count = Counter(n_grams)
+
+    return ngram_count

@@ -1,0 +1,49 @@
+import pandas as pd
+import re
+import random
+
+
+def task_func(data_list, seed=None):
+    """
+    Removes a random comma-separated value (treated as a "substring") from each string
+    in a list and returns a pandas DataFrame containing the original and modified strings.
+
+    Parameters:
+    - data_list (list of str): A list of comma-separated strings. The function will remove
+                               leading and trailing whitespaces first before processing.
+    - seed (int, optional): Seed for the random number generator for reproducibility.
+      Default is None, which uses system time.
+
+    Returns:
+    - DataFrame: A pandas DataFrame with columns 'Original String' and 'Modified String'.
+
+    Requirements:
+    - pandas
+    - re
+    - random
+
+    Example:
+    >>> task_func(['lamp, bag, mirror', 'table, chair, bag, lamp'], seed=42)
+               Original String   Modified String
+    0        lamp, bag, mirror         lamp, bag
+    1  table, chair, bag, lamp  chair, bag, lamp
+    """
+    # Set random seed if provided
+    if seed is not None:
+        random.seed(seed)
+
+    result = []
+    for row in data_list:
+        # Remove leading/trailing whitespaces
+        row = row.strip()
+
+        # Split the string by comma and choose a random element
+        elements = row.split(',')
+        random_element = random.choice(elements)
+
+        # Combine the rest of the elements back into a string
+        modified_string = ', '.join(elements[:elements.index(random_element)] + elements[elements.index(random_element) + 1:])
+
+        result.append((row, modified_string))
+
+    return pd.DataFrame(result, columns=['Original String', 'Modified String'])

@@ -1,0 +1,55 @@
+import numpy as np
+import pandas as pd
+from sklearn.decomposition import PCA
+
+
+def task_func(array, seed=None):
+    """
+    Shuffles the columns of a numpy array randomly, performs Principal Component Analysis (PCA)
+    to reduce the dimensionality to 2 principal components, and returns these components as a pandas DataFrame.
+
+    Parameters:
+    - array (numpy.ndarray): A 2D numpy array where each row is an observation and each column is a feature.
+    - seed (int, optional): Seed for the random number generator. Defaults to None (not set).
+
+    Returns:
+    - pandas.DataFrame: DataFrame with columns 'PC1' and 'PC2' representing the two principal components.
+
+    Raises:
+    - ValueError: If the input array is not 2D.
+
+    Requirements:
+    - numpy
+    - pandas
+    - sklearn
+
+    Note:
+    - PCA reduction will default to the number of features if fewer than 2.
+    - An named but empty DataFrame is returned for arrays without features or with empty content.
+
+    Examples:
+    >>> array = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+    >>> df = task_func(array, seed=42)
+    >>> df["PC1"]
+    0    5.59017
+    1   -5.59017
+    Name: PC1, dtype: float64
+    >>> df.shape
+    (2, 2)
+    """
+    if len(array.shape) != 2:
+        raise ValueError("Input must be a 2D numpy array.")
+
+    # Shuffle columns using the given seed
+    if seed is not None:
+        np.random.seed(seed)
+        np.random.shuffle(array, axis=1)
+
+    # Perform PCA on the shuffled data
+    pca = PCA(n_components=min(array.shape))
+    transformed_data = pca.fit_transform(array)
+
+    # Create a DataFrame from the transformed data
+    result_df = pd.DataFrame(transformed_data, columns=['PC1', 'PC2'])
+
+    return result_df

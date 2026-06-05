@@ -1,0 +1,50 @@
+import json
+import csv
+import requests
+from io import StringIO
+
+# Constants
+CSV_URL = 'https://example.com/data.csv'
+JSON_FILE = 'data.json'
+
+def task_func(csv_url=CSV_URL, json_file_path=JSON_FILE):
+    """
+    Downloads a CSV file from a specified URL, converts it to JSON format, and saves it to a specified file path.
+    
+    Parameters:
+    - csv_url (str): The URL from which the CSV data should be downloaded. Defaults to a constant CSV_URL.
+    - json_file_path (str): The file path where the JSON data should be saved. Defaults to a constant JSON_FILE.
+
+    Returns:
+    str: The path to the saved JSON file.
+
+    Requirements:
+    - json
+    - csv
+    - requests
+    - io.StringIO
+
+    Example:
+    >>> task_func("https://example.com/sample.csv", "sample.json")
+    "sample.json"
+    """
+    # Download the CSV file from the specified URL
+    response = requests.get(csv_url)
+    if response.status_code != 200:
+        raise Exception(f"Failed to download CSV from {csv_url}. Status code: {response.status_code}")
+    
+    # Read the content of the CSV file
+    csv_content = response.content
+    
+    # Convert the CSV content to a string using StringIO
+    csv_string_io = StringIO(csv_content.decode('utf-8'))
+    
+    # Convert the CSV data to a list of dictionaries
+    csv_reader = csv.DictReader(csv_string_io)
+    csv_data = [row for row in csv_reader]
+    
+    # Write the CSV data to a JSON file
+    with open(json_file_path, 'w') as json_file:
+        json.dump(csv_data, json_file)
+    
+    return json_file_path

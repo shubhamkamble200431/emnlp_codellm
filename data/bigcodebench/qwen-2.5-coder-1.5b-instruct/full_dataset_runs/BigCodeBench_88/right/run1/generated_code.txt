@@ -1,0 +1,56 @@
+import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
+
+def task_func(start_date, end_date, seed=42):
+    """
+    Generate random sales data for each day between a start and end date, inclusive.
+    Returns the data and a plot of sales over time.
+
+    Parameters:
+    start_date (datetime): The start date.
+    end_date (datetime): The end date.
+    seed (int): Seed for the random number generator. Default is 42.
+
+    Returns:
+    DataFrame: A pandas DataFrame with columns 'Date' and 'Sales'.
+    Axes: A matplotlib Axes object of the plot showing the sales overtime.
+    
+    sales ranges 0 to 500 and it is an integer
+
+    Requirements:
+    - numpy
+    - pandas
+    - datetime
+
+    Example:
+    >>> start_date = datetime(2021, 1, 1)
+    >>> end_date = datetime(2021, 12, 31)
+    >>> data, plot = task_func(start_date, end_date)
+    >>> print(data.head())
+            Date  Sales
+    0 2021-01-01    102
+    1 2021-01-02    435
+    2 2021-01-03    348
+    3 2021-01-04    270
+    4 2021-01-05    106
+    """
+    # Set the seed for reproducibility
+    np.random.seed(seed)
+
+    # Create a sequence of dates from start_date to end_date
+    dates = pd.date_range(start=start_date, end=end_date)
+
+    # Generate random sales data for each date in the range
+    sales_data = np.random.randint(low=0, high=501, size=len(dates))
+
+    # Create a DataFrame with the generated data
+    data = pd.DataFrame({
+        'Date': dates,
+        'Sales': sales_data
+    })
+
+    # Create a plot of sales over time
+    plot = data.plot(x='Date', y='Sales')
+
+    return data, plot

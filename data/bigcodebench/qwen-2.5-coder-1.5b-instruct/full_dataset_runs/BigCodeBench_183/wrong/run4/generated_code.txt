@@ -1,0 +1,27 @@
+from django.http import HttpResponse
+import uuid
+
+def task_func(data):
+    """
+    Create a Django HttpResponse with JSON data, and include a UUID in the HTTP headers to track requests.
+
+    Parameters:
+    data (str): The JSON-formatted data to be included in the response body.
+
+    Returns:
+    HttpResponse: A Django HttpResponse with JSON data and UUID.
+    
+    Requirements:
+    - django
+    - uuid
+
+    Example:
+    >>> import json
+    >>> response = task_func(json.dumps({"Sample-Key": "Sample-Value"}))
+    >>> response.has_key('UUID')
+    True
+    """
+    response_data = {'data': data}
+    request_uuid = str(uuid.uuid4())
+    response_headers = {'X-Random-UUID': request_uuid}
+    return HttpResponse(json.dumps(response_data), status=200, headers=response_headers)

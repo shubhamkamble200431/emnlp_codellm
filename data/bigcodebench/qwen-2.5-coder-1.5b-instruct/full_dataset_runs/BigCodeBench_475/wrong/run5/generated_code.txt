@@ -1,0 +1,69 @@
+import pandas as pd
+from datetime import datetime
+
+def task_func(data, date_format, country, country_codes=None):
+    """ 
+    Draw a histogram of the data from a DataFrame column of the pandas after converting the data into a specific format,
+    and return the matplotlib Axes object.
+
+    Parameters:
+    data (DataFrame): The pandas DataFrame containing date strings. The DataFrame has a column named 'dates' with the format '%d/%m/%Y'
+    date_format (str): The date format string.
+    country (str): The country name.
+    country_codes (dict, optional): A dictionary mapping country names. Defaults to a predefined dictionary, where default is:
+        default_country_codes = {
+            'Russia': 'ru_RU',
+            'Germany': 'de_DE',
+            'France': 'fr_FR',
+            'Spain': 'es_ES',
+            'Italy': 'it_IT'
+        }
+
+    Returns:
+    matplotlib.axes.Axes: The Axes object of the plotted histogram.
+
+    Raises:
+    ValueError: If 'data' is not a DataFrame, 'date_format' is not a string, 'country' is not in 'country_codes',
+                or 'country_codes' is not a dictionary.
+
+    Additional Notes:
+    The title of the plot should be 'Date Distribution'. The y label should be named with 'Frequency'.
+    
+    Requirements:
+    - pandas
+    - datetime
+
+    Example:
+    >>> data = pd.DataFrame({'dates': ['01/01/2000', '01/02/2000', '02/03/2000', '04/05/2000', '06/07/2000']})
+    >>> ax = task_func(data, '%d/%m/%Y', 'Russia')
+    >>> ax.get_title()
+    'Date Distribution'
+    """
+    if not isinstance(data, pd.DataFrame):
+        raise ValueError("Data must be a pandas DataFrame")
+    if not isinstance(date_format, str):
+        raise ValueError("Date format must be a string")
+    if country not in country_codes.values():
+        raise ValueError("Country must be one of the keys in country_codes dictionary")
+
+    if country_codes is None:
+        country_codes = {
+            'Russia': 'ru_RU',
+            'Germany': 'de_DE',
+            'France': 'fr_FR',
+            'Spain': 'es_ES',
+            'Italy': 'it_IT'
+        }
+
+    data['dates'] = data['dates'].astype(datetime)
+    filtered_data = data[data['country'] == country]
+    dates = filtered_data['dates']
+    frequency = dates.value_counts(normalize=True).sort_index()
+
+    plt.figure(figsize=(10, 6))
+    axes = frequency.plot(kind='bar', color='skyblue')
+    axes.set_xlabel('Date')
+    axes.set_ylabel('Frequency')
+    axes.set_title('Date Distribution')
+
+    return axes

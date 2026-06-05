@@ -1,0 +1,48 @@
+import re
+import os
+import glob
+
+
+def task_func(dir_path):
+    """
+    Search for occurrences of the word "error" in all text files within a 
+    specified directory and its subdirectories.
+    
+    Parameters:
+    dir_path (str): The path of the directory.
+    
+    Returns:
+    dict: A dictionary with relative file paths as keys and the count of 
+            occurrences of the word "error" as values.
+    
+    Raises:
+    - ValueError: If directory in dir_path does not exist.
+
+    Requirements:
+    - re: For regex pattern matching.
+    - os: For retrieving relative file paths.
+    - glob: For fetching all text file paths in the directory.
+    
+    The function specifically searches for the word "error" in text files
+    (with the extension ".txt").
+    This function is NOT case sensitive, e.g. also "ERROr" will be counted.
+    
+    Example:
+    >>> task_func("/path/to/directory")
+    {'file1.txt': 2, 'subdir/file2.txt': 1}
+    """
+    if not os.path.exists(dir_path):
+        raise ValueError("Directory not found.")
+
+    result = {}
+    for filename in glob.glob(os.path.join(dir_path, '**/*.txt'), recursive=True):
+        try:
+            with open(filename, encoding='utf-8') as file:
+                content = file.read()
+                count = len(re.findall(r'\b(error)\b', content, re.IGNORECASE))
+                if count > 0:
+                    result[os.path.relpath(filename, dir_path)] = count
+        except Exception as e:
+            print(f"Error processing {filename}: {e}")
+
+    return result

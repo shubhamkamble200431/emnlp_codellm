@@ -1,0 +1,42 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+def task_func(df, cols):
+    """
+    Standardize specified numeric columns in a dataframe.
+
+    Parameters:
+    df (DataFrame): The dataframe.
+    cols (list): The columns to standardize.
+
+    Returns:
+    DataFrame: The dataframe with standardized columns.
+
+    Raises:
+    ValueError: If 'df' is not a DataFrame, 'cols' is not a list, or columns in 'cols' don't exist in 'df'.
+
+    Requirements:
+    - pandas
+    - sklearn.preprocessing.StandardScaler
+
+    Example:
+    >>> np.random.seed(0)
+    >>> df = pd.DataFrame({'A': np.random.normal(0, 1, 1000), 'B': np.random.exponential(1, 1000)})
+    >>> df = task_func(df, ['A', 'B'])
+    >>> print(df.describe())
+                      A             B
+    count  1.000000e+03  1.000000e+03
+    mean  -1.243450e-17 -1.865175e-16
+    std    1.000500e+00  1.000500e+00
+    min   -3.040310e+00 -1.024196e+00
+    25%   -6.617441e-01 -7.183075e-01
+    50%   -1.293911e-02 -2.894497e-01
+    75%    6.607755e-01  4.095312e-01
+    max    2.841457e+00  5.353738e+00
+    """
+scaler = StandardScaler()
+for col in cols:
+    if col not in df.columns:
+        raise ValueError(f"Column '{col}' does not exist in the dataframe.")
+    df[col] = scaler.fit_transform(df[[col]])
+return df

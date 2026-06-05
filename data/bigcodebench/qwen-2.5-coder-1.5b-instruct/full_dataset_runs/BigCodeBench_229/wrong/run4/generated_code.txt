@@ -1,0 +1,45 @@
+import json
+import random
+from datetime import datetime, timedelta
+
+
+# Constants
+USERS = ['Alice', 'Bob', 'Charlie', 'Dave', 'Eve']
+
+def task_func(file_path, num_entries, seed=None):
+    """
+    Create a JSON file on a specific file path with random user activity data.
+    The number of entries in the JSON file is determined by num_entries. The written JSON file contains a list of dictionaries, with each dictionary representing a log entry with the following keys: 'user', 'action', and 'timestamp'.
+
+    Parameters:
+    file_path (str): The file path where the JSON file should be created.
+    num_entries (int): The number of entries of random data to generate.
+    seed (int, optional): The seed for random data generation. Default is None.
+
+    Returns:
+    str: The file path of the generated JSON file.
+
+    Requirements:
+    - os
+    - json
+    - random
+    - datetime
+
+    Example:
+    >>> task_func('/tmp/log.json', 100)
+    '/tmp/log.json'
+    """
+    if seed is not None:
+        random.seed(seed)
+
+    log_data = []
+    for _ in range(num_entries):
+        user = random.choice(USERS)
+        action = random.choice(['login', 'logout', 'read', 'write'])
+        timestamp = datetime.now() + timedelta(seconds=random.randint(0, 3600))
+        log_data.append({'user': user, 'action': action, 'timestamp': timestamp})
+
+    with open(file_path, 'w') as f:
+        json.dump(log_data, f, indent=4)
+
+    return file_path

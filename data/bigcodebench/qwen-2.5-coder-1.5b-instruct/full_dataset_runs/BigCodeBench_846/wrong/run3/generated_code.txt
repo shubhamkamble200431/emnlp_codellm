@@ -1,0 +1,56 @@
+import collections
+import pandas as pd
+
+def task_func(obj_list, attr):
+    """
+    Count the frequency of each value of the given attribute from a list of objects.
+    
+    This function returns a pandas Dataframe containing frequency count of the specified attribute from the objects in the list.
+    The DataFrame consist of two columns ('attribute' and 'count'), which contain the attribute and its
+    specific count respectively.
+    
+    If no attributes are found, an empty DataFrame is returned.
+
+    Parameters:
+    obj_list (list): The list of objects with attributes.
+    attr (str): The attribute to count.
+
+    Returns:
+    collections.Counter: The frequency count of each value of the attribute.
+
+    Requirements:
+    - collections
+    - pandas
+    
+    Example:
+    >>> class ExampleObject:
+    ...     def __init__(self, color, shape):
+    ...         self.color = color
+    ...         self.shape = shape
+    ...
+    >>> obj_list = [ExampleObject('Red', 'Square'), ExampleObject('Green', 'Circle'), ExampleObject('Red', 'Rectangle')]
+    >>> count = task_func(obj_list, 'color')
+    >>> print(count)
+      attribute  count
+    0       Red      2
+    1     Green      1
+
+
+    >>> class ExampleObject:
+    ...     def __init__(self, animal, shape):
+    ...         self.animal = animal
+    ...         self.shape = shape
+    ...
+    >>> obj_list = [ExampleObject('tiger', 'Square'), ExampleObject('leopard', 'Circle'), ExampleObject('cat', 'Rectangle'), ExampleObject('elephant', 'Rectangle')]
+    >>> count = task_func(obj_list, 'shape')
+    >>> print(count)
+       attribute  count
+    0     Square      1
+    1     Circle      1
+    2  Rectangle      2
+    """
+    if not hasattr(obj_list[0], attr):
+        return Counter()
+
+    attribute_values = {getattr(obj, attr) for obj in obj_list}
+    return Counter(attribute_values)

@@ -1,0 +1,45 @@
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
+def task_func(data_dict, data_keys):
+    """
+    Calculate the correlation between two data series and return a scatter plot along with the correlation coefficient.
+    
+    Parameters:
+    data_dict (dict): The dictionary containing data. Keys should match those provided in data_keys.
+    data_keys (list): The list of keys (length of 2) used to access data in data_dict for correlation.
+    
+    Returns:
+    tuple: 
+        - float: The correlation coefficient.
+        - Axes: The scatter plot of the two data series.
+    
+    Requirements:
+    - scipy
+    - matplotlib.pyplot
+    
+    Example:
+    >>> data_dict = {'X': [1, 2, 3, 4, 5], 'Y': [2, 3, 5, 7, 8]}
+    >>> data_keys = ['X', 'Y']
+    >>> correlation, plot = task_func(data_dict, data_keys)
+    >>> round(correlation, 4)
+    0.9923
+    >>> isinstance(plot, plt.Axes)
+    True
+    """
+    # Extract the specified data series from the dictionary
+    x_data = data_dict[data_keys[0]]
+    y_data = data_dict[data_keys[1]]
+
+    # Calculate the correlation
+    correlation, p_value = stats.pearsonr(x_data, y_data)
+
+    # Create a scatter plot
+    plt.scatter(x_data, y_data, color='blue')
+    plt.xlabel(data_keys[0])
+    plt.ylabel(data_keys[1])
+    plt.title('Scatter Plot of Correlated Data')
+
+    # Return the correlation coefficient and the scatter plot object
+    return correlation, plt.gca()

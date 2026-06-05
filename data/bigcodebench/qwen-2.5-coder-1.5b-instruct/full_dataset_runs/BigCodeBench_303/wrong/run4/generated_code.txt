@@ -1,0 +1,54 @@
+import pytz
+import numpy as np
+from dateutil.parser import parse
+import math
+
+
+MOON_PHASES_YEARS = np.array([1987, 1994, 2001, 2008, 2015, 2022])
+
+def task_func(date_str, from_tz, to_tz):
+    """
+    Calculate the moon phase by the date and time taking into account the lunar phase cycle of 7 years. The 
+    function uses a constant array `MOON_PHASES_YEARS` to determine the reference years for the moon phases.
+
+    Parameters:
+    date_str (str): The date string in "yyyy-mm-dd hh:mm:ss" format.
+    from_tz (str): The timezone of the given date string.
+    to_tz (str): The timezone to which the given date and time should be converted.
+
+    Returns:
+    float: The moon phase between 0 and 1. A value of 0 indicates a new moon and a value of 1 indicates a full moon.
+
+    Requirements:
+    - pytz
+    - numpy
+    - dateutil.parser
+    - math
+
+    Example:
+    >>> task_func('1970-01-01 00:00:00', 'UTC', 'America/New_York')
+    0.9749279121818237
+    """
+    # Parse the input date and time using dateutil.parser
+    date_time = parse(date_str)
+
+    # Convert the parsed datetime object to the specified from_tz timezone
+    from_dt = date_time.astimezone(pytz.timezone(from_tz))
+
+    # Create a timedelta object with 7 days to represent one lunar cycle
+    cycle = datetime.timedelta(days=365/7)
+
+    # Determine the number of complete cycles that have passed since the reference dates
+    num_cycles = (date_time.year - MOON_PHASES_YEARS[0]) / 7
+
+    # Calculate the fractional part of the year within the current cycle
+    fractional_year = (date_time.year % 7) / 7
+
+    # Calculate the moon phase based on the fractional part of the year
+    # Assuming a linear relationship between the fractional year and the moon phase
+    moon_phase = fractional_year * 2 + 0.5
+
+    # Convert the moon phase from a fractional value to a percentage
+    moon_phase *= 100
+
+    return moon_phase

@@ -1,0 +1,27 @@
+import random
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def task_func(result, colors=['b', 'g', 'r', 'c', 'm', 'y', 'k']):
+    """
+    Draws a histogram of the "from_user" values in the provided result. The color of the histogram bars is selected at random from the provided colors list.
+
+    Parameters:
+    result (list): A list of dictionaries containing the key "from_user".
+    colors (list, optional): A list of colors to choose from for the histogram bars. Defaults is ['b', 'g', 'r', 'c', 'm', 'y', 'k'].
+
+    Returns:
+    None: The function displays the histogram and does not return any value.
+
+    Requirements:
+    - random
+    - matplotlib
+    - seaborn
+
+    Example:
+    >>> result = [{"from_user": 0}, {"from_user": 0}, {"from_user": 1}]
+    >>> task_func(result)
+    """
+plt.hist([item['from_user'] for item in result], bins=range(2), alpha=0.7, edgecolor='black')
+plt.bar_label(ax=plt.gca().patches, labels=[f'{label}: {count}' for label, count in Counter([item['from_user'] for item in result]).items()])
+plt.show()

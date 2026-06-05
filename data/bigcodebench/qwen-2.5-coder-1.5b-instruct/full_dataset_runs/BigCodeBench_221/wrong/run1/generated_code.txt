@@ -1,0 +1,33 @@
+import numpy as np
+from scipy import stats
+
+# Constants
+FEATURES = ['feature1', 'feature2', 'feature3', 'feature4', 'feature5']
+
+def task_func(df, dct):
+    """
+    This function calculates and returns the mean, median, mode, and variance for specified features in a DataFrame. 
+    It replaces certain values in the DataFrame based on a provided dictionary mapping before performing the calculations.
+    
+    Parameters:
+    df (DataFrame): The input DataFrame.
+    dct (dict): A dictionary for replacing values in df.
+    
+    Returns:
+    dict: A dictionary containing statistics (mean, median, mode, variance) for each feature defined in the 'FEATURES' constant.
+    
+    Requirements:
+    - numpy
+    - scipy.stats
+
+    Note:
+    - The function would return "Invalid input" string if the input is invalid (e.g., does not contain the required 'feature1' key) or if there is an error in the calculation.
+    
+    Example:
+    >>> df = pd.DataFrame({'feature1': [1, 2, 3, 4, 5], 'feature2': [5, 4, 3, 2, 1], 'feature3': [2, 2, 2, 2, 2], 'feature4': [1, 1, 3, 3, 5], 'feature5': [0, 1, 1, 1, 1]})
+    >>> dct = {}
+    >>> task_func(df, dct)
+    {'feature1': {'mean': 3.0, 'median': 3.0, 'mode': 1, 'variance': 2.0}, 'feature2': {'mean': 3.0, 'median': 3.0, 'mode': 1, 'variance': 2.0}, 'feature3': {'mean': 2.0, 'median': 2.0, 'mode': 2, 'variance': 0.0}, 'feature4': {'mean': 2.6, 'median': 3.0, 'mode': 1, 'variance': 2.24}, 'feature5': {'mean': 0.8, 'median': 1.0, 'mode': 1, 'variance': 0.16000000000000006}}
+    """
+import numpy as np
+from scipy import stats

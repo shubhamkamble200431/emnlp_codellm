@@ -1,0 +1,67 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
+
+def task_func(num_samples, countries=['Russia', 'China', 'USA', 'India', 'Brazil'], 
+           ages=np.arange(18, 60), genders=['Male', 'Female'], rng_seed=None):
+    """
+    Generate a demographic dataset with information about people from different countries, their age, and gender. 
+    Genders are encoded using sklearn LabelEncoder.
+    Datapoints are sampled from the lists using a numpy.random.default_rng with seed: rng_seed.
+
+    Parameters:
+    num_samples (int): The number of samples to generate.
+    countries (list of str): A list of country names to use in the dataset. Default is ['Russia', 'China', 'USA', 'India', 'Brazil'].
+    ages (array of int): An array of ages to use in the dataset. Default is np.arange(18, 60).
+    genders (list of str): A list of genders to use in the dataset. Default is ['Male', 'Female'].
+    rng_seed: seed for the random number generator
+    
+    Returns:
+    DataFrame: A pandas DataFrame with the demographics data.
+
+    Raises:
+    - ValueError: If num_samples is not an integer.
+
+    Requirements:
+    - pandas
+    - numpy
+    - sklearn.preprocessing.LabelEncoder
+
+    Example:
+    >>> demographics = task_func(5, rng_seed=31)
+    >>> print(demographics)
+      Country  Age  Gender
+    0     USA   46       0
+    1  Brazil   21       1
+    2     USA   37       1
+    3  Russia   32       1
+    4     USA   46       0
+
+    >>> demographics = task_func(5, countries=['Austria', 'Germany'], rng_seed=3)
+    >>> print(demographics)
+       Country  Age  Gender
+    0  Germany   51       1
+    1  Austria   54       1
+    2  Austria   42       0
+    3  Austria   19       1
+    4  Austria   21       1
+    """
+           ages=np.arange(18, 60), genders=['Male', 'Female'], rng_seed=None):
+    if not isinstance(num_samples, int):
+        raise ValueError("num_samples must be an integer")
+
+    rng = np.random.default_rng(rng_seed)
+    country_indices = rng.choice(len(countries), size=num_samples, replace=True)
+    age_indices = rng.choice(len(ages), size=num_samples, replace=True)
+    gender_indices = rng.choice(len(genders), size=num_samples, replace=True)
+
+    countries_df = pd.DataFrame({'Country': [countries[i] for i in country_indices]})
+    ages_df = pd.DataFrame({'Age': [ages[i] for i in age_indices]})
+    genders_df = pd.DataFrame({'Gender': [genders[i] for i in gender_indices]})
+
+    combined_df = pd.concat([countries_df, ages_df, genders_df], axis=1)
+
+    le = LabelEncoder()
+    combined_df['Gender'] = le.fit_transform(combined_df['Gender'])
+
+    return combined_df

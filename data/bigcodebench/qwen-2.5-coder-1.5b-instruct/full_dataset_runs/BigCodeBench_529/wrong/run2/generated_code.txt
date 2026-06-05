@@ -1,0 +1,48 @@
+from collections import Counter
+import random
+import matplotlib.pyplot as plt
+
+
+def task_func(num_rolls, num_dice, plot_path=None, random_seed=0):
+    """Simulate rolling a certain number of a standard six-sided dice several times, then
+    identify and display the distribution of the sums of the dice rolls in a bar plot.
+
+    Parameters:
+    - num_rolls (int): The number of times to roll the dice.
+    - num_dice (int): The number of dice to roll each time.
+    - plot_path (str, optional): Path to save the generated plot. If not provided, plot is not saved.
+    - random_seed (int): Random seed for reproducibility. Defaults to 0.
+
+    Returns:
+    tuple: A tuple containing the following elements:
+        - Counter: A Counter object with the count of each possible sum.
+        - Axes: A matplotlib Axes object representing the bar plot of the Distribution of Dice Roll Sums,
+                with Sum of Dice Roll on the x-axis and count on the y-axis.
+
+    Requirements:
+    - collections.Counter
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> result, ax = task_func(10000, 2, 'output.png')
+    >>> type(result)
+    <class 'collections.Counter'>
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    random.seed(random_seed)
+
+    # Simulate rolling dice num_rolls times with num_dice sides
+    rolls = [sum(random.randint(1, 6) for _ in range(num_dice)) for _ in range(num_rolls)]
+
+    # Count occurrences of each sum
+    count = collections.Counter(rolls)
+
+    # Create a bar plot of the counts
+    ax = count.plot(kind='bar', title='Distribution of Dice Roll Sums')
+
+    if plot_path:
+        plt.savefig(plot_path)
+
+    return count, ax

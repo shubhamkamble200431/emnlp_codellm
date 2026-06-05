@@ -1,0 +1,45 @@
+import pandas as pd
+import seaborn as sns
+
+def task_func(df, col1, col2):
+    """
+    Draw a scatter plot with a regression line for two columns from a DataFrame.
+
+    Parameters:
+    df (DataFrame): Input DataFrame.
+    col1 (str): Name of the first column.
+    col2 (str): Name of the second column.
+
+    Returns:
+    Axes: A seaborn axes object.
+
+    Requirements:
+    - pandas
+    - seaborn
+
+    Raises:
+    - Raise ValueError if the input df is not a DataFrame, empty, or does not contain the specified columns.
+    - Raise TypeError if df use non-numeric data
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> df = pd.DataFrame({'X': [1, 2, 3, 4, 5], 'Y': [2, 4, 6, 8, 10]})
+    >>> plot = task_func(df, 'X', 'Y')
+    >>> len(plot.collections[0].get_offsets().data)
+    5
+    >>> plt.close()
+    """
+    if not isinstance(df, pd.DataFrame) or df.empty:
+        raise ValueError("The input must be a non-empty DataFrame.")
+    
+    if not all(col in df.columns for col in [col1, col2]):
+        raise ValueError(f"The input DataFrame must have columns '{col1}' and '{col2}'.")
+    
+    if df.select_dtypes(include=[object]).shape[0] > 0:
+        raise TypeError("The DataFrame contains non-numeric data.")
+    
+    # Generate the scatter plot
+    plt.figure(figsize=(10, 8))
+    sns.regplot(x=col1, y=col2, data=df)
+    
+    return plt.gca()

@@ -1,0 +1,45 @@
+import shutil
+from pathlib import Path
+from typing import List
+
+def task_func(source_dir: str, target_dir: str, extensions: List[str]) -> int:
+    '''
+    Move all files with certain extensions from one directory to another.
+
+    Parameters:
+    - source_dir (str): The directory containing the source files.
+    - target_dir (str): The directory to which the files should be moved.
+    - extensions (List[str]): The list of file extensions to be moved.
+
+    Returns:
+    int: The number of moved files.
+
+    Raises:
+    - ValueError: If source_dir or target_dir does not exist.
+
+    Requirements:
+    - shutil
+    - pathlib.Path
+
+    Example:
+    >>> task_func('path/to/source/', 'path/to/target/', ['.jpg', '.png', '.gif'])
+    15
+    >>> task_func('path/to/source/', 'path/to/target/', ['.txt'])
+    1
+    '''
+    if not Path(source_dir).exists() or not Path(target_dir).exists():
+        raise ValueError("Source or target directories do not exist.")
+
+    moved_files_count = 0
+    for ext in extensions:
+        source_ext_dir = Path(source_dir) / f'*.{ext}'
+        target_ext_dir = Path(target_dir) / f'*.{ext}'
+
+        if source_ext_dir.exists() and target_ext_dir.exists():
+            try:
+                shutil.move(str(source_ext_dir), str(target_ext_dir))
+                moved_files_count += len(list(source_ext_dir.iterdir()))
+            except Exception as e:
+                print(f"Failed to move {source_ext_dir}: {e}")
+
+    return moved_files_count

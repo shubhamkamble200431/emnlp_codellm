@@ -1,0 +1,44 @@
+import re
+import json
+import requests
+
+def task_func(data_url: str) -> list:
+    """
+    Fetch data from a specific URL and extract all names from the JSON-formatted data that are not enclosed by square brackets.
+    No specific status code should be raised.
+    
+    Note:
+    - The function uses regular expressions to search for names in the fetched data. Names that are inside square
+    brackets are ignored.
+    - The function will return "Invalid url input" if any exception is raised during the request.
+
+    Parameters:
+    - data_url (str): The URL from which to fetch data.
+
+    Returns:
+    - list[str]: A list of extracted names.
+
+    Requirements:
+    - re
+    - json
+    - requests
+
+    Example:
+    >>> import json
+    >>> from unittest.mock import MagicMock
+    >>> from io import BytesIO
+    >>> mock_response = MagicMock()
+    >>> mock_response.json.return_value = {"names": ["John", "[Adam]", "Eve"]}
+    >>> requests.get = MagicMock(return_value=mock_response)
+    >>> task_func("https://api.example.com/other_data")
+    ['John', 'Eve']
+    """
+    try:
+        response = requests.get(data_url)
+        response.raise_for_status()  # Ensure no exceptions are raised from the request
+        data = response.json()
+        pattern = r'\b\w+\b'
+        names = re.findall(pattern, data['names'], re.UNICODE)
+        return names
+    except requests.RequestException as e:
+        return ["Invalid url input"]

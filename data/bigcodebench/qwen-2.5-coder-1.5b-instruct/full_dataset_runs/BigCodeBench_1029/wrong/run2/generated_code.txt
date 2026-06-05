@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+
+
+def task_func(rows=100, columns=3):
+    """
+    Create a Pandas DataFrame with random alphabets in each cell.
+    The DataFrame will have a specified number of rows and columns.
+    Each column is named with a string from the list ['a', 'b', 'c', ...]
+    depending on the number of columns specified.
+
+    Parameters:
+    - rows (int, optional): Number of rows in the DataFrame. Defaults to 100.
+    - columns (int, optional): Number of columns in the DataFrame. Defaults to 3.
+
+    Returns:
+    DataFrame: A pandas DataFrame with random alphabets.
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> np.random.seed(0)
+    >>> df = task_func(5, 3)
+    >>> print(df)
+       a  b  c
+    0  m  p  v
+    1  a  d  d
+    2  h  j  t
+    3  v  s  e
+    4  x  g  y
+    >>> df['a'].value_counts()
+    a
+    m    1
+    a    1
+    h    1
+    v    1
+    x    1
+    Name: count, dtype: int64
+    """
+    alphabet_list = [chr(i) for i in range(ord('a'), ord('z') + 1)]
+
+    if columns > len(alphabet_list):
+        raise ValueError("Number of columns exceeds the available alphabet characters.")
+
+    df = pd.DataFrame(np.random.choice(alphabet_list, size=(rows, columns)), 
+                       columns=[f"a{i}" for i in range(columns)])
+
+    return df

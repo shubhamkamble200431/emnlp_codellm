@@ -1,0 +1,57 @@
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from python_http_client.exceptions import HTTPError
+
+def task_func(dir, api_key, recipient_email):
+    """
+    Get a list of files in a directory and send that list by e-mail to a specific recipient using a provided SendGrid API key.
+
+    Parameters:
+    - dir (str): The directory to list.
+    - api_key (str): The SendGrid API key for authentication.
+    - recipient_email (str): The email address of the recipient.
+
+    Returns:
+    - bool: True if the email was sent successfully. Specifically, a successful send is indicated by an HTTP status code in the 2xx range, which denotes success. False is returned if the directory does not exist.
+
+    Raises:
+    - FileNotFoundError: If the specified directory does not exist.
+    - HTTPError: If an HTTP error occurs during the sending process.
+    - Exception: For any other exceptions that may occur during the execution.
+
+    Requirements:
+    - os
+    - sendgrid.SendGridAPIClient
+    - sendgrid.helpers.mail.Mail
+    - python_http_client.exceptions.HTTPError
+
+    Example:
+    >>> isinstance(task_func('./test_directory', 'YOUR_SENDGRID_API_KEY', 'YOUR_EMAIL'), bool)
+    True
+    >>> task_func('/nonexistent_directory', 'YOUR_SENDGRID_API_KEY', 'YOUR_EMAIL')  # This will return False, as the directory does not exist.
+    False
+    """
+    try:
+        with os.scandir(dir) as entries:
+            file_list = [entry.name for entry in entries if entry.is_file()]
+            message = Mail(
+                from_email='your-email@example.com',
+                to_emails=recipient_email,
+                subject='Files in Directory',
+                html_content='<strong>Here is the list of files:</strong><br>' + '<br>'.join(file_list)
+            )
+            sg = SendGridAPIClient(api_key)
+            response = sg.send(message)
+
+            # Check if the email was sent successfully
+            if response.status_code >= 200 and response.status_code < 300:
+                return True
+            else:
+                raise HTTPError(response.status_code, response.json())
+    except FileNotFoundError:
+        print("Directory does not exist.")
+        return False
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False

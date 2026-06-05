@@ -1,0 +1,61 @@
+import subprocess
+import os
+import threading
+
+def task_func(script_path: str, timeout: int = 60) -> str:
+    """
+    Execute a specified python code with a given timeout. If the script execution exceeds the timeout, it is terminated.
+
+    Parameters:
+    - script_path (str): The path to the Python code to be executed.
+    - timeout (int): The maximum allowed time (in seconds) for the script execution. Default is 60 seconds.
+
+    Returns:
+    - str: A message indicating if the code was terminated due to timeout or executed successfully. The message is either "Script executed successfully." or "Terminating process due to timeout."
+
+    Requirements:
+    - subprocess
+    - os
+    - threading
+
+    Examples:
+    >>> task_func('/pathto/MyrScript.py')
+    'Script executed successfully.'
+    
+    >>> task_func('/pathto/LongRunningScript.py', 30)
+    'Terminating process due to timeout.'
+
+    Note:
+    - If the script was terminated due to timeout it will return "Script executed successfully.", otherwise "Terminating process due to timeout."
+
+    Raise:
+    - The code will raise FileNotFoundError if the file is not exist.
+    """
+    try:
+        with open(script_path, 'rb') as f:
+            script_code = f.read()
+    except FileNotFoundError:
+        return "Error: File not found."
+
+    def run_script():
+        nonlocal script_code, timeout
+        try:
+            process = subprocess.Popen(['python'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
+            process.stdin.write(script_code)
+            output, error = process.communicate(timeout=timeout)
+            if process.returncode == 0:
+                return "Script executed successfully."
+            else:
+                return f"Executing {script_path} timed out after {timeout} seconds."
+        finally:
+            process.terminate()
+
+    thread = threading.Thread(target=run_script)
+    thread.start()
+    thread.join(timeout)
+
+    if thread.is_alive():
+        thread.terminate()
+        return "Terminating process due to timeout."
+    else:
+        return "Script executed successfully."

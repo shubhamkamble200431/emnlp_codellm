@@ -1,0 +1,56 @@
+import os
+from pathlib import Path
+import glob
+import shutil
+
+
+def task_func(source_directory: str, target_directory: str):
+    """
+    Moves files with specific extensions from a source directory to a target directory,
+    handling naming conflicts by renaming duplicates.
+
+    Parameters:
+    - source_directory (str): The absolute or relative path of the source directory.
+    - target_directory (str): The absolute or relative path of the target directory.
+                              This function will create it if it does not exist.
+
+    Returns:
+    - int: The number of files successfully moved.
+
+    Raises:
+    - FileNotFoundError: If source_directory does not exist.
+
+    Requirements:
+    - os
+    - pathlib
+    - glob
+    - shutil
+
+    Notes:
+    - This function scans the source directory recursively to find files.
+    - Files are filtered by the extensions: ".txt", ".docx", ".xlsx", ".csv".
+    - Renaming of files due to naming conflicts follows the pattern '<original_name>-n.<extension>'.
+
+    Examples:
+    >>> task_func('./source_folder', './target_folder')
+    3
+    >>> task_func('./empty_folder', './target_folder')
+    0
+    """
+    if not os.path.exists(source_directory):
+        raise FileNotFoundError(f"Source directory '{source_directory}' does not exist.")
+
+    os.makedirs(target_directory, exist_ok=True)
+    count = 0
+    for file_path in glob.glob(os.path.join(source_directory, '**/*.txt'), recursive=True) + \
+                 glob.glob(os.path.join(source_directory, '**/*.docx'), recursive=True) + \
+                 glob.glob(os.path.join(source_directory, '**/*.xlsx'), recursive=True) + \
+                 glob.glob(os.path.join(source_directory, '**/*.csv'), recursive=True):
+        base_name, extension = os.path.splitext(file_path)
+        for i in range(1, 100):  # Maximum attempts for naming conflict resolution
+            new_file_path = f"{base_name}-{i}{extension}"
+            if not os.path.exists(new_file_path):
+                shutil.move(file_path, new_file_path)
+                count += 1
+                break
+    return count

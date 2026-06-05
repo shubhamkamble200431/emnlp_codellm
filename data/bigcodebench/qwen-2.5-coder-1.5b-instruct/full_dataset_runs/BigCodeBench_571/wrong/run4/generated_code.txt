@@ -1,0 +1,56 @@
+import inspect
+import pandas as pd
+
+def task_func(f_list, file_path):
+    """
+    Exports the specifications of functions in 'f_list' to a CSV file at 'file_path'.
+
+    The CSV file columns are as follows:
+    - 'Function Name': The name of the function.
+    - 'Number of Arguments': The number of arguments the function takes.
+    - 'Defaults': Default values for the function's arguments, if any.
+    - 'Annotations': Type annotations of the function's arguments and return value, if any.
+    - 'Is Lambda': Boolean value indicating whether the function is a lambda function.
+
+    Each row in the CSV file corresponds to a function in 'f_list'.
+
+    Parameters:
+    f_list (list): A list of function objects to inspect. Each element should be a callable object.
+    file_path (str): The path (including filename) where the CSV file will be saved. Should be a writable path.
+
+    Returns:
+    None
+
+    Requirements:
+    - inspect
+    - pandas
+
+    Raises:
+    - ValueError: If 'f_list' is not a list of functions, 'f_list' is empty, or 'file_path' is not a valid path.
+    - IOError: If there's an error in writing to the specified file path.
+
+    Example:
+    >>> def f(x): return 2 * x
+    >>> def g(x, y=2): return x * y
+    >>> task_func([f, g], './function_info.csv')
+    >>> os.remove('./function_info.csv')
+    """
+    if not isinstance(f_list, list) or not all(callable(func) for func in f_list):
+        raise ValueError("'f_list' must be a list of functions")
+    
+    if not f_list:
+        raise ValueError("'f_list' cannot be empty")
+    
+    if not file_path or not isinstance(file_path, str):
+        raise ValueError("'file_path' must be a valid string path")
+    
+    data = []
+    for i, func in enumerate(f_list):
+        signature = inspect.signature(func)
+        
+        # Extracting information from the function signature
+        fn_name = func.__name__
+        num_args = len(signature.parameters)
+        defaults = {param.name: param.default if param.default != inspect.Parameter.empty else None for param in signature.parameters.values()}
+        annotations = {param.name: param.annotation for param in signature.parameters.values() if param.annotation}
+        is_lambda = 'lambda' in repr(func)

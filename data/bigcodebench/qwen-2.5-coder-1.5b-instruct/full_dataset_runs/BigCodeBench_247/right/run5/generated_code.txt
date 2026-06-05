@@ -1,0 +1,55 @@
+import pandas as pd
+import random
+from sklearn.preprocessing import StandardScaler
+
+# Constants
+N_DATA_POINTS = 5000
+MIN_VALUE = 0.0
+MAX_VALUE = 10.0
+
+def task_func(n_data_points=5000, min_value=0.0, max_value=10.0):
+    """
+    Generate a random dataset of floating point numbers, truncate each value to 3 decimal places and normalize the data using standard scaling (mean = 0, std = 1).
+    
+    Parameters:
+    n_data_points (int): Number of data points to generate. Default is 5000.
+    min_value (float): Minimum value range for data points. Default is 0.0.
+    max_value (float): Maximum value range for data points. Default is 10.0.
+    
+    Returns:
+    DataFrame: A pandas DataFrame with the normalized data.
+    
+    Raises:
+    If max_value is less than min_value, a ValueError is raised.
+    
+    Note:
+    - The function use "Normalized Value" for the column name in the DataFrame that being returned.
+
+    Requirements:
+    - pandas
+    - random
+    - sklearn.preprocessing.StandardScaler
+
+    Example:
+    >>> random.seed(0)
+    >>> normalized_data = task_func(5000, 5, 5)
+    >>> print(normalized_data['Normalized Value'][0])
+    0.0
+    """
+    if max_value < min_value:
+        raise ValueError("max_value must be greater than min_value")
+
+    # Generate random data
+    data = [random.uniform(min_value, max_value) for _ in range(n_data_points)]
+
+    # Truncate each value to 3 decimal places
+    data_truncated = [round(value, 3) for value in data]
+
+    # Create DataFrame
+    df = pd.DataFrame(data_truncated, columns=['Normalized Value'])
+
+    # Normalize the data
+    scaler = StandardScaler()
+    df['Normalized Value'] = scaler.fit_transform(df[['Normalized Value']])
+
+    return df

@@ -1,0 +1,74 @@
+import random
+import string
+
+
+def task_func(length: int, predicates: list, seed: int = None):
+    """
+    Generates a random string of specified length and evaluates it for specific characteristics.
+
+    Parameters:
+    - length (int): Desired length of the generated string.
+    - predicates (list of strings): Conditions to evaluate the string.
+        Must contain options from 'has_uppercase', 'has_lowercase', 'has_special_chars', 'has_numbers'.
+    - seed (int, optional): Seed for the random number generator for reproducibility.
+
+    Returns:
+    - tuple:
+        - string: the generated random text
+        - dict: the text's characteristics
+
+    Raises:
+    - ValueError: If the specified length is negative.
+    - KeyError: If any predicate is not recognized.
+
+    Notes:
+    - Predicates are deduplicated.
+    - Characters are randomly sampled from string ascii_letters, digits, and punctuation with replacement.
+    - Any invalid predicates provided will result in a KeyError.
+    - If no predicates are provided, the result dictionary will be empty.
+
+    Requirements:
+    - string
+    - random
+
+    Example:
+    >>> task_func(10, ['has_uppercase', 'has_numbers'], seed=42)[0]
+    '8czu("@iNc'
+    >>> task_func(5, ['has_lowercase'], seed=123)
+    ('eiMk[', {'has_lowercase': True})
+    """
+    if length < 0:
+        raise ValueError("Length must be non-negative")
+
+    predicates = set(predicates) & {'has_uppercase', 'has_lowercase', 'has_special_chars', 'has_numbers'}
+    if len(predicates) == 0:
+        return "", {}
+
+    if seed is not None:
+        random.seed(seed)
+
+    def sample_character():
+        characters = string.ascii_letters + string.digits + string.punctuation
+        return random.choice(characters)
+
+    result = ""
+    while len(result) < length:
+        c = sample_character()
+        if has_uppercase(c) and 'has_uppercase' in predicates:
+            continue
+        if has_lowercase(c) and 'has_lowercase' in predicates:
+            continue
+        if has_special_chars(c) and 'has_special_chars' in predicates:
+            continue
+        if has_numbers(c) and 'has_numbers' in predicates:
+            continue
+        result += c
+
+    characteristics = {
+        'has_uppercase': has_uppercase(result[-1]) if result else False,
+        'has_lowercase': has_lowercase(result[-1]) if result else False,
+        'has_special_chars': has_special_chars(result[-1]) if result else False,
+        'has_numbers': has_numbers(result[-1]) if result else False
+    }
+
+    return result, characteristics

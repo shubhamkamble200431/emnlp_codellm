@@ -1,0 +1,37 @@
+import requests
+import json
+import base64
+
+def task_func(data, url="http://your-api-url.com"):
+    """
+    Convert a Python dictionary into a JSON-formatted string, encode this string in base64 format,
+    and send it as a 'payload' in a POST request to an API endpoint.
+    
+    Parameters:
+    data (dict): The Python dictionary to encode and send.
+    url (str, optional): The API endpoint URL. Defaults to "http://your-api-url.com".
+    
+    Returns:
+    requests.Response: The response object received from the API endpoint after the POST request.
+    
+    Requirements:
+    - requests
+    - json
+    - base64
+    
+    Example:
+    >>> data = {'name': 'John', 'age': 30, 'city': 'New York'}
+    >>> response = task_func(data, url="http://example-api-url.com")
+    >>> print(response.status_code)
+    200
+    """
+    # Convert Python dictionary to JSON-formatted string
+    json_string = json.dumps(data)
+
+    # Encode the JSON string in base64 format
+    encoded_string = base64.b64encode(json_string.encode('utf-8')).decode('utf-8')
+
+    # Send the encoded string as a payload in a POST request to the API endpoint
+    response = requests.post(url, data=encoded_string)
+
+    return response

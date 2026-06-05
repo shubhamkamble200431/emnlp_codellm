@@ -1,0 +1,71 @@
+import os
+import ctypes
+import sys
+import subprocess
+
+
+def task_func(filepath):
+    """
+    Loads a DLL file specified by the given filepath, then retrieves and prints system information
+    including system name, node name, release, version, machine, Python version, and PIP version.
+    This function demonstrates the use of various system-related libraries in Python.
+
+    The format of the printed message is:
+    System: <system-name-here>
+    Node Name: <node-name-here>
+    Release: <release-here>
+    Version: <version-here>
+    Machine: <type-of-the-machine-here>
+    Python Version: <python-version-here> 
+    PIP Version: <pip-version-here>
+
+    Parameters:
+    filepath (str): The path of the DLL file to be loaded.
+
+    Returns:
+    str: The name of the loaded DLL file.
+
+    Raises:
+    OSError: if the input filepath is invalid or empty
+    TypeError: if the input filepath is not a string
+    
+    Requirements:
+    - ctypes
+    - os
+    - sys
+    - subprocess
+
+    Examples:
+    >>> task_func('libc.so.6') # Doctest will vary based on the system and DLL file.
+    'libc.so.6'
+    >>> isinstance(task_func('libc.so.6'), str)
+    True
+    """
+    if not os.path.isfile(filepath) or not isinstance(filepath, str):
+        raise OSError("Invalid file path or non-string path provided.")
+
+    dll = ctypes.CDLL(filepath)
+    info = [
+        ('System', ctypes.c_char_p),
+        ('Node Name', ctypes.c_char_p),
+        ('Release', ctypes.c_char_p),
+        ('Version', ctypes.c_char_p),
+        ('Machine', ctypes.c_char_p),
+        ('Python Version', ctypes.c_char_p),
+        ('PIP Version', ctypes.c_char_p)
+    ]
+
+    results = {}
+    for field_name, field_type in info:
+        result = dll.get_system_info(field_name)
+        results[field_name] = result.decode('utf-8')
+
+    print(f"System: {results['System']}")
+    print(f"Node Name: {results['Node Name']}")
+    print(f"Release: {results['Release']}")
+    print(f"Version: {results['Version']}")
+    print(f"Machine: {results['Machine']}")
+    print(f"Python Version: {results['Python Version']}")
+    print(f"PIP Version: {results['PIP Version']}")
+
+    return filepath

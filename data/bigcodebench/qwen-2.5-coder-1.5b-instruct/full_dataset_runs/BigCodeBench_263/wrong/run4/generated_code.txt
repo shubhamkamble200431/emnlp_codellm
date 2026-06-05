@@ -1,0 +1,50 @@
+import os
+import glob
+import shutil
+import time
+
+# Constants
+FILE_EXTENSIONS = ['.txt', '.csv', '.xlsx', '.docx', '.pdf']
+
+def task_func(my_path: str, days_old: int) -> str:
+    """
+    Archive files that were changed older than a specified number of days in a given directory. This function searches for files with specific extensions (.txt, .csv, .xlsx, .docx, .pdf) in the given directory.
+    Files older than 'days_old' are moved to an 'archive' subdirectory within the specified directory.
+
+    Parameters:
+    my_path (str): The path of the directory to search.
+    days_old (int): The age of files to archive, in days.
+
+    Returns:
+    str: The path of the archive subdirectory where files are moved.
+
+    Requirements:
+    - os
+    - glob
+    - shutil
+    - time
+
+    Example:
+    >>> task_func('/usr/my_directory', 30)
+    '/usr/my_directory/archive'
+    """
+    # Create the 'archive' directory if it doesn't exist
+    archive_dir = os.path.join(my_path, 'archive')
+    if not os.path.exists(archive_dir):
+        os.makedirs(archive_dir)
+
+    # Get current date and subtract days_old from it
+    cutoff_date = datetime.now() - timedelta(days=days_old)
+
+    # Walk through the directory and its subdirectories
+    for root, dirs, files in os.walk(my_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            # Check if the file is one of the allowed types
+            if any(file.endswith(ext) for ext in FILE_EXTENSIONS):
+                # Check if the file was modified before cutoff_date
+                if os.path.getmtime(file_path) < cutoff_date.timestamp():
+                    # Move the file to the archive directory
+                    shutil.move(file_path, os.path.join(archive_dir, file))
+
+    return archive_dir

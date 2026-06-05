@@ -1,0 +1,43 @@
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+
+# Constants
+ARRAY_LENGTH = 10
+
+def task_func():
+    """
+    Generate a random array and apply min-max normalization (scaling) to transform the array values into a range between 0 and 1.
+
+    Parameters:
+    - None
+
+    Returns:
+    - scaled_array (numpy.ndarray): The normalized array.
+
+    Requirements:
+    - numpy
+    - sklearn
+
+    Example:
+    >>> task_func()
+    array([[0.57142857],
+           [0.14285714],
+           [0.71428571],
+           [0.28571429],
+           [0.57142857],
+           [1.        ],
+           [0.        ],
+           [0.57142857],
+           [0.71428571],
+           [0.28571429]])
+    """
+    # Create a random array of length ARRAY_LENGTH
+    original_array = np.random.rand(ARRAY_LENGTH)
+
+    # Initialize scaler
+    scaler = MinMaxScaler(feature_range=(0, 1))
+
+    # Fit the scaler to the array and transform it
+    scaled_array = scaler.fit_transform(original_array.reshape(-1, 1))
+
+    return scaled_array

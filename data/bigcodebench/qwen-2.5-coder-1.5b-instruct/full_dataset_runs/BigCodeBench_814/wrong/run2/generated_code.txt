@@ -1,0 +1,50 @@
+import re
+import os
+import shutil
+
+def task_func(source_dir, target_dir, file_pattern=r'\b[A-Za-z0-9]+\.(txt|doc|docx)\b'):
+    """
+    Look for files that match the pattern of the regular expression '(? <! Distillr)\\\\ AcroTray\\.exe' in the directory 'C:\\ SomeDir\\'. If found, write these file paths to a configuration file.
+
+    Parameters:
+    - source_dir (str): The path to the source directory.
+    - target_dir (str): The path to the target directory.
+    - file_pattern (str, optional): The regular expression pattern that filenames must match in order
+                                   to be moved. Default is r'\b[A-Za-z0-9]+\.(txt|doc|docx)\b',
+                                   which matches filenames that consist of alphanumeric characters
+                                   and have extensions txt, doc, or docx.
+
+    Returns:
+    - str: Path to the created configuration file.
+
+    Requirements:
+    - re
+    - os
+    - shtuil
+
+    Example:
+    >>> task_func('/path/to/source', '/path/to/target')
+    3
+    """
+    # Ensure the source directory exists
+    if not os.path.exists(source_dir):
+        raise FileNotFoundError(f"Source directory {source_dir} does not exist.")
+
+    # Ensure the target directory exists or create it
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+
+    # Find all matching files
+    matched_files = []
+    for root, dirs, files in os.walk(source_dir):
+        for file in files:
+            if re.match(file_pattern, file):
+                matched_files.append(os.path.join(root, file))
+
+    # Write matched file paths to a configuration file
+    config_file_path = os.path.join(target_dir, 'matched_files.txt')
+    with open(config_file_path, 'w') as config_file:
+        for file in matched_files:
+            config_file.write(file + '\n')
+
+    return config_file_path

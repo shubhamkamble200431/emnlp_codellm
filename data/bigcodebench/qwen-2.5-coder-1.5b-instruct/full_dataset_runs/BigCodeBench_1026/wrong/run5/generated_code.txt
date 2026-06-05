@@ -1,0 +1,89 @@
+import numpy as np
+from scipy.stats import ttest_ind
+import matplotlib.pyplot as plt
+
+
+def task_func(kwargs):
+    """
+    Performs a two-sample t-test on numerical data from two groups to determine if there is a significant
+    difference in their means. The function handles NaN values, computes descriptive statistics for each group,
+    and generates a boxplot and histograms for data visualization.
+
+    Parameters:
+    - kwargs (dict): A dictionary with two keys, 'group1' and 'group2'. Each key maps to a list of numbers.
+                     Lists can contain NaN values, which will be excluded from analysis.
+
+    Returns:
+    - dict: A dictionary containing:
+        - 'significant': Boolean. True if the means of the two groups are significantly different (p < 0.05).
+        - 'group1_stats': Dictionary with mean and standard deviation of 'group1' (excluding NaNs).
+        - 'group2_stats': Dictionary with mean and standard deviation of 'group2' (excluding NaNs).
+        - 'ax_boxplot': A matplotlib Axes object with a boxplot comparing 'group1' and 'group2'.
+        - 'ax_histogram': A matplotlib Axes object with histograms of 'group1' and 'group2'.
+
+    Raises:
+    - ValueError: If either group is empty, contains only NaN values, has less than two non-NaN values,
+                  or if the variance in one or both groups is below a threshold (1e-8).
+
+    Requirements:
+    - numpy
+    - scipy
+    - matplotlib
+
+    Note:
+    - The function sets the significance level (alpha) at 0.05.
+    - It removes NaN values before performing any calculations or plotting.
+    - A t-test is performed with the 'nan_policy' set to 'omit' to ignore NaNs.
+    - The function checks for sufficient non-NaN data points and adequate variance in each group before conducting the t-test.
+    - The boxplot and histograms provide a visual comparison of the data distributions.
+    
+    Example:
+    >>> data = {'group1': [1, 2, 3, 4], 'group2': [5, 6, 7, 8]}
+    >>> results = task_func(data)
+    >>> results['significant']
+    True
+    """
+    group1 = kwargs.get('group1', [])
+    group2 = kwargs.get('group2', [])
+
+    # Handle NaN values and check if lists are empty or have less than two non-NaN values
+    if not group1 or not group2:
+        raise ValueError("At least one of the groups must be provided.")
+    if len(group1) <= 2 or len(group2) <= 2:
+        raise ValueError("Each group must contain more than two elements.")
+    if np.isnan(group1).sum() + np.isnan(group2).sum() > 0:
+        raise ValueError("Both groups must exclude NaN values.")
+
+    # Calculate descriptive statistics
+    group1_stats = {'mean': np.mean(group1), 'std_dev': np.std(group1)}
+    group2_stats = {'mean': np.mean(group2), 'std_dev': np.std(group2)}
+
+    # Perform two-sample t-test
+    _, p_value = ttest_ind(group1, group2, nan_policy='omit')
+
+    # Determine if the difference is significant
+    significant = p_value < 0.05
+
+    # Generate boxplots
+    fig, ax_boxplot = plt.subplots()
+    ax_boxplot.boxplot([group1, group2])
+    ax_boxplot.set_title('Box Plot Comparison')
+    ax_boxplot.set_xlabel('Groups')
+    ax_boxplot.set_ylabel('Values')
+
+    # Generate histograms
+    fig, ax_histogram = plt.subplots(2, 1, figsize=(10, 6))
+    ax_histogram[0].hist(group1, bins=10, alpha=0.7, label='Group 1')
+    ax_histogram[0].set_title('Histogram of Group 1')
+    ax_histogram[0].legend()
+    ax_histogram[1].hist(group2, bins=10, alpha=0.7, label='Group 2')
+    ax_histogram[1].set_title('Histogram of Group 2')
+    ax_histogram[1].legend()
+
+    return {
+        'significant': significant,
+        'group1_stats': group1_stats,
+        'group2_stats': group2_stats,
+        'ax_boxplot': ax_boxplot,
+        'ax_histogram': ax_histogram
+    }

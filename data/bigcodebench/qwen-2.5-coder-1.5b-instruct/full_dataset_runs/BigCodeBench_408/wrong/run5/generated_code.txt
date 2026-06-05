@@ -1,0 +1,34 @@
+import sqlite3
+import pandas as pd
+
+
+def task_func(db_file: str, query: str) -> pd.DataFrame:
+    """Query an SQLite database and return the results.
+
+    This function connects to a given SQLite database, executes a given SQL query,
+    and returns the results as a pandas DataFrame.
+
+    Parameters:
+    - db_file (str): Path to the SQLite database file.
+    - query (str): SQL query to execute.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing the results of the executed query.
+
+    Requirements:
+    - sqlite3
+    - pandas
+
+    Example:
+    >>> db_file = 'sample_database.db'
+    >>> df = task_func(db_file, "SELECT * FROM users WHERE name = 'John Doe'")
+    pd.DataFrame:
+    id        name  age
+    --  ----------  ---
+    ..  John Doe   ..
+    >>> df = task_func(db_file, "SELECT age, COUNT(*) AS count FROM users GROUP BY age")
+    pd.DataFrame:
+    age  count
+    ---  -----
+    25   3
+    """

@@ -1,0 +1,57 @@
+import subprocess
+import os
+import shutil
+from glob import glob
+
+
+def task_func(src_folder, dst_folder):
+    """Compress all files in the specified source folder and move the compressed files to a destination folder.
+    This operation is executed as a background process using the 'gzip' command.
+
+    Parameters:
+    src_folder (str): The path of the source folder containing the files to be compressed.
+    dst_folder (str): The path of the destination folder where the compressed files will be moved.
+
+    Returns:
+    dict: A dictionary containing:
+        - 'success': A boolean indicating if all files were compressed and moved successfully.
+        - 'message': A descriptive message about the operation's result.
+        - 'failed_files': A list of filenames that failed to compress or move.
+
+    Requirements:
+    - subprocess
+    - os
+    - shutil
+    - glob
+    - gzip
+
+    Example:
+    >>> import tempfile
+    >>> import os
+    >>> src_folder = tempfile.mkdtemp()
+    >>> dst_folder = tempfile.mkdtemp()
+    >>> for i in range(3):
+    ...     with open(os.path.join(src_folder, f'file{i}.txt'), 'w') as f:
+    ...         _ = f.write(f'This is file {i}.')
+    >>> task_func(src_folder, dst_folder)
+    {'success': True, 'message': 'All files compressed and moved successfully.', 'failed_files': []}
+    """
+    success = True
+    failed_files = []
+
+    for filename in glob(os.path.join(src_folder, '*.txt')):
+        try:
+            # Compress the file
+            subprocess.run(['gzip', filename], check=True)
+            # Move the compressed file to the destination folder
+            shutil.move(filename + '.gz', os.path.join(dst_folder, filename + '.gz'))
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to compress {filename}: {e}")
+            success = False
+            failed_files.append(filename)
+
+    return {
+        'success': success,
+        'message': 'All files compressed and moved successfully.' if success else 'Some files failed to compress or move.',
+        'failed_files': failed_files
+    }

@@ -1,0 +1,49 @@
+import math
+import statistics
+import numpy as np
+
+
+def task_func(input_list):
+    """
+    Sorts the input list in ascending order based on the degree value of its elements, and then 
+    calculates the mean, median, and mode of both the sorted list and the same for the magnitude of 
+    the fast fourier transform of the degree values upto the nearest integer.
+
+    Parameters:
+    input_list (list): A list of numbers to be sorted and analyzed.
+
+    Returns:
+    tuple: A tuple containing the rounded mean, median and mode of the sorted list along with those 
+    for the magnitude of the fast fourier transform of the degree values.
+
+    Requirements:
+    - math
+    - statistics
+    - numpy
+
+    Example:
+    >>> input_list = [30, 45, 60, 90, 180]
+    >>> stats = task_func(input_list)
+    >>> print(stats)
+    (81, 60, 30, 10712, 8460, 8460)
+    """
+    import math
+    import statistics
+    import numpy as np
+
+    # Sort the input list in ascending order
+    sorted_list = sorted(input_list)
+
+    # Calculate the mean, median, and mode of the sorted list
+    mean_sorted = round(statistics.mean(sorted_list))
+    median_sorted = round(statistics.median(sorted_list))
+
+    # Calculate the magnitude of the fast Fourier transform of the degree values upto the nearest integer
+    max_degree = max(sorted_list)
+    n = len(sorted_list)
+    fft_result = np.fft.fft(sorted_list)
+    magnitudes = abs(fft_result[:n//2+1])
+    peak_index = magnitudes.argmax()
+    mode_magnitude = magnitudes[peak_index]
+
+    return mean_sorted, median_sorted, int(max_degree), int(magnitudes[peak_index]), int(mode_magnitude) if mode_magnitude < peak_index else int(magnitudes[n//2+1-peak_index]) if peak_index != n//2 else int(magnitudes[peak_index])

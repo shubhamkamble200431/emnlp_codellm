@@ -1,0 +1,39 @@
+import collections
+import random
+
+# Constants
+LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+
+def task_func(n_keys, n_values):
+    """
+    Create a Python dictionary with a specified number of keys and values. 
+
+    Parameters:
+    n_keys (int): The number of keys to generate.
+    n_values (int): The number of values for each key (consecutive integers starting from 1).
+
+    Returns:
+    dict: A Python dictionary with keys as strings and values as lists of integers.
+
+    Note: 
+    - Keys are randomly selected from a predefined list of letters, and values are consecutive integers starting from 1.
+    - Due to the randomness in key selection, the actual keys in the dictionary may vary in each execution.
+
+    Requirements:
+    - collections
+    - random
+
+    Example:
+    >>> random.seed(0)
+    >>> task_func(3, 5)
+    {'g': [1, 2, 3, 4, 5], 'a': [1, 2, 3, 4, 5]}
+    >>> result = task_func(1, 5)
+    >>> list(result)[0] in LETTERS
+    True
+    """
+    # Generate keys and values
+    keys = random.sample(LETTERS, n_keys)
+    values = range(1, n_values + 1)
+
+    # Create dictionary
+    return {key: values[:n_values] for key in keys}

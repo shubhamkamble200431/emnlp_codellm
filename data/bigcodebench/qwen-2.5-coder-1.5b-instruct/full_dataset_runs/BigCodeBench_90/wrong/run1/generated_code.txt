@@ -1,0 +1,55 @@
+import numpy as np
+import math
+
+def task_func(data, target, k):
+    """
+    Calculate the 'k' nearest neighbors by geographic coordinates using a dataset 
+    and a target data point. The function returns a list of the 'k' nearest neighbors, 
+    sorted in ascending order of their distances from the target.
+
+    Parameters:
+    data (DataFrame): The dataset containing geographical coordinates with columns ['Latitude', 'Longitude'].
+    target (list): The target data point as [Latitude, Longitude].
+    k (int): The number of nearest neighbors to return. Must be a non-negative integer.
+
+    Returns:
+    list: List of the 'k' nearest neighbors as [Latitude, Longitude].
+
+    Raises:
+    ValueError: If 'k' is a negative integer or not an integer.
+
+    Constants:
+    radius of earth is 6371 km
+
+    Requirements:
+    - numpy
+    - math
+
+    Example:
+    >>> data = pd.DataFrame([[14, 25], [1, 22], [7, 8]], columns=['Latitude', 'Longitude'])
+    >>> target = [10, 15]
+    >>> k = 2
+    >>> task_func(data, target, k)
+    [[7, 8], [14, 25]]
+    """
+    if not isinstance(k, int) or k < 0:
+        raise ValueError("k must be a non-negative integer")
+
+    radius_of_earth_km = 6371.0
+
+    def distance(lat1, lon1, lat2, lon2):
+        dlat = radians(lat2 - lat1)
+        dlon = radians(lon2 - lon1)
+        a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+        distance_km = radius_of_earth_km * c
+        return distance_km
+
+    neighbors = []
+    for i in range(len(data)):
+        dist = distance(data.iloc[i]['Latitude'], data.iloc[i]['Longitude'], target[0], target[1])
+        neighbors.append((data.iloc[i]['Latitude'], data.iloc[i]['Longitude'], dist))
+
+    neighbors.sort(key=lambda x: x[2])
+
+    return [neighbor[:2] for neighbor in neighbors[:k]]

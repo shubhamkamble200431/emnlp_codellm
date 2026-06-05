@@ -1,0 +1,47 @@
+import numpy as np
+from sympy import symbols, solve
+
+
+def task_func(precision=2, seed=0):
+    """
+    Solve a quadratic equation in the form of ax ^ 2 + bx + c = 0, where a, b, and c randomly generated numbers are between -10 and 10. The solutions are complex numbers rounded to the specified accuracy.
+
+    Parameters:
+    precision (int): The number of decimal places to which to round the solutions.
+    seed (int, Optional): The seed for the random number generator.
+
+    Returns:
+    tuple: A tuple of two solutions formatted as complex numbers (rounded to the specified precision).
+
+    Requirements:
+    - numpy
+    - math
+    - sympy
+
+    Example:
+    >>> result = task_func()
+    >>> len(result)
+    2
+    >>> result
+    ((-3.86+0j), (-0.54+0j))
+    """
+    np.random.seed(seed)  # Seed for reproducibility
+
+    # Randomly generate coefficients
+    a = np.random.uniform(-10, 10)
+    b = np.random.uniform(-10, 10)
+    c = np.random.uniform(-10, 10)
+
+    # Define the variable
+    x = symbols('x')
+
+    # Define the quadratic equation
+    equation = a*x**2 + b*x + c
+
+    # Solve the quadratic equation
+    solutions = solve(equation, x)
+
+    # Round the solutions to the specified precision
+    rounded_solutions = [round(sol.evalf(decimal_places=precision), decimal_places) for sol in solutions]
+
+    return tuple(rounded_solutions)

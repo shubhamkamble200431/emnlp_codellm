@@ -1,0 +1,49 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+ARRAY_SIZE = 10000
+
+def task_func():
+    """
+    Create a numeric array of random integers, calculate the mean and standard deviation, and draw a histogram of the distribution.
+
+    Returns:
+    Tuple: A tuple containing the array, mean, standard deviation, and the histogram plot (Axes).
+
+    Note:
+        The random integers are generated between 1 and 100. The title of the histogram is "Histogram of Random Values". 
+        The x-axis is labeled "Val" and the y-axis is labeled "Freq". 
+        The mean is plotted as a red dashed line, and the standard deviation is plotted as purple dashed lines.
+        
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    
+    Example:
+    >>> import numpy as np
+    >>> np.random.seed(0)
+    >>> array, mean, std, ax = task_func()
+    >>> print(mean, std)
+    250.7154 142.85617453522966
+    >>> plt.show()
+    """
+np.random.seed(0)
+array = np.random.randint(low=1, high=101, size=ARRAY_SIZE)
+
+mean = np.mean(array)
+std = np.std(array)
+
+fig, ax = plt.subplots()
+
+ax.hist(array, bins=30, alpha=0.7, color='blue')
+
+ax.axvline(mean, color='r', linestyle='--')
+ax.axvline(std, color='purple', linestyle='--')
+
+ax.set_title("Histogram of Random Values")
+ax.set_xlabel("Val")
+ax.set_ylabel("Freq")
+
+plt.show()
+return array, mean, std, ax

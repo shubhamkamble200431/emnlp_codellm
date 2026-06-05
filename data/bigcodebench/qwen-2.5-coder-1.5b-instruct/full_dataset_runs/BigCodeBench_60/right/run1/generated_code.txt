@@ -1,0 +1,36 @@
+import json
+import pandas as pd
+
+
+def task_func(result, csv_file_path="test.csv", json_file_path="test.json"):
+    """
+    Save the list of dictionaries provided in the 'result' parameter to a CSV file (without index) and a JSON file.
+
+    Parameters:
+    - result (list): A list of dictionaries.
+    - csv_file_path (str): A path to a CSV file.
+    - json_file_path (str): A path to a JSON file.
+
+    Returns:
+    None
+
+    Requirements:
+    - pandas
+    - json
+
+    Example:
+    >>> result = [{"hi": 7, "bye": 4, "from_user": 0}, {1: 2, 3: 4, 5: 6}]
+    >>> task_func(result, 'test.csv', 'test.json')
+    """
+    # Convert the list of dictionaries into a DataFrame
+    df = pd.DataFrame(result)
+
+    # Write the DataFrame to a CSV file without index
+    df.to_csv(csv_file_path, index=False)
+
+    # Convert the list of dictionaries back into a JSON string
+    json_string = json.dumps(result, indent=2)
+
+    # Write the JSON string to a JSON file
+    with open(json_file_path, 'w') as f:
+        f.write(json_string)

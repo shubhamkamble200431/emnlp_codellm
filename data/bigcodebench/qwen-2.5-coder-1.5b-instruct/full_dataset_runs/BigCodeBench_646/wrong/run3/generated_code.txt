@@ -1,0 +1,44 @@
+import os
+import pandas as pd
+from dateutil.parser import parse
+OUTPUT_DIR = './output'
+
+def task_func(csv_path=os.path.join(OUTPUT_DIR, 'data.csv'), date_column='date'):
+    """
+    Read a CSV file, convert a column of date strings into datetime objects,
+    and draw a histogram of the year distribution of these dates.
+
+    Parameters:
+    - csv_path (str): The path to the CSV file. Default is the 'data.csv' in the script's directory.
+    - date_column (str): The column in the CSV file with the date strings. Default is 'date'.
+
+    Returns:
+    - matplotlib.axes._axes.Axes: A histogram plot object showing the distribution of years.
+
+    Requirements:
+    - pandas
+    - dateutil.parser
+    - os
+
+    Example:
+    >>> import os
+    >>> from unittest.mock import patch
+    >>> with patch('os.path.exists', return_value=False):
+    ...     task_func('nonexistent.csv')
+    Traceback (most recent call last):
+        ...
+    FileNotFoundError: nonexistent.csv does not exist
+    """
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"{csv_path} does not exist")
+
+    df = pd.read_csv(csv_path)
+    df[date_column] = df[date_column].apply(parse)
+    df['year'] = df[date_column].dt.year
+
+    plt.hist(df['year'], bins=50)
+    plt.title("Distribution of Years")
+    plt.xlabel("Year")
+    plt.ylabel("Frequency")
+    plt.show()
+    return plt.gca()

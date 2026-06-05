@@ -1,0 +1,68 @@
+import os
+import shutil
+
+
+def task_func(path, delimiter="/"):
+    """
+    Splits a given file path by a specific delimiter and computes disk usage for each directory component.
+
+    Parameters:
+    - path (str): The file path to split.
+    - delimiter (str, optional): The delimiter to use for splitting the path. Default is '/'.
+
+    Returns:
+    list: A list of tuples where each tuple contains a path component and its disk usage as a dictionary.
+          The disk usage dictionary contains keys 'total', 'used', and 'free'.
+
+    Raises:
+    - ValueError: If the 'path' is empty, not a string, or contain invalid components.
+    - FileNotFoundError: If the 'path' does not exist in the filesystem.
+
+    Requirements:
+    - os
+    - shutil
+
+    Examples:
+    >>> task_func('Docs/src', '/')
+    [('Docs', {'total': 100, 'used': 50, 'free': 50}), ('src', {'total': 200, 'used': 100, 'free': 100})]
+
+    >>> task_func('a/b', '/')
+    [('a', {'total': 300, 'used': 150, 'free': 150}), ('b', {'total': 400, 'used': 200, 'free': 200})]
+    """
+    if not isinstance(path, str) or not path.strip():
+        raise ValueError("Invalid path provided.")
+
+    path_list = path.split(delimiter)
+    result = []
+
+    def get_disk_usage(directory):
+        total_size = 0
+        for item in os.listdir(directory):
+            item_path = os.path.join(directory, item)
+            if os.path.isdir(item_path):
+                sub_total = get_disk_usage(item_path)
+                total_size += sub_total['total']
+            else:
+                try:
+                    total_size += os.path.getsize(item_path)
+                except OSError:
+                    pass
+        return {
+            'total': total_size,
+            'used': total_size - free_space(directory),
+            'free': free_space(directory)
+        }
+
+    def free_space(directory):
+        info = os.statvfs(directory)
+        return info.f_blocks * info.f_frsize - info.f_bavail * info.f_frsize
+
+    for part in path_list:
+        try:
+            dir_path = os.path.abspath(os.path.join(path, part))
+            usage = get_disk_usage(dir_path)
+            result.append((part, usage))
+        except FileNotFoundError:
+            continue
+
+    return result

@@ -1,0 +1,50 @@
+import inspect
+import types
+import math
+
+def task_func(f):
+    """
+    Analyzes a given function 'f' and returns a dictionary containing its name, the square root of
+    the number of arguments, and the count of lambda functions present in its default values.
+    This function demonstrates introspection of Python functions and the use of mathematical
+    operations on the introspected data.
+
+    Parameters:
+    f (function): The function to inspect.
+
+    Returns:
+    dict: A dictionary containing the function's name, the square root of the number of arguments,
+          and the count of lambda functions in default values.
+
+    Requirements:
+    - inspect
+    - types
+    - math
+
+    Examples:
+    >>> def sample_function(x, y=2): return x + y
+    >>> result = task_func(sample_function)
+    >>> 'sample_function' == result['function_name'] and result['sqrt_args'] == math.sqrt(2)
+    True
+    >>> lambda_func = lambda x: x * 2
+    >>> task_func(lambda_func)['lambda_in_defaults'] == 0
+    True
+    """
+    if not callable(f):
+        raise TypeError("The input must be a callable function.")
+
+    # Extracting function details using inspect module
+    func_info = inspect.getfullargspec(f)
+
+    # Calculating the square root of the number of arguments
+    args_count = len(func_info.args)
+    sqrt_args = math.sqrt(args_count)
+
+    # Counting lambda functions in default values
+    lambda_in_defaults = sum(isinstance(arg, types.LambdaType) for arg in func_info.defaults)
+
+    return {
+        'function_name': func_info.fn.__name__,
+        'sqrt_args': sqrt_args,
+        'lambda_in_defaults': lambda_in_defaults
+    }

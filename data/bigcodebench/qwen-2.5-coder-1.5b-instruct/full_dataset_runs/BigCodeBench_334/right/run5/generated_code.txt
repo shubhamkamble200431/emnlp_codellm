@@ -1,0 +1,30 @@
+from nltk.tokenize import word_tokenize
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
+
+
+def task_func(documents):
+    """
+    Calculate the TF-IDF score of the words in a list of documents.
+    
+    Parameters:
+    - documents (list of str): A list of text documents.
+    
+    Returns:
+    pandas.DataFrame: A DataFrame with words as columns and documents as rows, containing the TF-IDF scores.
+    
+    Requirements:
+    - nltk.tokenize.word_tokenize
+    - sklearn.feature_extraction.text.TfidfVectorizer
+    - pandas
+    
+    Example:
+    >>> docs = ['This is the first document.', 'This document is the second document.', 'And this is the third one.', 'Is this the first document?']
+    >>> tfidf = task_func(docs)
+    >>> print(tfidf.shape)
+    (4, 11)
+    """
+    vectorizer = TfidfVectorizer()
+    X = vectorizer.fit_transform([doc.lower() for doc in documents])
+    words = vectorizer.get_feature_names_out()
+    return pd.DataFrame(X.toarray(), index=documents, columns=words)

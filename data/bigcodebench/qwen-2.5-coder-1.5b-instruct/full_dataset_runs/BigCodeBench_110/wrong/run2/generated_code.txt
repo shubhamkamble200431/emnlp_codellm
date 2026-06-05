@@ -1,0 +1,46 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def task_func(df):
+    """
+    Draw and return the daily turnover line chart from a pandas DataFrame.
+
+    Parameters:
+    df (DataFrame): A pandas DataFrame with 'Date' and 'Sales' columns.
+
+    Returns:
+    Axes: Matplotlib Axes object with the line chart.
+
+    Raises:
+    ValueError: If 'df' is not a DataFrame or lacks 'Date' or 'Sales' columns, or has no data to plot.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> df = pd.DataFrame({
+    ...     'Date': pd.date_range(start='1/1/2021', end='12/31/2021'),
+    ...     'Sales': np.random.randint(100, 2000, size=365)
+    ... })
+    >>> ax = task_func(df)
+    >>> ax.get_title()  # Expected: 'Daily Turnover'
+    'Daily Turnover'
+    >>> ax.get_ylabel()  # Expected: 'Sales'
+    'Sales'
+    """
+    if not isinstance(df, pd.DataFrame) or 'Date' not in df.columns or 'Sales' not in df.columns:
+        raise ValueError("The input must be a valid DataFrame with 'Date' and 'Sales' columns.")
+
+    if len(df) == 0:
+        raise ValueError("The input DataFrame must contain at least one row of data.")
+
+    turnover_line = df['Sales'].resample('D').sum()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(turnover_line.index, turnover_line.values, marker='o')
+    ax.set_title('Daily Turnover')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Sales')
+
+    return ax

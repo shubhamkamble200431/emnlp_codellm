@@ -1,0 +1,45 @@
+import numpy as np
+import math
+
+def task_func(data, target, k):
+    """
+    Calculate the 'k' nearest neighbors by geographic coordinates using a dataset 
+    and a target data point. The function returns a list of the 'k' nearest neighbors, 
+    sorted in ascending order of their distances from the target.
+
+    Parameters:
+    data (DataFrame): The dataset containing geographical coordinates with columns ['Latitude', 'Longitude'].
+    target (list): The target data point as [Latitude, Longitude].
+    k (int): The number of nearest neighbors to return. Must be a non-negative integer.
+
+    Returns:
+    list: List of the 'k' nearest neighbors as [Latitude, Longitude].
+
+    Raises:
+    ValueError: If 'k' is a negative integer or not an integer.
+
+    Constants:
+    radius of earth is 6371 km
+
+    Requirements:
+    - numpy
+    - math
+
+    Example:
+    >>> data = pd.DataFrame([[14, 25], [1, 22], [7, 8]], columns=['Latitude', 'Longitude'])
+    >>> target = [10, 15]
+    >>> k = 2
+    >>> task_func(data, target, k)
+    [[7, 8], [14, 25]]
+    """
+    # Convert target coordinates to numpy array
+    target_np = np.array(target)
+
+    # Calculate distance between each point in data and target
+    distances = np.sqrt((data['Latitude'] - target_np[0])**2 + (data['Longitude'] - target_np[1])**2)
+
+    # Sort data based on distance and take the first 'k' points
+    sorted_data = data.iloc[np.argsort(distances)[:k]]
+
+    # Return the list of nearest neighbors
+    return sorted_data[['Latitude', 'Longitude']].values.tolist()

@@ -1,0 +1,47 @@
+import pandas as pd
+import regex as re
+
+def task_func(text):
+    """
+    Extract data from a text and create a Pandas DataFrame. The text contains several lines, each formatted as 'Score: 85, Category: Math'. Make sure to convert the scores in integer.
+
+    Parameters:
+    text (str): The text to analyze.
+
+    Returns:
+    DataFrame: A pandas DataFrame with extracted data.
+
+    Requirements:
+    - pandas
+    - regex
+
+    Example:
+    >>> text = "Score: 85, Category: Math\\nScore: 90, Category: Science\\nScore: 80, Category: Math"
+    >>> df = task_func(text)
+    >>> print(df)
+       Score Category
+    0     85     Math
+    1     90  Science
+    2     80     Math
+    """
+    # Split the text into lines
+    lines = text.split('\n')
+
+    # Create a list of dictionaries to store the extracted data
+    data_list = []
+
+    # Regular expression pattern to match the score and category
+    pattern = r'Score: (\d+), Category: (.+)'
+
+    # Iterate over each line and extract data using regular expression
+    for line in lines:
+        match = re.search(pattern, line)
+        if match:
+            score = int(match.group(1))
+            category = match.group(2)
+            data_list.append({'Score': score, 'Category': category})
+
+    # Convert the list of dictionaries to a pandas DataFrame
+    df = pd.DataFrame(data_list)
+
+    return df

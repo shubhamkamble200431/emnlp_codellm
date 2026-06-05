@@ -1,0 +1,51 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.formula.api import ols
+
+
+def task_func(mu, sigma, seed=0, num_samples=1000, num_bins=30):
+    '''
+    Create a histogram of a normal distribution with a given mean and standard deviation, and overlay the 
+    probability density function (PDF) of the normal distribution on the histogram. Additionally, overlay a 
+    second order polynomial function on the histogram fitted bin-wise using ordinary least squares (OLS) 
+    regression. The random seed is set for reproducibility. The color of the PDF line is red, and the color of the OLS line is green.
+    
+    Parameters:
+    - mu (float): The mean of the distribution.
+    - sigma (float): The standard deviation of the distribution.
+    - seed (int, Optional): The random seed for reproducibility. Defaults to 0.
+    - num_samples (int, Optional): The number of samples to generate from the distribution. Defaults to 1000.
+    - num_bins (int, Optional): The number of bins to use in the histogram. Defaults to 30.
+    
+    Returns:
+    - matplotlib.axes.Axes: The Axes object with the histogram and overlaid PDF.
+    
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - statsmodels.formula.api
+    
+    Example:
+    >>> ax = task_func(0, 1)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    '''
+    # Set random seed for reproducibility
+    np.random.seed(seed)
+
+    # Generate data from the normal distribution
+    x = np.random.normal(loc=mu, scale=sigma, size=num_samples)
+
+    # Create histogram of the data
+    fig, ax = plt.subplots()
+    hist, bins, _ = ax.hist(x, num_bins, density=True, alpha=0.5, color='blue', label='Histogram')
+
+    # Calculate PDF values for the bin edges
+    pdf_values = stats.norm.pdf(bins, loc=mu, scale=sigma)
+
+    # Plot the PDF values on the histogram
+    ax.plot(bins, pdf_values, 'r-', linewidth=2, label='PDF')
+
+    # Fit a second order polynomial to the binwise data
+    poly_model = ols('x ~ poly(x, 2)', data={'x': x}).fit()
+    poly_fit_values = poly_model

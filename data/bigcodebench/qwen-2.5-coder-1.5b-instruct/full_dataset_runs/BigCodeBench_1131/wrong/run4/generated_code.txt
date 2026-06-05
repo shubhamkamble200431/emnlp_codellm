@@ -1,0 +1,41 @@
+import hashlib
+import binascii
+
+def task_func(salt, cursor):
+    """
+    Updates the passwords in a user table of an SQLite database by hashing them with SHA256, 
+    using a provided salt. The function directly modifies the database via the given cursor.
+
+    Parameters:
+    - salt (str): The salt value to be appended to each password before hashing.
+    - cursor (sqlite3.Cursor): A cursor object through which SQL commands are executed.
+
+    Returns:
+    - int: The number of users whose passwords were successfully updated.
+
+    Requirements:
+    - hashlib
+    - binascii
+
+    Raises:
+    TypeError if the salt is not a string
+    
+    Example:
+    >>> conn = sqlite3.connect('sample.db')
+    >>> cursor = conn.cursor()
+    >>> num_updated = task_func('mysalt', cursor)
+    >>> print(num_updated)
+    5
+    """
+    # Check if the salt is a string
+    if not isinstance(salt, str):
+        raise TypeError("Salt must be a string")
+
+    # Execute SQL query to update passwords with SHA256 and salt
+    cursor.execute("UPDATE users SET hashed_password = ? WHERE salt = ?", (hashlib.sha256((salt + '?' + s).encode()).hexdigest(), salt))
+
+    # Commit the changes to the database
+    conn.commit()
+
+    # Return the number of affected rows (updated users)
+    return cursor.rowcount

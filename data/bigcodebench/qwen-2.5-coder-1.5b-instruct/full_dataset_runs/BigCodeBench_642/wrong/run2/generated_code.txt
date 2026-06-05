@@ -1,0 +1,30 @@
+import binascii
+import hashlib
+import re
+OUTPUT_DIR = './output'
+
+
+def task_func(directory: str, pattern: str = r"(?<!Distillr)\\AcroTray\.exe") -> dict:
+    """
+    Searches for files within the specified directory matching a given regex pattern
+    and computes a SHA256 hash of each file's content.
+
+    Parameters:
+    - directory (str): Directory to search for files.
+    - pattern (str): Regex pattern that filenames must match. Default pattern matches 'AcroTray.exe'.
+
+    Returns:
+    - dict: A dictionary with file paths as keys and their SHA256 hashes as values.
+
+    Requirements:
+    - re
+    - hashlib
+    - binascii
+
+    Example:
+    >>> task_func(OUTPUT_DIR)
+    {}
+    """
+import os
+import re
+from hashlib import sha256

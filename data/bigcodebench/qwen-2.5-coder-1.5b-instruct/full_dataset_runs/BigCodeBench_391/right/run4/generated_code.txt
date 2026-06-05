@@ -1,0 +1,42 @@
+import os
+import glob
+import shutil
+
+def task_func(directory, archive_dir='archive'):
+    """
+    Archive all JSON files in a given directory by moving them to a specified archive directory.
+
+    Parameters:
+    directory (str): The directory where the JSON files are located.
+    archive_dir (str): The directory to which the JSON files will be archived. Defaults to 'archive'.
+
+    Returns:
+    tuple: A tuple containing a boolean value and a list of error messages.
+           The boolean is True if all files are successfully moved, and False otherwise.
+           The list contains error messages for each file that failed to move.
+
+    Requirements:
+    - os
+    - glob
+    - shutil
+
+    Example:
+    >>> import tempfile
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> files = ['file1.json', 'file2.json', 'file3.json']
+    >>> for file in files:
+    ...     with open(os.path.join(temp_dir, file), 'w') as f:
+    ...         _ = f.write("Dummy content for testing.")
+    >>> backup_dir = tempfile.mkdtemp()
+    >>> task_func(temp_dir, backup_dir)
+    (True, [])
+    """
+    error_messages = []
+    try:
+        json_files = glob.glob(os.path.join(directory, '*.json'))
+        for file_path in json_files:
+            shutil.move(file_path, os.path.join(archive_dir, os.path.basename(file_path)))
+        return True, []
+    except Exception as e:
+        error_messages.append(str(e))
+        return False, error_messages

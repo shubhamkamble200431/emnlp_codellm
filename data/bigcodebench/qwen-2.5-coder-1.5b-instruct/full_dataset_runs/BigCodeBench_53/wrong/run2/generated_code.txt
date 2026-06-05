@@ -1,0 +1,55 @@
+import pandas as pd
+import regex as re
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+COLUMN_NAMES = ["Name", "Email", "Age", "Country"]
+
+
+def task_func(text):
+    """
+    Extract data from a text and create a Pandas DataFrame.
+    The text contains several lines, each formatted as 'Name: John Doe, Email: john.doe@example.com, Age: 30, Country: USA'.
+    Plot the age distribution using seaborn.
+
+    The data is extracted using the regular expression pattern:
+    "Name: (.*?), Email: (.*?), Age: (.*?), Country: (.*?)($|\n)"
+    and the resulting DataFrame has columns: ['Name', 'Email', 'Age', 'Country']
+
+    Parameters:
+    text (str): The text to analyze.
+
+    Returns:
+    DataFrame: A pandas DataFrame with extracted data.
+
+    Requirements:
+    - pandas
+    - regex
+    - seaborn
+    - matplotlib.pyplot
+
+    Example:
+    >>> text = 'Name: John Doe, Email: john.doe@example.com, Age: 30, Country: USA\\nName: Jane Doe, Email: jane.doe@example.com, Age: 25, Country: UK'
+    >>> df = task_func(text)
+    >>> print(df)
+           Name                 Email  Age Country
+    0  John Doe  john.doe@example.com   30     USA
+    1  Jane Doe  jane.doe@example.com   25      UK
+    """
+    # Extracting data using the regex pattern
+    lines = text.strip().split('\n')
+    pattern = r'Name: (.*?), Email: (.*?), Age: (\d+), Country: (.*)($|\n)'
+    matches = [re.match(pattern, line) for line in lines if match]
+
+    # Creating the DataFrame
+    data = {col: [match.group(i) for match in matches] for i, col in enumerate(COLUMN_NAMES)}
+    df = pd.DataFrame(data)
+
+    # Ploting the age distribution
+    sns.histplot(df['Age'])
+    plt.title('Age Distribution')
+    plt.xlabel('Age')
+    plt.ylabel('Frequency')
+    plt.show()
+
+    return df

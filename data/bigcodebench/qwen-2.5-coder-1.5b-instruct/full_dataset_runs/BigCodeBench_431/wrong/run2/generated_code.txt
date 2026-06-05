@@ -1,0 +1,51 @@
+import cv2
+import os
+import numpy as np
+
+def task_func(image_file: str) -> np.ndarray:
+    """
+    Creates a histogram of the pixel values of a grayscale image.
+
+    Parameters:
+    - image_file (str): The path to the image file.
+
+    Returns:
+    - np.ndarray: A 1D numpy array representing the histogram of the image, with 256 bins corresponding to 
+      the pixel values in the range [0, 256). Each entry in the array represents the frequency of a pixel value 
+      in the grayscale image.
+
+    Raises:
+    - FileNotFoundError: If the specified image file does not exist.
+    - ValueError: If the image file is not a valid image.
+
+    Requirements:
+    - opencv: For reading the image file in grayscale.
+    - os: For checking the existence of the image file.
+    - numpy: For calculating and storing the histogram data.
+
+    Example:
+    >>> dummy_image_path = 'dummy_image.png'
+    >>> np.random.seed(48)
+    >>> dummy_image = np.random.randint(0, 256, (10, 10), dtype=np.uint8)
+    >>> cv2.imwrite(dummy_image_path, dummy_image)
+    True
+    >>> histogram = task_func(dummy_image_path)
+    >>> os.remove(dummy_image_path)
+    >>> print(histogram.shape)
+    (256,)
+
+    Note:
+    - The function assumes the image is in grayscale format.
+    - The histogram array is 1D with a size of 256, where each index corresponds to a pixel value, and the value at each index
+      represents the count of pixels in the image with that pixel value.
+    """
+    if not os.path.exists(image_file):
+        raise FileNotFoundError("The specified image file does not exist.")
+
+    image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
+
+    if image is None:
+        raise ValueError("The image file is not a valid image.")
+
+    histogram = cv2.calcHist([image], [0], None, [256], [0, 256])
+    return histogram

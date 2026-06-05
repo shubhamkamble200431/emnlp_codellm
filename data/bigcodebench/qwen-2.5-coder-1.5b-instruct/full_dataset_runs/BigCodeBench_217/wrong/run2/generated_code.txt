@@ -1,0 +1,48 @@
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
+def task_func(mu=0, sigma=1, sample_size=1000, seed=0):
+    """
+    Generate a sample from a normal distribution with a given mean and a standard deviation and plot the histogram 
+    together with the probability density function. Returns the Axes object representing the plot and the empirical
+    mean and standard deviation of the sample.
+
+    Parameters:
+    - mu (float): The mean of the normal distribution. Default is 0.
+    - sigma (float): The standard deviation of the normal distribution. Default is 1.
+    - sample_size (int): The size of the sample to generate. Default is 1000.
+
+    Returns:
+    - ax (matplotlib.axes._axes.Axes): Axes object with the plotted histogram and normal PDF, with the title format of 'Normal Distribution with $\\mu = %0.2f, \\sigma = %0.2f$'.
+    - float: The empirical mean of the sample.
+    - float: The empirical standard deviation of the sample.
+
+    Requirements:
+    - numpy for data generation.
+    - scipy.stats for statistical functions.
+    - matplotlib.pyplot for plotting.
+
+    Example:
+    >>> ax, mean, std = task_func(0, 1, 1000)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> print(round(mean, 3))
+    -0.045
+    >>> print(round(std, 3))
+    0.987
+    """
+    np.random.seed(seed)
+    sample = np.random.normal(loc=mu, scale=sigma, size=sample_size)
+
+    ax = plt.hist(sample, bins=30, density=True, alpha=0.6)
+    x = np.linspace(-4 * sigma, 4 * sigma, 100)
+    y = stats.norm.pdf(x, loc=mu, scale=sigma)
+    plt.plot(x, y, color='red', linewidth=2)
+
+    ax.set_title('Normal Distribution with $\\mu = {0:.2f}, \\sigma = {1:.2f}$'.format(mu, sigma))
+    ax.set_xlabel('Value')
+    ax.set_ylabel('Probability')
+
+    return ax, np.mean(sample), np.std(sample)

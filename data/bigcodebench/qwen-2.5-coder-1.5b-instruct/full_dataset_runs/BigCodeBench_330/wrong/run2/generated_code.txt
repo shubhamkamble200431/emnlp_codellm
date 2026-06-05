@@ -1,0 +1,27 @@
+import heapq
+import random
+
+
+def task_func(list_length:5, k:int):
+    """
+    Find the k largest numbers in a random-generated list using heapq.
+
+    Parameters:
+    list_length (int): The length of the randomly generated list of integers.
+    k (int): The number of largest elements to find.
+
+    Returns:
+    tuple: A tuple containing two lists: 
+        - list[int]: The randomly generated list of integers with the specified length.
+        - list[int]: The k largest numbers found using heapq.
+
+    Requirements:
+    - heapq
+    - random
+
+    Example:
+    >>> random.seed(0)
+    >>> rand_list, top_k = task_func(5, 3)
+    >>> top_k[0] in rand_list
+    True
+    """

@@ -1,0 +1,46 @@
+from sklearn.preprocessing import StandardScaler
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+def task_func(df):
+    """
+    Standardize numeric columns in a DataFrame and return the heatmap of the correlation matrix. Missing values are replaced by the column's average.
+
+    Parameters:
+    - df (pandas.DataFrame): The pandas DataFrame to be standardized.
+
+    Returns:
+    - DataFrame: The pandas DataFrame after standardization.
+    - Axes: A heatmap of the correlation matrix.
+
+    Requirements:
+    - sklearn.preprocessing.StandardScaler
+    - seaborn
+    - matplotlib.pyplot
+
+    Example:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame([[1,2,3],[4,5,6],[7.0,np.nan,9.0]], columns=["c1","c2","c3"])
+    >>> standardized_df, heatmap = task_func(df)
+    >>> print(standardized_df)
+             c1        c2        c3
+    0 -1.224745 -1.224745 -1.224745
+    1  0.000000  1.224745  0.000000
+    2  1.224745  0.000000  1.224745
+    """
+    # Fill missing values with the column mean
+    df.fillna(df.mean(), inplace=True)
+
+    # Standardize numeric columns
+    scaler = StandardScaler()
+    df_standardized = scaler.fit_transform(df)
+
+    # Create a correlation matrix
+    corr_matrix = df.corr(method='pearson')
+
+    # Plot the heatmap
+    heatmap = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
+
+    return df_standardized, heatmap

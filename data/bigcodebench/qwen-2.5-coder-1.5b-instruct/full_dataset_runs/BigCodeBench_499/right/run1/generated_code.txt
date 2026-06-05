@@ -1,0 +1,55 @@
+import xlwt
+import os
+import io
+import csv
+
+def task_func(csv_content, filename):
+    """
+    Converts CSV content into an Excel file and saves it with the given filename. The function reads the CSV content,
+    creates a new Excel workbook, writes the data into the workbook, and saves it as an Excel file.
+
+    Parameters:
+    csv_content (str): The CSV content as a string, where rows are separated by newlines and columns by commas.
+    filename (str): The name of the Excel file to be created, including the .xls extension.
+
+    Returns:
+    str: The absolute path of the created Excel file.
+
+    Requirements:
+    - xlwt
+    - os
+    - io
+    - csv
+
+    Examples:
+    Convert simple CSV content to an Excel file and return its path.
+    >>> csv_content = 'ID,Name,Age\\n1,John Doe,30\\n2,Jane Doe,28'
+    >>> os.path.isfile(task_func(csv_content, 'test_data.xls'))
+    True
+
+    Create an Excel file with a single cell.
+    >>> csv_content = 'Hello'
+    >>> os.path.isfile(task_func(csv_content, 'single_cell.xls'))
+    True
+    """
+    # Write CSV content to a temporary file
+    with io.StringIO(csv_content) as f:
+        reader = csv.reader(f)
+        data = [row for row in reader]
+
+    # Create a new Excel workbook
+    workbook = xlwt.Workbook()
+
+    # Add a worksheet to the workbook
+    ws = workbook.add_sheet('Sheet 1')
+
+    # Write the data from the CSV to the worksheet
+    for i, row in enumerate(data):
+        for j, value in enumerate(row):
+            ws.write(i, j, value)
+
+    # Save the workbook to the specified filename
+    workbook.save(filename)
+
+    # Return the absolute path of the created Excel file
+    return os.path.abspath(filename)

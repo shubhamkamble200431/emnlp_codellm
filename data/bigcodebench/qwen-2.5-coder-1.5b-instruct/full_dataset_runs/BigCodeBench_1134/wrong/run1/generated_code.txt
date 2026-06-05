@@ -1,0 +1,55 @@
+import os
+import glob
+import hashlib
+
+def task_func(source_dir, target_dir, prefix='#Hash: '):
+    """
+    Computes the MD5 hash of each file's content in the specified `source_dir`, prepends the hash along with a prefix 
+    to the original content, and writes the modified content to new files in the `target_dir`. 
+    Existing files with the same name in `target_dir` are overwritten.
+
+    Parameters:
+    - source_dir (str): The directory containing the files to be processed. Must exist.
+    - target_dir (str): The directory where the processed files will be written. Created if it does not exist.
+    - prefix (str): The prefix to prepend before the hash in each new file. Default is '#Hash: '.
+
+    Returns:
+    - list: A list of paths to the newly created files in the `target_dir`, each with the hash prepended.
+
+    Requirements:
+    - os
+    - glob
+    - hashlib
+
+    Raises:
+    FileNotFoundError if the source directory does not exist.
+
+    Example:
+    >>> task_func(source_dir='samples', target_dir='hashed_samples', prefix='#MD5: ')
+    ['hashed_samples/file1.txt', 'hashed_samples/file2.txt']
+    """
+    # Ensure the source directory exists
+    if not os.path.exists(source_dir):
+        raise FileNotFoundError(f"The source directory '{source_dir}' does not exist.")
+
+    # Ensure the target directory exists, create it if necessary
+    os.makedirs(target_dir, exist_ok=True)
+
+    # List all files in the source directory that match the pattern '*.txt'
+    txt_files = glob.glob(os.path.join(source_dir, '*.txt'))
+
+    # Process each text file
+    new_file_paths = []
+    for file_path in txt_files:
+        with open(file_path, 'rb') as file:
+            content = file.read()
+            md5_hash = hashlib.md5(content).hexdigest()
+
+            # Write the modified content with the hash prepended
+            new_file_path = os.path.join(target_dir, f'{prefix}{md5_hash}_{os.path.basename(file_path)}')
+            with open(new_file_path, 'wb') as new_file:
+                new_file.write(content)
+
+            new_file_paths.append(new_file_path)
+
+    return new_file_paths

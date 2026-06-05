@@ -1,0 +1,36 @@
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+def task_func(df):
+    """
+    Use a linear regression model to predict the "value" of "feature" in the given dataframe and return the coefficients and intercept.
+
+    Parameters:
+    - df (pd.DataFrame): pandas DataFrame that contains columns named 'feature' and 'value'.
+
+    Returns:
+    - result (dict): A dictionary with the coefficients and the intercept of the fitted linear regression model.
+
+    Requirements:
+    - numpy
+    - sklearn
+
+    Example:
+    >>> import pandas as pd
+    >>> np.random.seed(42)
+    >>> df = pd.DataFrame({'feature': np.random.rand(100), 'value': np.random.rand(100)})
+    >>> coefficients = task_func(df)
+    >>> print(coefficients)
+    {'coefficients': [[-0.03353164387961974]], 'intercept': [0.5135976564010359]}
+    """
+    # Create a linear regression model
+    reg = LinearRegression()
+
+    # Fit the model using 'feature' as the independent variable and 'value' as the dependent variable
+    reg.fit(df['feature'].values.reshape(-1, 1), df['value'].values)
+
+    # Return the coefficients and intercept of the fitted model
+    return {
+        'coefficients': [reg.coef_],
+        'intercept': [reg.intercept_]
+    }

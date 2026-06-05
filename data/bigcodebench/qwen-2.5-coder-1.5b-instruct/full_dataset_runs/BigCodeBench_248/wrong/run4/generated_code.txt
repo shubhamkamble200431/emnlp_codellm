@@ -1,0 +1,58 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import itertools
+
+
+def task_func(data_list):
+    """
+    Unzips the provided list of tuples and plots the numerical values for each position.
+    
+    Parameters:
+    - data_list (list of tuples): A list containing tuples. Each tuple should contain a character and two numerical values.
+    
+    Returns:
+    - Axes: The plot with the unzipped numerical values.
+    
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - itertools
+
+    Raises:
+    - ValueError: If the data_list is empty.
+    
+    Example:
+    >>> plot = task_func([('a', 1, 2), ('b', 2, 3), ('c', 3, 4), ('d', 4, 5), ('e', 5, 6)])
+    >>> type(plot)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    if not data_list:
+        raise ValueError("The data_list cannot be empty.")
+
+    characters, *numerical_values = zip(*data_list)
+
+    # Extracting numerical arrays from lists
+    nums_a = np.array(numerical_values[0])
+    nums_b = np.array(numerical_values[1])
+    nums_c = np.array(numerical_values[2])
+    nums_d = np.array(numerical_values[3])
+    nums_e = np.array(numerical_values[4])
+
+    # Plots
+    fig, axs = plt.subplots(2, 3, figsize=(12, 6))
+    axs[0, 0].plot(range(len(nums_a)), nums_a, label=f'a')
+    axs[0, 1].plot(range(len(nums_b)), nums_b, label=f'b')
+    axs[0, 2].plot(range(len(nums_c)), nums_c, label=f'c')
+    axs[1, 0].plot(range(len(nums_d)), nums_d, label=f'd')
+    axs[1, 1].plot(range(len(nums_e)), nums_e, label=f'e')
+
+    axs[0, 0].set_title(f'a vs Time')
+    axs[0, 1].set_title(f'b vs Time')
+    axs[0, 2].set_title(f'c vs Time')
+    axs[1, 0].set_title(f'd vs Time')
+    axs[1, 1].set_title(f'e vs Time')
+
+    for ax in axs.flatten():
+        ax.legend()
+
+    return axs

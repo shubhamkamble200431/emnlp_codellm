@@ -1,0 +1,57 @@
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+
+def task_func(df1, df2, column1="feature1", column2="feature2"):
+    """Merge datasets, perform KMeans clustering, then return cluster labels and scatterplot.
+
+    Each dataset is assumed to contain at least one id column and one feature column. The column to process
+    is specified for df1 and df2 via column1 and column2, respectively. KMeans clustering is applied
+    with k=2 and n_init=10. Resulting scatterplot shows column1 on the x-axis, column2 on the y-axis,
+    and predicted cluster as color.
+
+    Parameters:
+    - df1 (pd.DataFrame): Dataframe with columns 'id' and feature columns including column1.
+    - df2 (pd.DataFrame): Dataframe with columns 'id' and feature columns including column2.
+    - column1 (str): Name of column containing features to model in df1. Defaults to "feature1".
+    - column2 (str): Name of column containing features to model in df2. Defaults to "feature2".
+
+    Returns:
+    - labels (numpy.ndarray): Cluster labels for each data point (dtype=int32).
+    - ax (matplotlib.axes._axes.Axes): The plotted figure's Axes object.
+
+    Requirements:
+    - sklearn.cluster.KMeans
+    - matplotlib.pyplot
+
+    Example:
+    >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'feature1': [1.2, 3.4, 5.6]})
+    >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'feature2': [2.3, 4.5, 6.7]})
+    >>> labels, ax = task_func(df1, df2)
+    >>> type(labels)
+    <class 'numpy.ndarray'>
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Merge datasets based on the common 'id' column
+    merged_df = pd.concat([df1[[column1, 'id']], df2[[column2, 'id']]], ignore_index=True)
+
+    # Define the feature to cluster on from df1 and df2
+    if column1 not in merged_df.columns or column2 not in merged_df.columns:
+        raise ValueError("Both dataframes must have 'id' and a common feature column.")
+
+    # Select the feature columns
+    X = merged_df[['feature1', column2]]
+
+    # Perform KMeans clustering with k=2 and n_init=10
+    kmeans = KMeans(n_clusters=2, n_init=10, random_state=42)
+    labels = kmeans.fit_predict(X)
+
+    # Create a scatter plot
+    fig, ax = plt.subplots()
+    ax.scatter(X['feature1'], X[column2], c=labels, cmap='viridis')
+    ax.set_xlabel(column1)
+    ax.set_ylabel(column2)
+    ax.title('KMeans Clustering of Features')
+
+    return labels, ax

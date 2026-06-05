@@ -1,0 +1,44 @@
+import re
+import os
+from collections import Counter
+
+
+def task_func(folder_path: str) -> dict:
+    """
+    Scan a directory for log files and count the occurrences of each IP address in all files.
+    
+    Parameters:
+    - folder_path (str): The path to the directory containing log files to be scanned.
+    
+    Returns:
+    dict: A dictionary with IP addresses as keys and their counts as values.
+    
+    Requirements:
+    - re
+    - os
+    - collections.Counter
+    
+    The function utilizes a regular expression pattern to identify IP addresses in the log files.
+    
+    Example:
+    >>> import tempfile
+    >>> temp_dir = tempfile.mkdtemp() # Create a temporary directory that is empty
+    >>> task_func(temp_dir)
+    {}
+    """
+    ip_pattern = r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'  # Regular expression pattern for IP addresses
+
+    ip_counts = Counter()  # Initialize a Counter object to store IP addresses and their counts
+
+    # Walk through each file in the specified directory and its subdirectories
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith('.log'):  # Check if the file has a .log extension
+                file_path = os.path.join(root, file)  # Construct the full file path
+                with open(file_path, 'r') as f:
+                    lines = f.readlines()  # Read all lines from the file
+                    for line in lines:
+                        matches = re.findall(ip_pattern, line)  # Find all IP addresses in the current line
+                        ip_counts.update(matches)  # Update the counter with the found IP addresses
+
+    return ip_counts  # Return the dictionary of IP addresses and their counts

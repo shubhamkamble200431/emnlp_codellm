@@ -1,0 +1,31 @@
+import re
+import string
+
+# Constants
+PUNCTUATION = string.punctuation
+
+def task_func(text):
+    """
+    Divide a string into words, remove punctuation marks and convert them to lowercase letters.
+
+    Parameters:
+    - text (str): The input string.
+
+    Returns:
+    - cleaned_words (list): A list of cleaned words.
+
+    Requirements:
+    - re
+    - string
+
+    Example:
+    >>> task_func("Hello, world! This is a test.")
+    ['hello', 'world', 'this', 'is', 'a', 'test']
+    """
+    # Remove punctuation and convert to lowercase
+    cleaned_text = re.sub(r'[{}]'.format(PUNCTUATION), '', text).lower()
+
+    # Split the text into words
+    cleaned_words = cleaned_text.split()
+
+    return cleaned_words

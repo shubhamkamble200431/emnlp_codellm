@@ -1,0 +1,43 @@
+import subprocess
+import os
+import random
+
+def task_func(directory, file_list):
+    """
+    Select a random file from a given list of files in a specified directory and run it as a subprocess.
+    
+    Parameters:
+    directory (str): The directory path where the files are located.
+    file_list (list of str): A list of file names to choose from.
+
+    Returns:
+    int: The exit code of the subprocess, or None if the process is still running or if the file list is empty.
+
+    Requirements:
+    - subprocess
+    - os
+    - random
+
+    Example:
+    >>> random.seed(0)
+    >>> task_func("c:\Program Files\VMware\VMware Server", ["file1.bat", "file2.bat"]) #valid directory and file list
+    0 
+    """
+    if not file_list:
+        return None
+    
+    random_file = random.choice(file_list)
+    full_path = os.path.join(directory, random_file)
+    
+    try:
+        subprocess.run(full_path, check=True)
+        return 0
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to run {full_path}: {e}")
+        return e.returncode
+    except FileNotFoundError:
+        print(f"File {random_file} not found.")
+        return None
+    except PermissionError:
+        print(f"Permission denied to run {full_path}.")
+        return None

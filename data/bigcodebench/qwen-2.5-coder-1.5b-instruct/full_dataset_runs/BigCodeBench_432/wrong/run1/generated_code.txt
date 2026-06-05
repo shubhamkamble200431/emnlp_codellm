@@ -1,0 +1,46 @@
+import seaborn as sns
+from scipy.stats import chi2_contingency
+
+
+def task_func(df1, df2, column1="feature1", column2="feature2"):
+    """
+    Merge two dataframes based on the 'id' column, perform a chi-square independence test on the merged dataframe,
+    and draw a heatmap of the contingency table created from the features in column1, column2.
+
+    Parameters:
+    - df1 (DataFrame): Left dataframe to merge. Must contain columns 'id' and one matching column1.
+    - df2 (DataFrame): Right dataframe to merge from. Must contain columns 'id' and one matching column2.
+    - column1   (str): Name of column containing features in df1. Defaults to 'feature1'.
+    - column2   (str): Name of column containing features in df2. Defaults to 'feature2'.
+
+    Returns:
+    tuple: A tuple containing:
+        - p (float): The p-value of the Chi-Squared test.
+        - heatmap (matplotlib.pyplot.Axes): Seaborn heatmap of the contingency table.
+
+    Requirements:
+    - seaborn
+    - scipy.stats.chi2_contingency
+
+    Example:
+    >>> import pandas as pd
+    >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'feature1': ['A', 'B', 'A']})
+    >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'feature2': ['X', 'Y', 'X']})
+    >>> p_value, heatmap = task_func(df1, df2)
+    >>> p_value
+    0.6650055421020291
+    >>> heatmap
+    <Axes: xlabel='feature2', ylabel='feature1'>
+    """
+    # Merge the dataframes on the 'id' column
+    df_merged = pd.merge(df1, df2, on='id')
+
+    # Calculate the contingency table
+    contingency_table = pd.crosstab(df_merged[column1], df_merged[column2])
+
+    # Perform the Chi-Square test
+    chi2, p, dof, expected = chi2_contingency(contingency_table)
+
+    # Draw a heatmap of the contingency table
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(contingency_table, annot=True, cmap='coolwarm', fmt='.2f')

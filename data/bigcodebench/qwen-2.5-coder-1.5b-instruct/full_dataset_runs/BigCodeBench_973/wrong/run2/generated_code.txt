@@ -1,0 +1,67 @@
+import os
+import shutil
+
+
+def task_func(path, delimiter="/"):
+    """
+    Splits a given file path by a specific delimiter and computes disk usage for each directory component.
+
+    Parameters:
+    - path (str): The file path to split.
+    - delimiter (str, optional): The delimiter to use for splitting the path. Default is '/'.
+
+    Returns:
+    list: A list of tuples where each tuple contains a path component and its disk usage as a dictionary.
+          The disk usage dictionary contains keys 'total', 'used', and 'free'.
+
+    Raises:
+    - ValueError: If the 'path' is empty, not a string, or contain invalid components.
+    - FileNotFoundError: If the 'path' does not exist in the filesystem.
+
+    Requirements:
+    - os
+    - shutil
+
+    Examples:
+    >>> task_func('Docs/src', '/')
+    [('Docs', {'total': 100, 'used': 50, 'free': 50}), ('src', {'total': 200, 'used': 100, 'free': 100})]
+
+    >>> task_func('a/b', '/')
+    [('a', {'total': 300, 'used': 150, 'free': 150}), ('b', {'total': 400, 'used': 200, 'free': 200})]
+    """
+    if not isinstance(path, str) or not path:
+        raise ValueError("The 'path' parameter must be a non-empty string.")
+
+    try:
+        full_path = os.path.abspath(path)
+        components = full_path.split(delimiter)
+
+        result = []
+        current_usage = {'total': 0, 'used': 0, 'free': 0}
+
+        for component in components:
+            if not component:
+                continue
+
+            # Calculate total space available for this component
+            try:
+                total_space = os.statvfs(component).f_blocks * os.statvfs(component).f_frsize
+            except OSError:
+                total_space = 0
+
+            # Calculate used and free space for this component
+            try:
+                usage = os.statvfs(component).f_bavail * os.statvfs(component).f_frsize
+            except OSError:
+                usage = 0
+
+            current_usage['total'] += total_space
+            current_usage['used'] += usage
+            current_usage['free'] = total_space - usage
+
+            result.append((component, current_usage))
+
+        return result
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"The path '{path}' does not exist in the filesystem.")

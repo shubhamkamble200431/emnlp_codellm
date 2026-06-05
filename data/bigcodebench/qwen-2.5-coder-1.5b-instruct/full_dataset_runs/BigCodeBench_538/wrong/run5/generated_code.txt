@@ -1,0 +1,50 @@
+import sqlite3
+import pandas as pd
+
+
+def task_func(db_name, table_name):
+    """
+    Plot the relationship between the first and second numerical columns of an SQLite3 table, after excluding 'id' column.
+
+    Parameters:
+    - db_name (str): The absolute path to the SQLite3 database.
+    - table_name (str): The name of the table to plot from.
+
+    Returns:
+    - matplotlib.axes._axes.Axes: Scatterplot with column name labeled on their respective axes.
+
+    Raises:
+    - ValueError: If the table has less than two numerical columns.
+    
+    Requirements:
+    - sqlite3
+    - pandas
+
+    Example:
+    >>> ax = task_func('/path/to/database/test.db', 'People')
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(0.9400000000000001, 0, '0.94'), ... ]
+    """
+    # Connect to the database
+    conn = sqlite3.connect(db_name)
+    df = pd.read_sql_query(f"SELECT * FROM {table_name} WHERE id NOT IN ('id')", conn)
+
+    # Check if there are at least two numerical columns
+    if len(df.select_dtypes(include=[int, float]).columns) < 2:
+        raise ValueError("The table must have at least two numerical columns.")
+
+    # Extract the first and second numerical columns
+    x_column = df.columns[0]
+    y_column = df.columns[1]
+
+    # Create a scatter plot
+    fig, ax = plt.subplots()
+    ax.scatter(df[x_column], df[y_column])
+
+    # Set labels
+    ax.set_xlabel(x_column)
+    ax.set_ylabel(y_column)
+
+    return ax

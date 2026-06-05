@@ -1,0 +1,57 @@
+import hashlib
+import base64
+
+
+def task_func(filename, data, password):
+    """
+    Encrypt a string with a password, then write the encrypted string to a file. 
+    If the file or directory does not exist, create it.
+
+    Parameters:
+    filename (str): The name of the file to write to.
+    data (str): The string to encrypt and write to the file.
+    password (str): The password to use for encryption.
+
+    Returns:
+    str: The encrypted string.
+
+    Requirements:
+    - hashlib
+    - base64
+
+    Example:
+    >>> task_func('test.txt', 'Hello, World!', 'password')
+    'Fu0k9LUEJCY+ookLrA=='
+    """
+    # Create a hash object using SHA256
+    hash_obj = hashlib.sha256(password.encode()).digest()
+
+    # Use the first 16 bytes as key for AES encryption
+    key = hash_obj[:16]
+
+    # Use the rest of the hash object as IV for AES encryption
+    iv = hash_obj[16:]
+
+    # Import the AES module from the cryptography library
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+    # Create an AES cipher instance with CBC mode
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+
+    # Create an encryptor
+    encryptor = cipher.encryptor()
+
+    # Pad the data to the AES block size
+    padded_data = pad(data.encode(), AES.block_size)
+
+    # Encrypt the data
+    encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
+
+    # Encode the encrypted data to base64
+    encoded_data = base64.b64encode(encrypted_data).decode()
+
+    # Write the encrypted data to a file
+    with open(filename, 'w') as f:
+        f.write(encoded_data)
+
+    return encoded_data

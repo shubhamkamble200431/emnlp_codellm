@@ -1,0 +1,39 @@
+import re
+import urllib.parse
+import ssl
+import socket
+
+def task_func(myString):
+    """
+    Extracts all URLs from a string and retrieves the domain and the expiration date of the SSL certificate 
+    for each HTTPS URL. Only HTTPS URLs are processed; HTTP URLs are ignored. The function handles SSL errors 
+    by ignoring any HTTPS URLs where the SSL certificate cannot be retrieved due to such errors, and these domains 
+    are not included in the returned dictionary.
+
+    Parameters:
+    myString (str): The string from which to extract URLs.
+    
+    Returns:
+    dict: A dictionary with domains as keys and SSL certificate expiry dates in UTC format as values. 
+          The dictionary includes only those HTTPS URLs for which the SSL certificate was successfully retrieved.
+          Domains with SSL errors are excluded.
+
+    Requirements:
+    - re
+    - urllib.parse
+    - ssl
+    - socket
+    
+    Example:
+    >>> task_func("Check these links: https://www.google.com, https://www.python.org")
+    {'www.google.com': '2023-06-15 12:00:00', 'www.python.org': '2023-07-20 12:00:00'}
+    """
+    urls = re.findall(r'https?://[^\s]+', myString)
+    ssl_domains = {}
+    for url in urls:
+        if url.startswith('https'):
+            domain = url.split('/')[2]
+            ssl_expiry = get_ssl_expiry_date(url)
+            if ssl_expiry:
+                ssl_domains[domain] = ssl_expiry
+    return ssl_domains

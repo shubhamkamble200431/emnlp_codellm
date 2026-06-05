@@ -1,0 +1,25 @@
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
+
+def task_func(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """
+    Encrypt the categorical data in a specific column of a DataFrame using LabelEncoder.
+
+    Parameters:
+    df (pd.DataFrame): The DataFrame that contains the data.
+    column_name (str): The name of the column to encode.
+
+    Returns:
+    pd.DataFrame: The DataFrame with the encoded column.
+
+    Requirements:
+    - pandas
+    - sklearn
+
+    Example:
+    >>> df = pd.DataFrame({'fruit': ['apple', 'banana', 'cherry', 'apple', 'banana']})
+    >>> encoded_df = task_func(df, 'fruit')
+    >>> encoded_df['fruit'].tolist()
+    [0, 1, 2, 0, 1]
+    """

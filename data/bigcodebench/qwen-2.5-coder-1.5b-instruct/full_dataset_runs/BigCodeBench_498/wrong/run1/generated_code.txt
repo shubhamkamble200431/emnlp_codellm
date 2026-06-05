@@ -1,0 +1,43 @@
+import xmltodict
+import json
+
+def task_func(s, save_json, json_file_path):
+    """ 
+    Converts an XML string into a dictionary representation and optionally saves it as a JSON file.
+
+    This function is useful for easily accessing data stored in XML format and saving it for future use.
+
+    Parameters:
+    s (str): The XML string to be converted.
+    save_json (bool): Whether to save the parsed XML as a JSON file.
+    json_file_path (str): The file path to save the JSON file. Required if save_json is True.
+
+    Returns:
+    dict: A dictionary representation of the XML string.
+
+    Raises:
+    ValueError: If the input XML string is empty or contains only whitespace.
+
+    Requirements:
+    - xmltodict
+    - json
+
+    Examples:
+    Convert a simple XML string to a dictionary.
+    >>> result = task_func('<person><name>John</name><age>30</age></person>')
+    >>> result['person']['name'] + ', ' + result['person']['age']
+    'John, 30'
+
+    Convert an XML string with nested elements.
+    >>> result = task_func('<school><class><student>Emma</student></class></school>')
+    >>> result['school']['class']['student']
+    'Emma'
+
+    Save the parsed XML as a JSON file.
+    >>> task_func('<data><item>1</item><item>2</item></data>', save_json=True, json_file_path='data.json')
+    # A JSON file 'data.json' will be created with the parsed XML data.
+    """
+xmltodict.parse(s)
+if save_json:
+    with open(json_file_path, 'w') as json_file:
+        json.dump(xmltodict.parse(s), json_file, indent=4)

@@ -1,0 +1,65 @@
+import os
+import shutil
+import string
+
+# Constants
+INVALID_CHARACTERS = string.punctuation + string.whitespace
+
+def task_func(directory_path):
+    """
+    Scan a directory and organize the files according to their endings. Files with invalid characters in the name will be moved to a new directory called "Invalid."
+    
+    The invalid characters are defined by the constant INVALID_CHARACTERS, which includes all punctuation and whitespace characters.
+
+    Parameters:
+    - directory_path (str): The path to the directory.
+
+    Returns:
+    - summary (dict): A summary dictionary containing the count of files moved to each directory.
+
+    Requirements:
+    - os
+    - shutil
+    - string
+
+    Example:
+    >>> task_func('path_to_directory')
+    {'txt': 2, 'jpg': 1, 'Invalid': 1}
+    """
+    if not os.path.exists(directory_path):
+        return {}
+
+    # Create the "Invalid" directory if it doesn't exist
+    invalid_dir_path = os.path.join(directory_path, 'Invalid')
+    if not os.path.exists(invalid_dir_path):
+        os.makedirs(invalid_dir_path)
+
+    summary = {}
+    for root, dirs, files in os.walk(directory_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            base_name, ext = os.path.splitext(file)
+            
+            # Check if the file name contains any invalid characters
+            if any(char in INVALID_CHARACTERS for char in base_name) or any(char in INVALID_CHARACTERS for char in ext):
+                destination_dir = invalid_dir_path
+            else:
+                # Determine the destination directory based on the file extension
+                extension = ext.lower()
+                if extension in ['png', 'jpg']:
+                    destination_dir = os.path.join(root, 'images')
+                elif extension in ['pdf', 'docx']:
+                    destination_dir = os.path.join(root, 'documents')
+                else:
+                    destination_dir = os.path.join(root, 'other')
+
+            # Move the file to the appropriate directory
+            shutil.move(file_path, os.path.join(destination_dir, file))
+            
+            # Update the summary
+            if extension in summary:
+                summary[extension] += 1
+            else:
+                summary[extension] = 1
+
+    return summary

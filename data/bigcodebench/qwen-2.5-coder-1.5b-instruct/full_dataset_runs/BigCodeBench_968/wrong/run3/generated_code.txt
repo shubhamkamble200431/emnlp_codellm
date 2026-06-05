@@ -1,0 +1,35 @@
+import pandas as pd
+import seaborn as sns
+
+def task_func(data):
+    """
+    Creates and return a heatmap of the cumulative sum of each column in a dictionary.
+
+    Parameters:
+    - data (dict): A dictionary where the keys are the column names and the values are the column values.
+
+    Returns:
+    - matplotlib.axes._axes.Axes: The Axes object of the Seaborn heatmap.
+
+    Raises:
+    - ValueError: If the DataFrame is empty or if no numeric columns are present.
+
+    Requirements:
+    - pandas
+    - seaborn
+
+    Notes:
+    - Only numeric columns are considered for the heatmap. Non-numeric columns are ignored.
+
+    Example:
+    >>> data = {'A': [1, 2, 3], 'B': [4, 5, 6]}
+    >>> ax = task_func(data)
+    """
+    df = pd.DataFrame(data)  # Convert dictionary to DataFrame
+    numeric_columns = df.select_dtypes(include=[np.number]).columns  # Filter out non-numeric columns
+    
+    if len(numeric_columns) == 0:  # Check if there are any numeric columns
+        raise ValueError("The DataFrame must contain at least one numeric column.")
+    
+    heat_map = sns.heatmap(df[numeric_columns].cumsum(axis=1), annot=True, fmt=".1f")  # Create heatmap with cumulative sums
+    return heat_map

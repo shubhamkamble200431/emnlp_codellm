@@ -1,0 +1,46 @@
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+import random
+# Constants
+RANGE = 10000
+SIZE = 1000
+PI = np.pi
+
+
+def task_func(size=SIZE, frequency=1):
+    '''
+    Create a list of random sinusoidal values and plot them in a graph.
+    
+    Parameters:
+    - size (int): The number of points for the sinusoidal wave. Default is 1000.
+    - frequency (float): The frequency of the sinusoidal wave. Default is 1.
+    
+    Returns:
+    - Axes object: The plot of the sinusoidal wave.
+    
+    Requirements:
+    - random
+    - math
+    - matplotlib.pyplot
+    - numpy
+    
+    Example:
+    >>> import matplotlib
+    >>> ax = task_func(size=1000, frequency=1)
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    >>> len(ax.lines[0].get_ydata()) == 1000  # Verify the number of data points in the sinusoidal wave
+    True
+    >>> isinstance(ax.lines[0].get_ydata()[0], float)  # Check if y-values are floating-point numbers
+    True
+    '''
+x_values = np.linspace(0, 2 * PI, size)  # Generate x-coordinates for the sinusoidal wave
+y_values = np.sin(frequency * x_values)  # Compute y-values using the given frequency
+
+plt.plot(x_values, y_values)  # Plot the sinusoidal wave
+plt.xlabel('X-axis')  # Label the x-axis
+plt.ylabel('Y-axis')  # Label the y-axis
+plt.title('Sinusoidal Wave')  # Title of the plot
+plt.grid(True)  # Add grid to the plot
+return plt.gca()  # Return the axes object for further manipulation

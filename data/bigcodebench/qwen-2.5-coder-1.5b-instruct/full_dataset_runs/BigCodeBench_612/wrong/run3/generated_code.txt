@@ -1,0 +1,48 @@
+from random import choice
+import numpy as np
+import pandas as pd
+
+
+# Constants
+TEAMS = ['Team A', 'Team B', 'Team C', 'Team D', 'Team E']
+PENALTIES_COSTS = [100, 200, 300, 400, 500]
+
+
+def task_func(goals, penalties, teams=TEAMS, penalties_costs=PENALTIES_COSTS):
+    """
+    Generates a performance report DataFrame for teams, detailing goals and penalties. For each team, the function fetches
+    goal and penalty counts, calculates 'Penalties Cost' using a random multiplier from a predefined list, and computes
+    a 'Performance Score' as the non-negative difference between goals and penalties. Return a Dataframe with colomns 'Team',
+    'Goals', 'Penalties', 'Penalties Cost' and 'Performance Score'.
+
+    Parameters:
+    - goals (dict): Team names as keys, numbers of goals scored as values.
+    - penalties (dict): Team names as keys, numbers of penalties incurred as values.
+    - teams (list, optioanl): input teams. Default value is ['Team A', 'Team B', 'Team C', 'Team D', 'Team E']
+    - penalties_costs (list, optional): input penalties_costs. Default value is [100, 200, 300, 400, 500].
+
+    Returns:
+    - pd.DataFrame: DataFrame with Team, Goals, Penalties, Penalties Cost, Performance Score.
+
+    Requirements:
+    - pandas
+    - numpy
+    - random.choice
+
+    Example:
+    >>> goals = {'Team A': 3, 'Team B': 2}
+    >>> penalties = {'Team A': 1, 'Team B': 0}
+    >>> report = task_func(goals, penalties)
+    """
+    # Fetching data from dictionaries
+    team_data = {team: {"Goals": goals.get(team, 0), "Penalties": penalties.get(team, 0)} for team in teams}
+
+    # Calculating penalties cost and performance score
+    for team in teams:
+        team_data[team]["Penalties Cost"] = np.random.choice(penalties_costs)
+        team_data[team]["Performance Score"] = abs(team_data[team]["Goals"] - team_data[team]["Penalties"])
+
+    # Creating DataFrame
+    report_df = pd.DataFrame.from_dict(team_data, orient='index').reset_index(drop=True).rename(columns={'index': 'Team'})
+
+    return report_df

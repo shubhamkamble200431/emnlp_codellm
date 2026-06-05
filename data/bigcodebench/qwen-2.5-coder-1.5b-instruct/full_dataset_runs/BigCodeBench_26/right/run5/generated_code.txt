@@ -1,0 +1,38 @@
+import base64
+from cryptography.fernet import Fernet
+
+def task_func(message, encryption_key):
+    """
+    Encrypts a message with a symmetric encryption key using Fernet encryption, and then encode the 
+    encrypted message using base64.
+
+    Parameters:
+    message (str): The message to be encrypted and encoded.
+    encryption_key (str): The key used for symmetric encryption. It should be a string, which will 
+                          be encoded to bytes, then URL-safe base64 encoded to conform to the requirements 
+                          for Fernet (32 bytes after encoding).
+
+    Returns:
+    str: The base64 encoded encrypted message. The message is first encrypted using Fernet encryption, 
+         then the result is base64 encoded.
+
+    Requirements:
+    - base64
+    - cryptography.fernet
+
+    Example:
+    >>> encrypted_message = task_func('Hello, World!', '01234567890123456789012345678901')
+    >>> isinstance(encrypted_message, str)
+    True
+    """
+    # Encode the encryption key from string to bytes, then base64 encode it
+    key_bytes = base64.urlsafe_b64encode(encryption_key.encode()).decode()
+
+    # Create a Fernet object with the key
+    cipher_suite = Fernet(key_bytes)
+
+    # Encrypt the message
+    encrypted_message = cipher_suite.encrypt(message.encode())
+
+    # Base64 encode the encrypted message
+    return base64.urlsafe_b64encode(encrypted_message).decode()

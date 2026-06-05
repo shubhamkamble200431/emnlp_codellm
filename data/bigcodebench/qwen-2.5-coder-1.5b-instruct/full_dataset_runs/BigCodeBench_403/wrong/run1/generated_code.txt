@@ -1,0 +1,56 @@
+from PIL import Image, ImageFilter
+import cv2
+import numpy as np
+import os
+
+def task_func(img_path, blur_radius=5):
+    """
+    Open an RGB image from a specific path, apply a blur filter, convert it to grayscale, and then display both the original and the edited images side by side.
+    Returns numpy arrays representing both the original and the processed images.
+
+    Parameters:
+    - img_path (str): The path of the image file.
+    - blur_radius (int): The radius of the Gaussian blur filter. Default is 5.
+
+    Returns:
+    - tuple: A tuple containing two numpy arrays, the first representing the original image and 
+             the second representing the blurred and grayscaled image.
+
+    Raises:
+    - FileNotFoundError: If the image file does not exist at the specified path.
+
+    Requirements:
+    - PIL
+    - opencv-python
+    - numpy
+    - os
+
+    Example:
+    >>> image_path = 'sample.png'
+    >>> create_dummy_image(image_path=image_path)
+    >>> original, processed = task_func(image_path)
+    >>> os.remove(image_path)
+    """
+    # Check if the image exists at the specified path
+    if not os.path.exists(img_path):
+        raise FileNotFoundError(f"The image file {img_path} does not exist.")
+
+    # Load the image using PIL
+    pil_img = Image.open(img_path)
+
+    # Convert the PIL image to a NumPy array
+    original_array = np.array(pil_img)
+
+    # Apply Gaussian blur using Pillow
+    blurred_pil_img = pil_img.filter(ImageFilter.GaussianBlur(radius=blur_radius))
+
+    # Convert the blurred PIL image back to a NumPy array
+    blurred_array = np.array(blurred_pil_img)
+
+    # Convert the original image to grayscale
+    gray_pil_img = pil_img.convert('L')
+
+    # Convert the grayscale PIL image back to a NumPy array
+    gray_array = np.array(gray_pil_img)
+
+    return original_array, blurred_array

@@ -1,0 +1,54 @@
+import pandas as pd
+import random
+from sklearn.model_selection import train_test_split
+
+def task_func(n_data_points=10000, min_value=0.0, max_value=10.0, test_size=0.2):
+    '''
+    Generate a random set of floating-point numbers within a specified range, truncate each value to 3 decimal places,
+    and divide the data into train and test sets based on a given test size.
+
+    Parameters:
+    - n_data_points (int): Number of data points to generate. Default is 10000.
+    - min_value (float): Minimum value of the generated data points. Default is 0.0.
+    - max_value (float): Maximum value of the generated data points. Default is 10.0.
+    - test_size (float): Proportion of the dataset to include in the test split. Default is 0.2.
+
+    Returns:
+    tuple: A tuple with two pandas DataFrames (train set, test set).
+
+    Requirements:
+    - pandas
+    - random
+    - sklearn.model_selection
+
+    Note:
+    - The function use "Value" for the column name in the DataFrames (train set, test set) that being returned.
+
+    Example:
+    >>> random.seed(0)
+    >>> train_data, test_data = task_func()
+    >>> print(train_data.shape[0])
+    8000
+    >>> print(test_data.shape[0])
+    2000
+    >>> random.seed(0)
+    >>> train_data, test_data = task_func(n_data_points=500, min_value=1.0, max_value=1.0, test_size=0.3)
+    >>> print(train_data.shape[0])
+    350
+    >>> print(test_data.shape[0])
+    150
+    >>> print(test_data.iloc[0]['Value'])
+    1.0
+    '''
+    # Generate random data points
+    data = pd.DataFrame({
+        'Value': [random.uniform(min_value, max_value) for _ in range(n_data_points)]
+    })
+
+    # Truncate values to 3 decimal places
+    data['Value'] = round(data['Value'], 3)
+
+    # Split the data into train and test sets
+    train_data, test_data = train_test_split(data, test_size=test_size, random_state=0)
+
+    return train_data,

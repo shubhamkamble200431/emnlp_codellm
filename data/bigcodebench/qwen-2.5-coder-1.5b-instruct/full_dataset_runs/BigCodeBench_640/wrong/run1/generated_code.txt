@@ -1,0 +1,61 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+PRODUCTS = ['Product' + str(i) for i in range(1, 6)]
+MONTHS = ['Month' + str(i) for i in range(1, 13)]
+
+
+def task_func():
+    """
+    Generate a DataFrame representing monthly sales of products and visualize the total sales.
+
+    The function creates a DataFrame where each row represents a month, each column represents a product,
+    and cell values represent sales figures. It then plots the total sales per product across all months
+    using both a line plot and a heatmap for visualization.
+
+    Returns:
+    - pd.DataFrame: A DataFrame with randomly generated sales figures for each product over 12 months.
+
+    The function also displays:
+    - A line plot showing the total sales per product.
+    - A heatmap visualizing sales figures across products and months.
+
+    Requirements:
+    - pandas
+    - numpy
+    - matplotlib.pyplot
+    - seaborn
+
+    Example:
+    >>> df = task_func()
+    >>> df.shape
+    (12, 5)
+    >>> all(df.columns == PRODUCTS)
+    True
+    >>> all(df.index == MONTHS)
+    True
+    >>> (df.values >= 100).all() and (df.values <= 1000).all()
+    True
+    """
+    # Generating random sales figures for each product over 12 months
+    sales_data = np.random.randint(100, 1000, (12, len(PRODUCTS)))
+
+    # Creating the DataFrame
+    df = pd.DataFrame(sales_data, columns=PRODUCTS, index=MONTHS)
+
+    # Plotting line plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+    df.plot(ax=ax, kind='line')
+    ax.set_title('Total Sales by Product Over Months')
+    plt.show()
+
+    # Plotting heatmap
+    plt.figure(figsize=(8, 8))
+    sns.heatmap(df, annot=True, cmap='viridis', fmt='.0f')
+    plt.title('Sales by Product Across Months')
+    plt.xlabel('Products')
+    plt.ylabel('Months')
+    plt.colorbar(label='Sales')
+    plt.show()

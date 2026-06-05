@@ -1,0 +1,45 @@
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+import re
+
+
+def task_func(example_str):
+    """
+    Extract all texts not enclosed in square brackets into a string and calculate the TF-IDF values
+    which are returned as a dictionary.
+
+    Parameters:
+    example_str (str): The input string.
+
+    Returns:
+    dict: A dictionary with words as keys and TF-IDF scores as values.
+
+    Requirements:
+    - sklearn.feature_extraction.text.TfidfVectorizer
+    - numpy
+    - re
+
+    Example:
+    >>> tfidf_scores = task_func("Josie Smith [3996 COLLEGE AVENUE, SOMETOWN, MD 21003] Mugsy Dog Smith [2560 OAK ST, GLENMEADE, WI 14098]")
+    >>> print(tfidf_scores)
+    {'dog': 0.3779644730092272, 'josie': 0.3779644730092272, 'mugsy': 0.3779644730092272, 'smith': 0.7559289460184544}
+    """
+    # Remove text enclosed in square brackets using regex
+    cleaned_text = re.sub(r'\[.*?\]', '', example_str)
+
+    # Convert text to lowercase and split into words
+    words = cleaned_text.lower().split()
+
+    # Initialize TfidfVectorizer
+    vectorizer = TfidfVectorizer()
+
+    # Fit and transform the document
+    tfidf_matrix = vectorizer.fit_transform([words])
+
+    # Get vocabulary from the vectorizer
+    vocab = vectorizer.get_feature_names_out()
+
+    # Create a dictionary of TF-IDF scores
+    tfidf_scores = {word: tfidf_matrix[0][vocab.index(word)].tolist()[0] for word in vocab}
+
+    return tfidf_scores

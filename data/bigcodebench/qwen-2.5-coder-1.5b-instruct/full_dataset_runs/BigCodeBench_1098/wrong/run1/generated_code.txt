@@ -1,0 +1,34 @@
+import re
+from collections import Counter
+
+
+def task_func(text, top_n):
+    """
+    Count the N most common words in a text after removing URLs.
+
+    Parameters:
+    text (str): The text to analyze.
+    top_n (int): The number of top words to return.
+
+    Returns:
+    list: A list of tuples where each tuple contains a word and its frequency.
+
+    Requirements:
+    - re
+    - collections.Counter
+
+    Example:
+    >>> task_func('Visit https://www.python.org for more info. Python is great. I love Python.', 2)
+    [('Python', 2), ('Visit', 1)]
+
+    Note:
+    - Valid url is start with http or https
+    """
+    # Remove URLs from the text using regular expression
+    cleaned_text = re.sub(r'http[s]?://\S+', '', text)
+
+    # Split the text into words and count their frequencies
+    word_counts = Counter(cleaned_text.split())
+
+    # Return the N most common words
+    return word_counts.most_common(top_n)

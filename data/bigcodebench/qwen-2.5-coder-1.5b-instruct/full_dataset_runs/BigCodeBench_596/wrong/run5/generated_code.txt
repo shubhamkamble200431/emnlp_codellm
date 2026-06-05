@@ -1,0 +1,51 @@
+import time
+from datetime import datetime
+from random import randint
+import matplotlib.pyplot as plt
+
+
+def task_func(duration):
+    """
+    Generate and draw random data in real time for the specified duration.
+
+    Parameters:
+    - duration (int): The duration in seconds for which data is to be generated and plotted.
+
+    Returns:
+    - tuple: A tuple containing two lists.
+        - The first list contains timestamps (as strings) in the format '%H:%M:%S.%f'.
+        - The second list contains the generated random values.
+
+    Requirements:
+    - datetime
+    - time
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> type(task_func(1))
+    <class 'tuple'>
+    """
+    timestamps = []
+    values = []
+
+    start_time = datetime.now()
+    end_time = start_time + timedelta(seconds=duration)
+
+    while datetime.now() < end_time:
+        timestamp = datetime.now().strftime('%H:%M:%S.%f')
+        value = randint(0, 100)
+        timestamps.append(timestamp)
+        values.append(value)
+
+        # Simulate plotting every second
+        if len(timestamps) % 60 == 0:
+            plt.figure(figsize=(8, 4))
+            plt.plot(timestamps, values, marker='o', linestyle='-')
+            plt.xlabel('Time')
+            plt.ylabel('Value')
+            plt.title(f'Random Data Generator - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+            plt.grid(True)
+            plt.pause(1)
+
+    return timestamps, values

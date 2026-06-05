@@ -1,0 +1,38 @@
+import random
+from collections import Counter
+
+# Constants
+CARDS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
+def task_func(x=1):
+    """
+    Draw x random 5-card poker hands from a 52-card pack (without suits) and return
+    the hands along with a counter of the drawn cards.
+
+    Parameters:
+    x (int, optional): Number of hands to draw. Default is 1.
+
+    Returns:
+    tuple: A tuple containing two elements:
+        - list of list str: Each inner list contains 5 strings, representing a 5-card poker hand.
+        - Counter: A counter of the drawn cards.
+
+
+    The output is random; hence, the returned list will vary with each call.
+
+    Requirements:
+    - random
+    - collections.Counter
+
+    Example:
+    >>> random.seed(0)
+    >>> result = task_func(1)
+    >>> len(result[0][0])
+    5
+    >>> result[0][0][0] in CARDS
+    True
+    """
+    hand = random.sample(CARDS * 4, 5)
+    hand = [hand[i:i+5] for i in range(0, 10)]
+    card_counter = Counter(hand)
+    return hand, card_counter

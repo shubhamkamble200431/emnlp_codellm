@@ -1,0 +1,49 @@
+import hashlib
+import base64
+
+
+def task_func(filename, data, password):
+    """
+    Encrypt a string with a password, then write the encrypted string to a file. 
+    If the file or directory does not exist, create it.
+
+    Parameters:
+    filename (str): The name of the file to write to.
+    data (str): The string to encrypt and write to the file.
+    password (str): The password to use for encryption.
+
+    Returns:
+    str: The encrypted string.
+
+    Requirements:
+    - hashlib
+    - base64
+
+    Example:
+    >>> task_func('test.txt', 'Hello, World!', 'password')
+    'Fu0k9LUEJCY+ookLrA=='
+    """
+    # Generate a hash object using SHA-256
+    hash_obj = hashlib.sha256(password.encode())
+
+    # Create a secure random key from the hash digest
+    key = hash_obj.digest()
+
+    # Create a cipher object using AES with CBC mode and the key
+    from Crypto.Cipher import AES
+    from Crypto.Util.Padding import pad
+
+    iv = bytes.fromhex('0123456789abcdef')  # IV must be 16 bytes long
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+
+    # Pad the data to ensure it's a multiple of the block size
+    padded_data = pad(data.encode(), AES.block_size)
+
+    # Encrypt the padded data
+    encrypted_data = cipher.encrypt(padded_data)
+
+    # Write the encrypted data to a file in base64 encoding
+    with open(filename, 'wb') as f:
+        f.write(base64.b64encode(encrypted_data))
+
+    return encrypted_data.hex()  # Return the hexadecimal representation of the encrypted data

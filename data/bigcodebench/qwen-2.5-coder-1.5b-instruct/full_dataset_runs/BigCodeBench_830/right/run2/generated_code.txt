@@ -1,0 +1,44 @@
+import json
+import os
+
+def task_func(filename, data):
+    """
+    Write a dictionary to a file as a JSON object and return the written content for verification.
+    
+    This function performs a write operation to store the dictionary data in JSON format
+    and then reads it back to verify the content. Additionally, checks if the file exists using the os library.
+
+    Parameters:
+    - filename (str): The name of the file to be written to.
+    - data (dict): The dictionary containing data to be written as JSON to the file.
+
+    Returns:
+    - tuple: A tuple containing a boolean indicating the success of the operation and the content that was written.
+        - bool: indicating the success of the operation.
+        - written_data (json): the content that was written.
+    
+    Requirements:
+    - json
+    - os
+
+    Example:
+    >>> result, written_data = task_func('data.json', {'key': 'value'})
+    >>> print(result)  # This should print: True
+    True
+    >>> print(written_data)  # This should print: {'key': 'value'}
+    {'key': 'value'}
+    """
+    try:
+        with open(filename, 'w') as file:
+            json.dump(data, file)
+
+        # Check if the file is created
+        if not os.path.exists(filename):
+            raise FileNotFoundError
+
+        with open(filename, 'r') as file:
+            written_data = json.load(file)
+
+        return True, written_data
+    except Exception as e:
+        return False, str(e)

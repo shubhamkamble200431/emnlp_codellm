@@ -1,0 +1,73 @@
+# Importing the required libraries
+import re
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+
+
+def task_func(text, n=2):
+    """
+    Analyzes a text string, removing duplicate consecutive words and stopwords defined by nltk.corpus,
+    generates a square co-occurrence matrix of words, and plots this matrix.
+
+    Parameters:
+    - text (str): Input text to be analyzed.
+    - n (int, optional): Size of n-grams for the co-occurrence matrix. Defaults to 2.
+
+    Returns:
+    - tuple:
+        - pd.DataFrame: Square co-occurrence matrix of words.
+        - matplotlib.axes.Axes: Plot object of the co-occurrence matrix.
+
+    Requirements:
+        - re
+        - pandas
+        - matplotlib.pyplot
+        - numpy
+        - sklearn.feature_extraction.text
+        - nltk.corpus
+
+    Example:
+    >>> import matplotlib
+    >>> text = "hello hello world world"
+    >>> df, ax = task_func(text, n=2)
+    >>> df.columns.tolist()
+    ['hello world']
+    >>> df.index.tolist()
+    ['hello world']
+    >>> df.iloc[0, 0]
+    0
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    # Tokenize the text into individual words
+    tokens = word_tokenize(text)
+
+    # Remove stopwords using NLTK's built-in stopwords corpus
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [word for word in tokens if word.lower() not in stop_words]
+
+    # Convert tokens to lowercase for consistent counts
+    lowercased_filtered_tokens = [word.lower() for word in filtered_tokens]
+
+    # Generate a count vector
+    vectorizer = CountVectorizer(ngram_range=(n, n))
+    count_matrix = vectorizer.fit_transform(lowercased_filtered_tokens)
+
+    # Calculate TF-IDF weights for each token
+    tfidf_vectorizer = TfidfTransformer()
+    tfidf_scores = tfidf_vectorizer.fit_transform(count_matrix).toarray()
+
+    # Create a DataFrame from the TF-IDF scores
+    df = pd.DataFrame(tfidf_scores, columns=vectorizer.get_feature_names_out(), index=lowercased_filtered_tokens)
+
+    # Set the plot size
+    plt.figure(figsize=(10, 10))
+
+    # Plot the co-occurrence matrix as a heatmap
+    sns.heatmap(df, annot=True, cmap='coolwarm', xticklabels=df.columns, yticklabels=df.index, linewidths=.5)
+
+    # Return the DataFrame and the plot axes
+    return df, plt.gca()

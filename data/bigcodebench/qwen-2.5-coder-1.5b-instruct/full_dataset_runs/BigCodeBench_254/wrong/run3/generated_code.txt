@@ -1,0 +1,36 @@
+import json
+import math
+
+
+def task_func(decimal_value, precision=2):
+    """
+    Calculate the square root of the given decimal value to a certain precision and then encode the result as a JSON string.
+    
+    Parameters:
+    utc_datetime (datetime): The datetime in UTC.
+    precision (int, Optional): The number of decimal places to round the square root to. Defaults to 2.
+    
+    Returns:
+    str: The square root of the decimal value encoded as a JSON string.
+    
+    Requirements:
+    - json
+    - math
+    
+    Example:
+    >>> from decimal import Decimal
+    >>> decimal_value = Decimal('3.9')
+    >>> json_str = task_func(decimal_value, decimal_value)
+    >>> print(json_str)
+    "1.97"
+    """
+    # Calculate the square root of the decimal value
+    sqrt_value = decimal_value.sqrt()
+
+    # Round the square root to the specified precision
+    rounded_sqrt_value = sqrt_value.quantize(Decimal(f'0.{("0" * precision)}'))
+
+    # Encode the rounded square root as a JSON string
+    json_str = json.dumps(rounded_sqrt_value)
+
+    return json_str

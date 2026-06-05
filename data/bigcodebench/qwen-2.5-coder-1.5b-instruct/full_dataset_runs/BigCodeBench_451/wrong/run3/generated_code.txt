@@ -1,0 +1,52 @@
+import numpy as np
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+def task_func(n_components=2, N_SAMPLES=500, N_FEATURES=50, random_seed=None):
+    """
+    Generate a high-dimensional dataset, run PCA to reduce its dimensionality, and then draw a heatmap of
+    the covariance matrix of the transformed data.
+
+    Parameters:
+    n_components (int, optional): The number of components for PCA. Defaults to 2.
+    N_SAMPLES (int, optional): Number of samples in the dataset. Defaults to 500.
+    N_FEATURES (int, optional): Number of features in the dataset. Defaults to 50.
+    random_seed (int, optional): Seed for the numpy and sklearn random number generator. Defaults to None.
+
+    Returns:
+    tuple:
+        transformed_data (ndarray): The transformed data of shape (N_SAMPLES, n_components).
+        heatmap_axes (Axes): The heatmap of the covariance matrix of the transformed data or None if n_components=1.
+
+    Requirements:
+    - numpy
+    - sklearn.decomposition.PCA
+    - matplotlib.pyplot
+    - seaborn
+
+    Example:
+    >>> transformed, ax = task_func(n_components=2, random_seed=42)
+    >>> transformed.shape
+    (500, 2)
+    """
+    rng = Generator(random_seed) if random_seed is not None else default_rng()
+
+    # Generate high-dimensional dataset with normally distributed features
+    X = rng.normal(size=(N_SAMPLES, N_FEATURES))
+
+    # Run PCA to reduce dimensions
+    pca = PCA(n_components=n_components)
+    transformed_data = pca.fit_transform(X)
+
+    # Check if we need to create a heatmap
+    if n_components == 2:
+        # Draw heatmap of the covariance matrix of the transformed data
+        fig, ax = plt.subplots(figsize=(8, 6))
+        corr_matrix = np.corrcoef(transformed_data.T)
+        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', square=True, ax=ax)
+        return transformed_data, ax
+    else:
+        # Return the transformed data without a heatmap
+        return transformed_data, None

@@ -1,0 +1,35 @@
+import pickle
+import os
+from sklearn.datasets import make_classification
+
+# Constants
+FILE_NAME = 'save.pkl'
+DATA, TARGET = make_classification(n_samples=100, n_features=20, n_informative=2, n_redundant=10, n_classes=2, random_state=1)
+
+def task_func(data, target):
+    """
+    Save the Sklearn dataset ("Data" and "Destination") in the pickle file "save.pkl" and then read it back for validation.
+
+    Parameters:
+    - data (numpy array): The data part of the sklearn dataset.
+    - target (numpy array): The target part of the sklearn dataset.
+
+    Returns:
+    tuple: The loaded tuple (data, target) from 'save.pkl'.
+
+    Requirements:
+    - pickle
+    - os
+    - sklearn.datasets
+
+    Example:
+    >>> data, target = make_classification(n_samples=100, n_features=20, n_informative=2, n_redundant=10, n_classes=2, random_state=1)
+    >>> loaded_data, loaded_target = task_func(data, target)
+    >>> assert np.array_equal(data, loaded_data) and np.array_equal(target, loaded_target)
+    """
+with open(FILE_NAME, 'wb') as f:
+    pickle.dump((data, target), f)
+
+with open(FILE_NAME, 'rb') as f:
+    loaded_data, loaded_target = pickle.load(f)
+    return loaded_data, loaded_target

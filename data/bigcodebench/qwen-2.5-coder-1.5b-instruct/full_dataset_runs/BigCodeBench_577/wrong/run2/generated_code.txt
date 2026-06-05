@@ -1,0 +1,50 @@
+import os
+import pathlib
+from hashlib import md5
+import unicodedata
+
+def task_func(directory):
+    """
+    Processes all files within the specified directory, normalizes their filenames to ASCII,
+    calculates their MD5 hashes, and retrieves their sizes. It returns a dictionary where
+    each key is the normalized file name and each value is another dictionary with the file's size
+    and MD5 hash. This method is useful for file integrity checks and file organization tasks.
+
+    Parameters:
+    directory (str): The directory path whose files are to be analyzed.
+
+    Returns:
+    dict: A dictionary where each key is a normalized file name, and the value is a dictionary
+          containing the 'Size' (in bytes) and 'MD5 Hash' of the file.
+
+    Requirements:
+    - os
+    - pathlib
+    - hashlib.md5
+    - unicodedata
+
+    Examples:
+    >>> info = task_func('test')
+    >>> type(info) == dict
+    True
+    >>> 'test.txt' in info
+    True
+    """
+    result = {}
+    for filename in pathlib.Path(directory).iterdir():
+        if filename.is_file():
+            # Normalize filename to ASCII
+            normalized_filename = unicodedata.normalize("NFKD", filename.name)
+            
+            # Calculate MD5 hash
+            with open(filename, "rb") as f:
+                file_data = f.read()
+            md5_hash = md5(file_data).hexdigest()
+            
+            # Retrieve file size
+            file_size = filename.stat().st_size
+            
+            # Store the result
+            result[normalized_filename] = {'Size': file_size, 'MD5 Hash': md5_hash}
+    
+    return result

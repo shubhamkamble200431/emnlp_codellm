@@ -1,0 +1,36 @@
+import itertools
+import math
+
+def task_func(x):
+    """
+    Find the sub-sequence of a dictionary, x, with the minimum total length, where the keys are letters and the values are their lengths.
+
+    Parameters:
+    - x (dict): The dictionary of letter lengths.
+
+    Returns:
+    - list: The subsequence with the minimum total length.
+
+    Requirements:
+    - itertools
+    - math
+
+    Example:
+    >>> task_func({'a': 1, 'b': 2, 'c': 3})
+    ['a']
+    >>> task_func({'a': 1, 'b': -2, 'c': -5, 'd': 4})
+    ['b', 'c']
+    """
+    # Sort the items in descending order by value
+    sorted_items = sorted(x.items(), key=lambda item: item[1], reverse=True)
+    
+    result = []
+    current_length = 0
+    
+    # Iterate over the sorted items
+    for key, value in sorted_items:
+        if current_length + value <= len(sorted_items):
+            result.append(key)
+            current_length += value
+    
+    return result

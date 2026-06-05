@@ -1,0 +1,73 @@
+import pandas as pd
+from collections import Counter
+
+
+def task_func(text_dict, word_keys, top_k=2):
+    """
+    Calculate the frequency of certain words in a text dictionary and return a bar chart's Axes object and a dictionary
+    containing the frequencies of the top_k most common words in text_dict. 
+    
+    The function takes a dictionary containing word frequencies and a list of words. It calculates the frequency 
+    of the provided words in the dictionary and returns the Axes object of the bar chart displaying the frequencies
+    along with the top_k most common words and their frequencies as a dictionary. If a word in word_keys is not present 
+    in text_dict, its frequency is considered to be 0.
+    
+    Parameters:
+    - text_dict (dict): The dictionary containing word frequencies. Key is the word and value is its frequency.
+    - word_keys (list of str): The list of words to consider.
+    - top_k (int, Optional): A positive integer denoting the number of most common words to return. Default is 2.
+    
+    Returns:
+    - matplotlib.axes._axes.Axes: Axes object of the bar chart displaying the frequencies.
+    - dict: Dictionary containing the frequencies of the top_k most common words. Key is the word and value is 
+    its frequency.
+    
+    Requirements:
+    - pandas
+    - collections.Counter
+
+    Raises:
+    - ValueError: If top_k is a negative integer.
+    
+    Example:
+    >>> import collections
+    >>> text_dict = collections.Counter(['the', 'be', 'to', 'the', 'that', 'and', 'a', 'in', 'the', 'that', 'have', 'I'])
+    >>> word_keys = ['the', 'and', 'I']
+    >>> ax, frequencies = task_func(text_dict, word_keys, 3)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> frequencies
+    {'the': 3, 'that': 2, 'be': 1}
+    """
+    if top_k < 0:
+        raise ValueError("top_k must be a non-negative integer")
+
+    # Calculate the frequency of each word in word_keys
+    word_frequencies = {word: 0 for word in word_keys}
+    for word in word_keys:
+        if word in text_dict:
+            word_frequencies[word] = text_dict[word]
+
+    # Calculate the total number of words considered
+    total_words = sum(word_frequencies.values())
+
+    # Create a DataFrame from the word_frequencies dictionary
+    df = pd.DataFrame.from_dict(word_frequencies, orient='index').reset_index()
+    df.columns = ['Word', 'Frequency']
+
+    # Sort the DataFrame by frequency in descending order
+    sorted_df = df.sort_values(by='Frequency', ascending=False)
+
+    # Extract the top_k most common words
+    top_common_words = sorted_df.head(top_k)
+
+    # Plot the top_k most common words
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bars = ax.bar(top_common_words['Word'], top_common_words['Frequency'])
+
+    # Set labels and title
+    ax.set_xlabel('Words')
+    ax.set_ylabel('Frequency')
+    ax.title.set_title('Top {} Common Words'.format(top_k))
+
+    return ax, dict(zip(top_common_words['Word'], top_common_words['Frequency']))

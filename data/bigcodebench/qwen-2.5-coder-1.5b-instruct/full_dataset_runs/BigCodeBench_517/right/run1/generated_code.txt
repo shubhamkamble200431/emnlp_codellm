@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from sklearn.decomposition import PCA
+
+
+def task_func(array: list, random_seed: int = 42) -> (pd.DataFrame, np.ndarray):
+    """
+    Converts a 2D list into a pandas DataFrame and applies PCA for dimensionality reduction.
+
+    This function creates a DataFrame from the provided 2D list and then applies PCA to reduce the dataset
+    to its two main components. The function uses a fixed random seed to ensure reproducibility.
+
+    Parameters:
+    - array (list of list of int): A 2D list representing data rows and columns.
+    - random_seed (int, optional): The seed for the random number generator. Default is 42.
+
+    Returns:
+    - pd.DataFrame: The original data in DataFrame format.
+    - np.ndarray: The data after PCA transformation.
+
+    Requirements:
+    - pandas
+    - numpy
+    - sklearn.decomposition.PCA
+
+    Examples:
+    >>> data = [[1,2,3,4,5], [6,7,8,9,10], [11,12,13,14,15]]
+    >>> df, transformed = task_func(data)
+    >>> print(df)
+        0   1   2   3   4
+    0   1   2   3   4   5
+    1   6   7   8   9  10
+    2  11  12  13  14  15
+    >>> print(transformed[:, 0])
+    [ 11.18033989  -0.         -11.18033989]
+    """
+    # Convert the list of lists to a NumPy array
+    arr = np.array(array)
+
+    # Initialize the PCA object with the specified random seed
+    pca = PCA(n_components=2, random_state=random_seed)
+
+    # Fit and transform the data using PCA
+    transformed = pca.fit_transform(arr)
+
+    return pd.DataFrame(arr), transformed

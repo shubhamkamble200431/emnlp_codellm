@@ -1,0 +1,69 @@
+import re
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+
+
+def task_func(df):
+    """
+    Analyzes a given DataFrame containing article titles and content to identify articles with titles that include
+    the words "how" or "what". It calculates the TF-IDF scores for the words in the content of these articles and
+    visualizes these scores in a bar plot.
+
+    Parameters:
+    df (DataFrame): A DataFrame containing at least two columns: 'Title' and 'Content'.
+
+    Returns:
+    Axes: A matplotlib Axes object displaying a bar plot of the TF-IDF scores.
+
+    Note:
+    - If the DataFrame does not contain 'Title' and 'Content' columns, the function returns an empty plot.
+    - If no articles have titles containing "how" or "what," the function also returns an empty plot.
+    - Set the name of the y-axis to 'TF-IDF Score'.
+    - Set xticks to display the feature names vertically.
+
+    Requirements:
+    - re
+    - matplotlib
+    - sklearn
+    - numpy
+
+    Example:
+    >>> import pandas as pd
+    >>> data = {'Title': ['How to make pancakes', 'News update'], 'Content': ['Pancakes are easy to make.', 'Today’s news is about politics.']}
+    >>> df = pd.DataFrame(data)
+    >>> ax = task_func(df)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    if 'Title' not in df.columns or 'Content' not in df.columns:
+        return None
+
+    # Filter articles with titles containing "how" or "what"
+    filtered_df = df[df['Title'].str.contains('how|what')]
+
+    if len(filtered_df) == 0:
+        return None
+
+    # Extract words from the content column
+    text_data = filtered_df['Content'].apply(lambda x: re.findall(r'\b\w+\b', x))
+    all_words = set(word for sublist in text_data for word in sublist)
+
+    # Create a TfidfVectorizer
+    vectorizer = TfidfVectorizer()
+    tfidf_matrix = vectorizer.fit_transform(all_words)
+
+    # Get feature names
+    feature_names = vectorizer.get_feature_names_out()
+
+    # Calculate TF-IDF scores for the words in the content of the filtered articles
+    tfidf_scores = np.array(tfidf_matrix.todense())
+
+    # Plot the TF-IDF scores
+    ax = plt.barh(feature_names, tfidf_scores.mean(axis=0), align='center')
+    plt.xlabel('TF-IDF Score')
+    plt.ylabel('Feature Name')
+    plt.gca().invert_yaxis()  # To display the top feature at the bottom
+    plt.xticks(rotation=90)  # Rotate the x-axis labels vertically
+    plt.title('Top Features by TF-IDF Score')
+    return ax

@@ -1,0 +1,32 @@
+import numpy as np
+import math
+
+# Constants
+POSSIBLE_NUMBERS = np.arange(1, 11)
+
+def task_func(list_of_lists):
+    """
+    Calculate the sum of the squares of numbers from a predefined range (POSSIBLE_NUMBERS) 
+    for each list in list_of_lists. The number of elements considered from POSSIBLE_NUMBERS 
+    is determined by the length of each list.
+
+    Parameters:
+    - list_of_lists (list): A list of lists, each representing a set of numbers.
+
+    Returns:
+    - sums (list): A list of sums of squares.
+
+    Requirements:
+    - numpy
+    - math
+
+    Example:
+    >>> sums = task_func([[1, 2, 3], [4, 5]])
+    >>> print(sums)
+    [14.0, 5.0]
+    """
+    sums = []
+    for lst in list_of_lists:
+        total_sum = sum([math.pow(num, 2) for num in lst[:len(POSSIBLE_NUMBERS)]])
+        sums.append(total_sum)
+    return sums

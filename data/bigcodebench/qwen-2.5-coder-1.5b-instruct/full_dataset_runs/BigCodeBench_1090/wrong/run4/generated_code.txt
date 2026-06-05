@@ -1,0 +1,40 @@
+import ast
+import json
+from collections import Counter
+
+
+def task_func(file_pointer):
+    """
+    Reads from a given file pointer to a JSON file, evaluates strings that represent dictionaries to actual dictionaries,
+    and counts the frequency of each key across all dictionary entries in the JSON data.
+
+    
+    Parameters:
+    file_pointer (file object): An open file object pointing to the JSON file containing the data. This file should
+                                already be opened in the correct mode (e.g., 'r' for reading).
+
+    Returns:
+    collections.Counter: A Counter object representing the frequency of each key found in the dictionaries.
+
+    Requirements:
+    - ast
+    - json
+    - collections.Counter
+    
+    Note:
+    This function assumes the input JSON data is a list of dictionaries or strings that can be evaluated as dictionaries.
+    
+    Example:
+    >>> with open("data.json", "r") as file:
+    >>>    key_frequency = task_func(file)
+    >>>    print(key_frequency)
+    Counter({'name': 5, 'age': 5, 'city': 3})
+    """
+    data = json.load(file_pointer)  # Load JSON data from the file
+    counter = Counter()  # Initialize a Counter object to count keys
+
+    for item in data:  # Iterate over each item in the JSON data
+        if isinstance(item, dict):  # Check if the item is a dictionary
+            counter.update(item.keys())  # Update the Counter with the keys of the dictionary
+
+    return counter

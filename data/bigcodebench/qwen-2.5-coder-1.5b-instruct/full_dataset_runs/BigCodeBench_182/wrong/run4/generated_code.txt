@@ -1,0 +1,64 @@
+import re
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import CountVectorizer
+
+
+def task_func(df):
+    """
+    Analyzes articles by their titles for specific case-insensitive keywords ("how" or "what"), vectorizes the content using
+    CountVectorizer, and groups them into clusters using KMeans clustering. This function is intended for basic
+    content analysis and clustering to understand common themes or topics among articles asking questions starting
+    with "how" or "what".
+
+    Parameters:
+    df (pd.DataFrame): DataFrame containing article data with columns 'Title' for the article titles and 'Content' for
+    the article text.
+
+    Returns:
+    list: List of cluster labels for the filtered articles, indicating the cluster to which each article belongs.
+
+    Requirements:
+    - re
+    - sklearn
+
+    Example:
+    >>> import pandas as pd
+    >>> df_sample = pd.DataFrame({
+    ...    'Title': ['How to code?', 'What is Python?', 'The art of programming', 'How to cook?', 'What is life?'],
+    ...    'Content': ['This is a tutorial about coding...', 'Python is a programming language...',
+    ...                'Programming is an art...', 'This is a cooking tutorial...', 'Life is complicated...']
+    ... })
+    >>> task_func(df_sample)
+    [0, 1, 0, 1]
+    """
+    # Convert titles to lowercase for case-insensitive keyword matching
+    df['Title'] = df['Title'].str.lower()
+
+    # Define keywords
+    keywords = ['how', 'what']
+
+    # Vectorize the content of the articles
+    vectorizer = CountVectorizer(stop_words='english')
+    X = vectorizer.fit_transform(df['Content'])
+
+    # Create a DataFrame from the vocabulary of the vectorizer
+    vocab = pd.DataFrame({'word': vectorizer.get_feature_names_out()})
+
+    # Filter out words that do not appear in any articles
+    vocab = vocab[vocab['word'].isin(df['Title'])].reset_index(drop=True)
+
+    # Split the filtered vocabulary into training and testing sets
+    train_vocab = vocab.sample(frac=0.8, random_state=42)
+    test_vocab = vocab.drop(train_vocab.index)
+
+    # Fit a model on the training vocabulary
+    kmeans = KMeans(n_clusters=len(train_vocab), random_state=42)
+    kmeans.fit(train_vocab[['word']])
+
+    # Transform the test vocabulary using the trained model
+    test_X = vectorizer.transform(test_vocab['word']).toarray()
+
+    # Predict the cluster labels for the test articles
+    test_labels = kmeans.predict(test_X)
+
+    return test_labels.tolist()

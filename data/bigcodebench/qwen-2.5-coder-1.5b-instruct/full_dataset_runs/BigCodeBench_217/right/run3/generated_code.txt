@@ -1,0 +1,57 @@
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
+def task_func(mu=0, sigma=1, sample_size=1000, seed=0):
+    """
+    Generate a sample from a normal distribution with a given mean and a standard deviation and plot the histogram 
+    together with the probability density function. Returns the Axes object representing the plot and the empirical
+    mean and standard deviation of the sample.
+
+    Parameters:
+    - mu (float): The mean of the normal distribution. Default is 0.
+    - sigma (float): The standard deviation of the normal distribution. Default is 1.
+    - sample_size (int): The size of the sample to generate. Default is 1000.
+
+    Returns:
+    - ax (matplotlib.axes._axes.Axes): Axes object with the plotted histogram and normal PDF, with the title format of 'Normal Distribution with $\\mu = %0.2f, \\sigma = %0.2f$'.
+    - float: The empirical mean of the sample.
+    - float: The empirical standard deviation of the sample.
+
+    Requirements:
+    - numpy for data generation.
+    - scipy.stats for statistical functions.
+    - matplotlib.pyplot for plotting.
+
+    Example:
+    >>> ax, mean, std = task_func(0, 1, 1000)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> print(round(mean, 3))
+    -0.045
+    >>> print(round(std, 3))
+    0.987
+    """
+    # Set random seed for reproducibility
+    np.random.seed(seed)
+
+    # Generate a sample from a normal distribution
+    sample = np.random.normal(loc=mu, scale=sigma, size=sample_size)
+
+    # Calculate empirical mean and standard deviation
+    empirical_mean = np.mean(sample)
+    empirical_std = np.std(sample)
+
+    # Create a histogram and plot the normal PDF
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.hist(sample, bins=30, density=True, alpha=0.75, label='Sample Histogram')
+
+    x = np.linspace(-5, 5, 1000)
+    y = stats.norm.pdf(x, loc=mu, scale=sigma)
+    ax.plot(x, y, color='r', linewidth=2, label='Normal PDF')
+
+    ax.set_title(f'Normal Distribution with $\mu = {mu:.2f}, \sigma = {sigma:.2f}$')
+    ax.legend()
+
+    return ax, empirical_mean, empirical_std

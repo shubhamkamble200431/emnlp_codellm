@@ -1,0 +1,34 @@
+import json
+import csv
+
+def task_func(json_file, csv_file):
+    """
+    Convert a JSON file to CSV.
+    
+    Parameters:
+    - json_file (str): The path to the JSON file.
+    - csv_file (str): The path to the CSV file.
+
+    Returns:
+    - csv_file: The function returns the path to the CSV file that was written.
+
+    Requirements:
+    - json
+    - csv
+        
+    Example:
+    >>> task_func('path_to_json_file.json', 'path_to_csv_file.csv')
+    'path_to_csv_file.csv'
+    """
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+
+    # Ensure the CSV file exists, otherwise create it
+    if not os.path.exists(csv_file):
+        with open(csv_file, mode='w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(data.keys())
+            for value in data.values():
+                writer.writerow(value)
+
+    return csv_file

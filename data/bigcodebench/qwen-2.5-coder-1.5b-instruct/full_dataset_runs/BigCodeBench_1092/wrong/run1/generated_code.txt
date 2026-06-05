@@ -1,0 +1,57 @@
+import ast
+import requests
+from bs4 import BeautifulSoup
+
+
+def task_func(url):
+    """
+    Fetches the content of a webpage specified by its URL, parses it to find <script> tags,
+    and attempts to evaluate any string within these tags as a Python dictionary.
+
+    Parameters:
+    - url (str): The URL of the webpage to scrape.
+
+    Returns:
+    - list of dict: A list containing dictionaries that were successfully evaluated from string representations
+      found within <script> tags on the webpage. 
+    
+    Note:
+    - If an error occurs during the request or if no dictionaries are found/evaluable, an empty list is returned.
+
+    Requirements:
+    - ast
+    - requests
+    - bs4.BeautifulSoup
+
+    Example:
+    >>> task_func('https://example.com')
+    [{'key': 'value'}, ...]
+    """
+    try:
+        # Fetch the content of the webpage
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+
+        # Parse the HTML content
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Find all script tags
+        script_tags = soup.find_all('script')
+
+        # Extract strings from script tags
+        script_strings = [tag.string for tag in script_tags if tag.string]
+
+        # Evaluate each string as a Python dictionary
+        result_list = []
+        for script_str in script_strings:
+            try:
+                # Safely attempt to parse the script string into a Python dictionary
+                dictionary = ast.literal_eval(script_str)
+                result_list.append(dictionary)
+            except (SyntaxError, ValueError):
+                continue
+
+        return result_list
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred while fetching the web page: {e}")
+        return []

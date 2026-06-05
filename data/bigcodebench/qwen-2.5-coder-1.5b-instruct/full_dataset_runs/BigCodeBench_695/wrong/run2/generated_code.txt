@@ -1,0 +1,24 @@
+import numpy as np
+from sklearn.decomposition import PCA
+
+def task_func(tuples_list, n_components):
+    """
+    Perform Principal Component Analysis (PCA) on a list of tuples.
+    
+    Parameters:
+    - tuples_list (list): The list of tuples.
+    
+    Returns:
+    - transformed_data (ndarray): The transformed data.
+
+    Requirements:
+    - numpy
+    - sklearn
+    
+    Example:
+    >>> data = task_func([(1, 2, 3, 4), (5, 6, 7, 8), (9, 10, 11, 12)], 2)
+    >>> print(data)
+    [[ 8.00000000e+00  3.84592537e-16]
+     [ 0.00000000e+00  0.00000000e+00]
+     [-8.00000000e+00  3.84592537e-16]]
+    """

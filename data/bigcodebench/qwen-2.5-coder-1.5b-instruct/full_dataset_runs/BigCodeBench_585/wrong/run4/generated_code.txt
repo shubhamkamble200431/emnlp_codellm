@@ -1,0 +1,64 @@
+import rsa
+import os
+import zipfile
+from base64 import b64encode
+
+def task_func(directory):
+    """
+    Generates RSA public and private keys, encrypts all files in the specified directory using the public key,
+    and saves the encrypted files into a zip file. It returns the public key and the name of the zip file.
+
+    Note: This method directly encrypts file data with RSA, which is not recommended for large files or
+    production use. Typically, RSA is used to encrypt a symmetric key (like AES), which is then used to
+    encrypt the actual data.
+
+    Parameters:
+    directory (str): The directory containing the files to be encrypted.
+
+    Returns:
+    rsa.PublicKey: The RSA public key.
+    str: The filename of the zip file containing the encrypted files.
+
+    Requirements:
+    - rsa
+    - os
+    - zipfile
+    - base64.b64encode
+
+    Examples:
+    >>> pub_key, zipfile_name = task_func('./')
+    >>> isinstance(pub_key, rsa.PublicKey)
+    'True'
+    >>> isinstance(zipfile_name, str)
+    'True'
+    """
+    # Generate RSA public and private keys
+    pub_key, priv_key = rsa.newkeys(2048)
+
+    # Initialize an empty list to store encrypted files
+    encrypted_files = []
+
+    # Walk through each file in the directory
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            # Construct the full path to the file
+            file_path = os.path.join(root, file)
+
+            # Open the file and read its content
+            with open(file_path, 'rb') as f:
+                data = f.read()
+
+            # Encrypt the data using the public key
+            encrypted_data = rsa.encrypt(data, pub_key)
+
+            # Append the encrypted data and original filename to the list
+            encrypted_files.append((encrypted_data, file))
+
+    # Create a zip file to store the encrypted files
+    zip_filename = os.path.basename(directory) + '.zip'
+    with zipfile.ZipFile(zip_filename, 'w') as zipf:
+        # Add each encrypted file to the zip
+        for encrypted_data, file in encrypted_files:
+            zipf.writestr(file, encrypted_data)
+
+    return pub_key, zip_filename

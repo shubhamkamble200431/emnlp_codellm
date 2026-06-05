@@ -1,0 +1,24 @@
+import random
+from collections import Counter
+
+def task_func(strings: list) -> dict:
+    """
+    Analyzes a given list of strings for the occurrence of a specific pattern and counts the occurrences.
+
+    Parameters:
+    - strings (list): A list of strings to be analyzed.
+
+    Returns:
+    dict: A dictionary with results of string analysis showing counts of the pattern.
+
+    Requirements:
+    - random
+    - collections
+
+    Example:
+    >>> task_func(['abcd}def}', 'pqrs}tuv}', 'wxyz}123}', '456}789}', '0ab}cde}'])
+    Counter({2: 10})
+    """
+    pattern = '}'
+    counter = Counter([len(s) for s in strings if pattern in s])
+    return counter

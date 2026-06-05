@@ -1,0 +1,50 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+# Constants
+FEATURES = ['feature '+str(i) for i in range(1, 11)]
+TARGET = 'target'
+
+def task_func(df):
+    """
+    Train a linear regression model on a given DataFrame.
+    
+    Parameters:
+    df (DataFrame): The DataFrame with features and target.
+    
+    Returns:
+    LinearRegression: The trained linear regression model.
+    
+    Requirements:
+    - pandas
+    - sklearn.model_selection.train_test_split
+    - sklearn.linear_model.LinearRegression
+    
+    Raises:
+    - The function will raise a ValueError is input df is not a DataFrame.
+
+    Example:
+    >>> import numpy as np
+    >>> np.random.seed(0)
+    >>> df = pd.DataFrame({'feature ' + str(i): np.random.rand(100) for i in range(1, 11)})
+    >>> df['target'] = df.apply(lambda row: sum(row), axis=1)
+    >>> model = task_func(df)
+    >>> print(len(model.coef_))
+    10
+    """
+    if not isinstance(df, pd.DataFrame):
+        raise ValueError("Input df must be a DataFrame.")
+
+    # Splitting the dataset into features and target variables
+    X = df[FEATURES]
+    y = df[TARGET]
+
+    # Splitting the dataset into training set and test set
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Training the linear regression model
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    return model

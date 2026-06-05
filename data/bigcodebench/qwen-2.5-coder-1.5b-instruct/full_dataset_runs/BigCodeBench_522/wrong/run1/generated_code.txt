@@ -1,0 +1,74 @@
+import collections
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Combine a list of dictionaries with possibly differing keys (student names) into a single dictionary,
+    calculate the average score for each student, and return a bar chart of average student scores with
+    student on the x-axis and average score on the y-axis.
+
+    This function handles data with varying dictionary lengths and missing keys by averaging available scores,
+    ignoring None. If there is any negative score, the function raises ValueError.
+    Bar colors can be: 'red', 'yellow', 'green', 'blue', 'purple'.
+
+    Parameters:
+    data (list): A list of dictionaries. The keys are student names and the values are scores.
+
+    Returns:
+    ax (matplotlib.axes._axes.Axes or None): A bar chart showing the 'Average Student Scores', with
+                                             'Student' on the x-axis and 'Average Score' on the y-axis.
+                                             If data is empty, return None.
+
+    Requirements:
+    - collections
+    - matplotlib.pyplot
+
+    Example:
+    >>> data = [{'John': 5, 'Jane': 10, 'Joe': 7},\
+                {'John': 6, 'Jane': 8, 'Joe': 10},\
+                {'John': 5, 'Jane': 9, 'Joe': 8},\
+                {'John': 7, 'Jane': 10, 'Joe': 9}]
+    >>> ax = task_func(data)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(0, 0, 'Jane'), Text(1, 0, 'Joe'), Text(2, 0, 'John')]
+    """
+    avg_scores = defaultdict(float)
+    max_score = float('-inf')
+    min_score = float('inf')
+
+    for student_data in data:
+        if isinstance(student_data, dict):
+            for key, value in student_data.items():
+                if key in avg_scores:
+                    avg_scores[key] += value
+                else:
+                    avg_scores[key] = value
+
+                if value is not None:
+                    if value > max_score:
+                        max_score = value
+                    if value < min_score:
+                        min_score = value
+
+    for key in avg_scores:
+        if avg_scores[key] is not None:
+            avg_scores[key] /= len([data[i] for i in range(len(data)) if key in data[i]])
+
+    # Raise error if there's a negative score
+    for key in avg_scores:
+        if avg_scores[key] < 0:
+            raise ValueError("Negative scores are not allowed")
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(avg_scores.keys(), avg_scores.values(), color=['red', 'yellow', 'green', 'blue', 'purple'])
+    ax.set_xlabel('Student')
+    ax.set_ylabel('Average Score')
+    ax.set_title('Average Student Scores')
+    ax.axhline(max_score, color='black', linestyle='--')
+    ax.axhline(min_score, color='black', linestyle='--')
+    ax.grid(True)
+
+    return ax

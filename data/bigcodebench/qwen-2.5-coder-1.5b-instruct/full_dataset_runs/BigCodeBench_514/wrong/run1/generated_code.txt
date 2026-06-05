@@ -1,0 +1,40 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def task_func(array):
+    """
+    Create a Pandas DataFrame from a 2D list and plot the sum of each column.
+
+    Parameters:
+    array (list of list of int): The 2D list representing the data.
+
+    Returns:
+    DataFrame, Axes: A pandas DataFrame with the data and a matplotlib Axes object showing the sum of each column.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+
+    Internal Constants:
+    COLUMNS: List of column names used for the DataFrame ['A', 'B', 'C', 'D', 'E']
+
+    Example:
+    >>> df, ax = task_func([[1,2,3,4,5], [6,7,8,9,10]])
+    >>> print(df)
+       A  B  C  D   E
+    0  1  2  3  4   5
+    1  6  7  8  9  10
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Convert the 2D list to a pandas DataFrame
+    df = pd.DataFrame(array, columns=COLUMNS)
+
+    # Calculate the sum of each column and create a new column with the sums
+    df['Sum'] = df.sum(axis=0)
+
+    # Plot the sum of each column
+    ax = df.plot(kind='bar')
+
+    return df, ax

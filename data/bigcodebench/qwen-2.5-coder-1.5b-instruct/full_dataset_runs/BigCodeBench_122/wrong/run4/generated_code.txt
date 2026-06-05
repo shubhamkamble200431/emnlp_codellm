@@ -1,0 +1,30 @@
+import numpy as np
+import random
+
+def task_func(my_list):
+    """
+    Appends a randomly selected integer between 0 and 100 to the given list 'my_list' and 
+    returns a numpy array of random floating-point numbers. The size of the returned array 
+    is equal to the sum of the numbers in the modified list.
+
+    Parameters:
+        my_list (list): A list of integers to which a random number will be added.
+
+    Returns:
+        numpy.ndarray: An array of random floating-point numbers. The length of the array 
+                       is equal to the sum of the integers in 'my_list' after a random 
+                       number has been appended.
+
+    Requirements:
+    - numpy
+    - random
+                       
+    Examples:
+        >>> result = task_func([2, 3, 5])
+        >>> 10 <= len(result) <= 110  # Expecting the length to be within the range after adding a random number between 0 and 100
+        True
+        >>> isinstance(result, np.ndarray)
+        True
+    """
+    my_list.append(random.randint(0, 100))
+    return np.array([random.random() for _ in range(sum(my_list))])

@@ -1,0 +1,62 @@
+import subprocess
+import os
+import time
+from datetime import datetime
+
+
+def task_func(script_dir, scripts, delay):
+    """
+    Execute a list of bash scripts with a specified delay between each script.
+
+    Parameters:
+    script_dir (str): Path to the directory containing the scripts.
+    scripts (list): List of script filenames to be executed. Must not be empty.
+                    If a script is not found, the function raises a FileNotFoundError.
+    delay (int): The delay in seconds between each script execution. Must at least 0.
+
+    Returns:
+    list: A list of timestamps indicating the start time of each script execution.
+
+    Raises:
+    - ValueError: If the delay is negative or no scripts are provided.
+    
+    Requirements:
+    - subprocess
+    - os
+    - time
+    - datetime.datetime
+
+    Example:
+    >>> task_func('/path/to/scripts/', ['script1.sh', 'script2.sh'], 5)
+    ['2023-09-09 10:10:10', '2023-09-09 10:10:15']
+    """
+    if not scripts:
+        raise ValueError("No scripts provided.")
+    if delay < 0:
+        raise ValueError("Delay must be non-negative.")
+
+    timestamps = []
+    for script in scripts:
+        try:
+            abs_script_path = os.path.join(script_dir, script)
+            if not os.path.isfile(abs_script_path):
+                raise FileNotFoundError(f"Script {script} not found.")
+
+            start_time = datetime.now()
+            print(f"Starting script {script} at {start_time}")
+            process = subprocess.Popen(['sh', abs_script_path])
+            process.communicate()
+            end_time = datetime.now()
+            print(f"Script {script} finished at {end_time}")
+
+            timestamp = {
+                'filename': script,
+                'start_time': start_time.strftime('%Y-%m-%d %H:%M:%S'),
+                'end_time': end_time.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            timestamps.append(timestamp)
+            time.sleep(delay)
+        except Exception as e:
+            print(f"Error executing script {script}: {e}")
+
+    return timestamps

@@ -1,0 +1,51 @@
+import numpy as np
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+
+def task_func(length):
+    """
+    Create a normal distribution with a given length, plot its histogram alongside the 
+    probability density function, and return the distribution and the plot.
+    
+    Parameters:
+    - length (int): The length of the distribution to be generated.
+    
+    Returns:
+    - tuple: A tuple containing:
+        1. numpy array with the normal distribution.
+        2. matplotlib Axes object representing the plot.
+    
+    Requirements:
+    - numpy
+    - scipy.stats.norm
+    - matplotlib.pyplot
+    
+    Note:
+    - This function use this constant MU (mean): 0, SIGMA (standard deviation): 1
+    
+    Example:
+    >>> np.random.seed(0)
+    >>> distribution, ax = task_func(1000)
+    >>> print(type(distribution))
+    <class 'numpy.ndarray'>
+    >>> len(ax.get_lines())
+    1
+    >>> plt.close()
+    """
+    mu, sigma = 0, 1  # mean and standard deviation
+    x = np.linspace(mu - 3*sigma, mu + 3*sigma, length)  # generate data points
+    y = norm.pdf(x, mu, sigma)  # calculate probabilities
+
+    # plot
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(x, y, label='Normal Distribution')
+
+    # set labels and title
+    ax.set_xlabel('X-axis')
+    ax.set_ylabel('Probability Density Function')
+    ax.set_title('Normal Distribution Plot')
+
+    # add legend
+    ax.legend()
+
+    return y, ax

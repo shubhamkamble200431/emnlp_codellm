@@ -1,0 +1,44 @@
+import sys
+import json
+from datetime import datetime
+
+# Constants
+PATH_TO_APPEND = '/path/to/whatever'
+JSON_FILE = '/path/to/json_file.json'
+
+def task_func(path_to_append=PATH_TO_APPEND, json_file=JSON_FILE):
+    """
+    Add a specific path to sys.path and update a JSON file with the current date and time.
+    This function appends a given path to Python's sys.path and updates a JSON file with the current date and time under the key 'last_updated'.
+    
+    Parameters:
+    - path_to_append (str): The path to append to sys.path. Default is '/path/to/whatever'.
+    - json_file (str): The path to the JSON file to update. Default is '/path/to/json_file.json'. The file should exist before running the function.
+
+    Returns:
+    - json_data (dict): The updated JSON data. The dictionary will contain a 'last_updated' key with the current datetime as its value.
+
+    Requirements:
+    - sys
+    - json
+    - datetime.datetime
+
+    Example:
+    >>> task_func('/path/to/new_directory', '/path/to/new_json_file.json')
+    {'last_updated': '2023-08-28 12:34:56'}
+    """
+    # Append the given path to sys.path
+    sys.path.append(path_to_append)
+
+    # Open the JSON file in read mode
+    with open(json_file, 'r') as file:
+        json_data = json.load(file)
+
+    # Update the last_updated key with the current date and time
+    json_data['last_updated'] = datetime.now().isoformat()
+
+    # Open the JSON file in write mode
+    with open(json_file, 'w') as file:
+        json.dump(json_data, file, indent=4)
+
+    return json_data

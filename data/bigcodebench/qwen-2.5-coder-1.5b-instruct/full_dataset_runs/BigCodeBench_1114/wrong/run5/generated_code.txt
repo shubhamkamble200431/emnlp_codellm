@@ -1,0 +1,38 @@
+from collections import defaultdict
+from random import randint
+
+def task_func(dict1):
+    """
+    Create a dictionary of employee data for departments starting with 'EMP$$'. 
+    The keys are department codes and the values are lists of the salaries of employees in that department.
+    
+    Parameters:
+    dict1 (dict): A dictionary with department codes as keys and number of employees as values.
+    
+    Returns:
+    dict: A dictionary with department codes starting with 'EMP$$' as keys and lists of employee salaries as values.
+    
+    Requirements:
+    - collections
+    - random
+    
+    Example:
+    >>> import random
+    >>> random.seed(0)
+    >>> d = {'EMP$$1': 10, 'MAN$$1': 5, 'EMP$$2': 8, 'HR$$1': 7}
+    >>> emp_data = task_func(d)
+    >>> print(emp_data.keys())
+    dict_keys(['EMP$$1', 'EMP$$2'])
+    """
+    emp_data = defaultdict(list)
+
+    for key in dict1:
+        if key.startswith('EMP'):
+            emp_code = int(key[3:])
+            num_employees = dict1[key]
+
+            for _ in range(num_employees):
+                salary = randint(1000, 10000)  # Random salary between $1,000 and $10,000
+                emp_data[key].append(salary)
+
+    return dict(emp_data)

@@ -1,0 +1,43 @@
+import pandas as pd
+from scipy.spatial import distance
+import matplotlib.pyplot as plt
+
+
+def task_func(a, b):
+    """
+    Calculate the Euclidean distance between two lists, create a Pandas DataFrame from these lists
+    with indices 'A' and 'B', and then draw the values with a line displaying the Euclidean distance.
+
+    Parameters:
+    a (list): A list of numbers.
+    b (list): Another list of numbers.
+
+    Returns:
+    float: The computed Euclidean distance between the two lists.
+    pd.DataFrame: A DataFrame containing the two lists as columns.
+    matplotlib.axes.Axes: The generated plot's Axes object.
+
+    Requirements:
+    - pandas
+    - scipy.spatial
+    - matplotlib.pyplot
+
+    Example:
+    >>> euclidean_distance, df, ax = task_func([1, 2, 3], [2, 3, 4])
+    >>> print(euclidean_distance)
+    1.7320508075688772
+    """
+    euclidean_dist = distance.euclidean(a, b)
+
+    # Create a Pandas DataFrame
+    data = {'A': a, 'B': b}
+    df = pd.DataFrame(data)
+
+    # Plotting the distance
+    ax = df.plot(kind='line')
+    ax.set_title('Euclidean Distance between Lists')
+    ax.set_xlabel('List Elements')
+    ax.set_ylabel('Values')
+    ax.axhline(y=euclidean_dist, color='red', linestyle='--', label=f'Distance: {euclidean_dist:.2f}')
+
+    return euclidean_dist, df, ax

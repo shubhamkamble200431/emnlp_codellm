@@ -1,0 +1,56 @@
+import collections
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Combine a list of dictionaries with the same keys (fruit names) into a single dictionary,
+    calculate the total turnover for each fruit, and return a bar chart's axes with colors representing
+    different fruits. The colors are selected from: 'red', 'yellow', 'green', 'blue', 'purple'. The function
+    ensures that sales quantity must not be negative, throwing a ValueError if encountered.
+
+    Parameters:
+    data (list): A list of dictionaries. The keys are fruit names and the values are sales quantities.
+                 Sales quantity must not be negative.
+
+    Returns:
+    total_sales (dict): A dictionary containing the total sales for each fruit.
+    ax (matplotlib.container.BarContainer): A bar chart of total fruit sales, or None if data is empty
+
+    Requirements:
+    - collections
+    - matplotlib.pyplot
+
+    Example:
+    >>> sales, plot = task_func([{'apple': 10, 'banana': 15, 'cherry': 12},\
+                             {'apple': 12, 'banana': 20, 'cherry': 14},\
+                             {'apple': 15, 'banana': 18, 'cherry': 15},\
+                             {'apple': 11, 'banana': 17, 'cherry': 13}])
+    >>> sales
+    {'apple': 48, 'banana': 70, 'cherry': 54}
+    >>> type(plot)
+    <class 'matplotlib.container.BarContainer'>
+    """
+    if not data:
+        return {}, None
+
+    total_sales = {}
+    fruit_colors = ['red', 'yellow', 'green', 'blue', 'purple']
+
+    for item in data:
+        if any(value < 0 for value in item.values()):
+            raise ValueError("Sales quantity cannot be negative")
+
+        for fruit, quantity in item.items():
+            if fruit not in total_sales:
+                total_sales[fruit] = 0
+            total_sales[fruit] += quantity
+
+    fig, ax = plt.subplots()
+    bars = ax.bar(total_sales.keys(), total_sales.values(), color=fruit_colors)
+
+    # Create legend based on colors
+    patches, labels = zip(*bars)
+    ax.legend(patches, labels)
+
+    return total_sales, ax

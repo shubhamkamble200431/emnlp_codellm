@@ -1,0 +1,36 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler
+
+
+def task_func(data: pd.DataFrame) -> (pd.DataFrame, plt.Axes):
+    """
+    Normalize the data and visualize it using a heatmap.
+
+    This function takes a pandas DataFrame, normalizes the data to a range [0, 1], and then visualizes this
+    normalized data using a seaborn heatmap.  The heatmap uses the "YlGnBu" colormap to represent normalized
+    values and includes a color bar labeled "Normalized Value" to indicate the range of data values.
+    It returns both the normalized data and the heatmap plot.
+
+    Parameters:
+    - data (pd.DataFrame): The input data with multiple features in columns.
+
+    Returns:
+    - pd.DataFrame: Normalized data.
+    - plt.Axes: Heatmap plot of the normalized data.
+
+    Requirements:
+    - pandas
+    - numpy
+    - matplotlib.pyplot
+    - seaborn
+    
+    Example:
+    >>> df = pd.DataFrame([[1,1,1], [2,2,2], [3,3,3]], columns=['Feature1', 'Feature2', 'Feature3'])
+    >>> normalized_df, _ = task_func(df)
+    >>> type(normalized_df)
+    <class 'pandas.core.frame.DataFrame'>
+    >>> normalized_df['Feature1'].iloc[0]  # Returns a normalized value between 0 and 1
+    0.0
+    """

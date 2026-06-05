@@ -1,0 +1,70 @@
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Processes a dataset containing salary information and experience, then plots normalized salary against experience.
+    The function executes the following steps:
+    1. Input Validation: Checks if the input data dictionary contains the required keys ('Salary_String' and 'Experience').
+       Raises a ValueError if the necessary keys are missing.
+    2. DataFrame Conversion: Converts the input data into a pandas DataFrame for easier manipulation.
+    3. Empty Data Handling: Checks if the DataFrame is empty. If so, it returns a default Axes instance with
+       labeled axes but no data plotted. This handles cases where there is no data to plot.
+    4. Salary Conversion: Converts 'Salary_String' values from comma-separated strings to floats.
+       It handles potential conversion errors by catching ValueErrors and re-raising them with a custom message.
+    5. Salary Normalization: Applies Min-Max scaling to normalize the salary values. This step transforms
+       the salary data into a range between 0 and 1, allowing for easier comparison and visualization.
+    6. Data Plotting: Creates a scatter plot of the normalized salary against experience using matplotlib.
+       The plot's axes are labeled accordingly.
+
+    Parameters:
+    - data (dict): A dictionary with two keys: 'Salary_String' and 'Experience'.
+                   'Salary_String' should contain salary values as comma-separated strings.
+                   'Experience' should contain corresponding experience values as integers.
+
+    Returns:
+    - matplotlib.axes.Axes: An Axes instance with the plotted scatter plot.
+
+    Raises:
+    - ValueError: If the input dictionary does not contain the required keys or if data conversion from string to float fails.
+
+    Requirements:
+    - pandas
+    - sklearn
+    - matplotlib
+
+    Example:
+    >>> ax = task_func({'Salary_String': ['1,000', '2,000', '3,000'], 'Experience': [1, 2, 3]})
+    >>> print(ax.get_title())
+    Normalized Salary vs Experience
+    """
+    # Input Validation
+    if 'Salary_String' not in data or 'Experience' not in data:
+        raise ValueError("The input data must contain the keys 'Salary_String' and 'Experience'.")
+
+    # DataFrame Conversion
+    df = pd.DataFrame(data)
+
+    # Empty Data Handling
+    if df.empty:
+        return plt.subplots()
+
+    try:
+        # Salary Conversion
+        df['Salary'] = df['Salary_String'].apply(lambda x: sum(map(int, x.split(',')))) / len(x.split(','))
+    except ValueError as e:
+        raise ValueError(f"Failed to convert 'Salary_String' to floats: {e}")
+
+    # Salary Normalization
+    scaler = MinMaxScaler()
+    df['Normalized_Salary'] = scaler.fit_transform(df[['Salary']])
+
+    # Data Plotting
+    ax = df.plot(kind='scatter', x='Experience', y='Normalized_Salary')
+    ax.set_xlabel('Experience')
+    ax.set_ylabel('Normalized Salary')
+    ax.set_title('Normalized Salary vs Experience')
+
+    return ax

@@ -1,0 +1,48 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+
+def task_func(x, y, labels):
+    """ 
+    Perform Principal Component Analysis (PCA) on "x" as x-values and "y" as y-values and record the results with labels.
+
+    Parameters:
+    x (list): List of numpy arrays representing the x-values of the data points.
+    y (list): List of numpy arrays representing the y-values of the data points.
+    labels (list): List of strings representing the labels for the chemical compounds.
+
+    Returns:
+    fig: Matplotlib figure object.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - sklearn.decomposition
+
+    Example:
+    >>> x = [np.array([1,2,3]), np.array([4,5,6]), np.array([7,8,9])]
+    >>> y = [np.array([4,5,6]), np.array([7,8,9]), np.array([10,11,12])]
+    >>> labels = ['H₂O', 'O₂', 'CO₂']
+    >>> fig = task_func(x, y, labels)
+    """
+    # Combine x and y arrays
+    combined_data = np.concatenate((x[0], y[0]), axis=0).reshape(len(labels), 1)
+
+    # Initialize PCA
+    pca = PCA(n_components=2)
+
+    # Fit PCA model to the combined data
+    pca.fit(combined_data)
+
+    # Get principal components
+    principal_components = pca.components_
+
+    # Create a scatter plot of the PCA transformed data
+    plt.scatter(principal_components[:, 0], principal_components[:, 1], c=labels, cmap='viridis')
+
+    # Add labels to the plot
+    plt.xlabel('First Principal Component')
+    plt.ylabel('Second Principal Component')
+
+    return plt.figure()

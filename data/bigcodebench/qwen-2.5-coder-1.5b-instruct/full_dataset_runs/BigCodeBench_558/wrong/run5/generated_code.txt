@@ -1,0 +1,36 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+
+def task_func(a, b, columns=['A', 'B']):
+    """
+    Standardize two lists of numbers using the StandardScaler from sklearn and visualize the standardized values using a bar plot.
+
+    Parameters:
+        a (list): A list of numbers.
+        b (list): Another list of numbers.
+        columns (list, optional): Column names for the resulting DataFrame. Defaults to ['A', 'B'].
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the standardized values.
+        matplotlib.axes.Axes: Axes object of the displayed bar plot.
+
+    Requirements:
+        - numpy
+        - pandas
+        - sklearn.preprocessing
+        - matplotlib.pyplot
+
+    Example:
+        >>> df, ax = task_func([1, 2, 3, 4, 5], [2, 4, 6, 8, 10])
+        >>> isinstance(df, pd.DataFrame) and isinstance(ax, matplotlib.axes.Axes)
+        True
+    """
+a_std = StandardScaler().fit_transform(np.array(a).reshape(-1, 1))
+b_std = StandardScaler().fit_transform(np.array(b).reshape(-1, 1))
+
+df = pd.DataFrame({'A': a_std.flatten(), 'B': b_std.flatten()}, columns=columns)
+ax = df.plot(kind='bar')
+return df, ax

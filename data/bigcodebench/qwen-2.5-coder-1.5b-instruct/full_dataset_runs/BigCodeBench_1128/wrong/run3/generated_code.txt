@@ -1,0 +1,59 @@
+import json
+import os
+import hashlib
+import base64
+import time
+
+def task_func(file_path, unknown_key):
+    """
+    Reads a JSON file, extracts a value specified by an 'unknown_key' within a nested structure, hashes this value using SHA256,
+    and writes the base64-encoded hash to a new file with a timestamp in its name. The JSON should contain a specific 
+    structure where the value to be hashed is under 'A' -> [unknown_key] -> 'maindata' -> [index 0] -> 'Info'.
+
+    Parameters:
+    - file_path (str): The file path to read the JSON data from.
+    - unknown_key (str): The key to look for in the nested JSON structure under the top-level key 'A'. This key should 
+                         lead to a list of dictionaries under 'maindata', with the first dictionary containing the 'Info' key.
+
+    Returns:
+    str: The absolute file path of the newly created file containing the hashed value.
+    
+    Requirements:
+    - json
+    - os
+    - hashlib
+    - base64
+    - time
+    
+    Example:
+    >>> json_file = '/path/to/file.json'
+    >>> new_file = task_func(json_file, 'B')
+    >>> print(f"Hashed data saved at: {new_file}")
+    """
+    try:
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+
+        # Traverse through the nested structure
+        target_value = next((item['Info'] for item in data['A'][0]['maindata']), None)
+        if target_value is None:
+            raise ValueError("Target key not found.")
+
+        # Hash the value using SHA256
+        hash_object = hashlib.sha256(target_value.encode('utf-8'))
+        hex_digest = hash_object.hexdigest()
+
+        # Create a new file with a timestamp
+        timestamp = int(time.time())
+        new_file_name = f"{timestamp}_hash.txt"
+        new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
+
+        # Write the base64-encoded hash to the new file
+        with open(new_file_path, 'wb') as f:
+            f.write(base64.b64encode(hex_digest.encode('utf-8')))
+
+        return new_file_path
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found at: {file_path}")
+    except Exception as e:
+        raise Exception(f"An error occurred: {e}")

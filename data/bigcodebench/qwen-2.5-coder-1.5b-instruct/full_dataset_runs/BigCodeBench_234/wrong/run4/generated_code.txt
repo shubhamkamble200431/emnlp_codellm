@@ -1,0 +1,50 @@
+import pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
+
+def task_func(df):
+    """
+    Perform a linear regression between "age" and "score" in the DataFrame, excluding rows with duplicate names.
+    Plot the regression line and the scatter plot of the data.
+
+    Parameters:
+    df (DataFrame): The pandas DataFrame containing the data.
+
+    Returns:
+    tuple: A tuple containing the matplotlib.pyplot object and the axes object.
+
+    Raises:
+    - The function will raise a ValueError is input df is not a DataFrame.
+
+    Note:
+    - The function use "Linear Regression" for the plot title.
+    - The function use "Age" and "Score" as the xlabel and ylabel respectively.
+
+    Requirements:
+    - pandas
+    - scipy.stats
+    - matplotlib.pyplot
+
+    Example:
+    >>> data = pd.DataFrame([{'Name': 'Alice', 'Age': 20, 'Score': 70}, {'Name': 'Bob', 'Age': 25, 'Score': 75}, {'Name': 'Eve', 'Age': 30, 'Score': 80}])
+    >>> plt, ax = task_func(data)
+    >>> ax.lines[0].get_xdata()[0]
+    20
+    """
+    if not isinstance(df, pd.DataFrame):
+        raise ValueError("Input df should be a DataFrame")
+
+    # Filter out duplicate names
+    filtered_df = df.drop_duplicates(subset='Name')
+
+    # Perform linear regression
+    slope, intercept, r_value, p_value, std_err = stats.linregress(filtered_df['Age'], filtered_df['Score'])
+
+    # Plot the regression line
+    plt.scatter(filtered_df['Age'], filtered_df['Score'], label='Data points')
+    plt.plot(filtered_df['Age'], slope * filtered_df['Age'] + intercept, color='red', label='Regression line')
+    plt.title('Linear Regression: Age vs Score')
+    plt.xlabel('Age')
+    plt.ylabel('Score')
+
+    return plt, plt.gca()  # Return the matplotlib.pyplot object and the axes object

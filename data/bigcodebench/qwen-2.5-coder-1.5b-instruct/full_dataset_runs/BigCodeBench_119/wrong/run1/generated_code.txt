@@ -1,0 +1,35 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func():
+    """
+    Creates and displays a diagram of a parabola represented by the equation y = x^2.
+    The function plots the parabola using matplotlib, sets the title as 'y = x^2', labels the axes as 'x' and 'y',
+    and enables the grid. It uses a fixed range for x values from -10 to 10 with 400 points.
+    This function is used for demonstrating basic plotting capabilities and visualizing
+    quadratic functions. The function does not take any parameters and does not return any value.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+
+    Parameters:
+    None
+    
+    Returns:
+    None
+    
+    Examples:
+    >>> task_func() # This will display the plot of the parabola y = x^2
+    >>> type(task_func())
+    <class 'NoneType'>
+    """
+    x = np.linspace(-10, 10, 400)  # Generate x values from -10 to 10 with 400 points
+    y = x**2                    # Calculate corresponding y values using the equation y = x^2
+    plt.plot(x, y, label='y = x^2')  # Plot the line graph
+    plt.title('y = x^2')           # Set the title of the plot
+    plt.xlabel('x')              # Label the x-axis
+    plt.ylabel('y')              # Label the y-axis
+    plt.grid(True)                # Enable the grid
+    plt.show()                  # Display the plot

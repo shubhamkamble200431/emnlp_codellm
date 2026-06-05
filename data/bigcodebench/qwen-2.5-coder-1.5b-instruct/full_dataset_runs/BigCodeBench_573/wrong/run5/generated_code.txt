@@ -1,0 +1,42 @@
+import numpy as np
+import pandas as pd
+
+
+def task_func(array_length=100):
+    '''
+    Generate two arrays of random numbers of a given length, calculate their mean, median, and standard deviation,
+    then store these results in a Panda DataFrame 'statistics' with keys 'Array1' and 'Array2'.
+    Draw a bar chart to compare these statistics with indices 'Mean', 'Median', and 'Standard Deviation'.
+
+    Parameters:
+    - array_length (int, optional): The length of the arrays to be generated. Default is 100.
+
+    Returns:
+    - DataFrame: A pandas DataFrame with the statistics of the arrays.
+    - Axes: The bar chart plot comparing the statistics.
+
+    Requirements:
+    - numpy
+    - pandas
+
+    Example:
+    >>> df, ax = task_func(50)
+    '''
+    array1 = np.random.rand(array_length)
+    array2 = np.random.rand(array_length)
+
+    mean_array1 = np.mean(array1)
+    mean_array2 = np.mean(array2)
+    median_array1 = np.median(array1)
+    median_array2 = np.median(array2)
+    std_dev_array1 = np.std(array1)
+    std_dev_array2 = np.std(array2)
+
+    statistics = pd.DataFrame({
+        'Array1': [mean_array1, median_array1, std_dev_array1],
+        'Array2': [mean_array2, median_array2, std_dev_array2]
+    })
+
+    ax = statistics.plot(kind='bar')
+
+    return statistics, ax

@@ -1,0 +1,69 @@
+import os
+from pathlib import Path
+import glob
+import shutil
+
+
+def task_func(source_directory: str, target_directory: str):
+    """
+    Moves files with specific extensions from a source directory to a target directory,
+    handling naming conflicts by renaming duplicates.
+
+    Parameters:
+    - source_directory (str): The absolute or relative path of the source directory.
+    - target_directory (str): The absolute or relative path of the target directory.
+                              This function will create it if it does not exist.
+
+    Returns:
+    - int: The number of files successfully moved.
+
+    Raises:
+    - FileNotFoundError: If source_directory does not exist.
+
+    Requirements:
+    - os
+    - pathlib
+    - glob
+    - shutil
+
+    Notes:
+    - This function scans the source directory recursively to find files.
+    - Files are filtered by the extensions: ".txt", ".docx", ".xlsx", ".csv".
+    - Renaming of files due to naming conflicts follows the pattern '<original_name>-n.<extension>'.
+
+    Examples:
+    >>> task_func('./source_folder', './target_folder')
+    3
+    >>> task_func('./empty_folder', './target_folder')
+    0
+    """
+    # Check if the source directory exists
+    if not os.path.exists(source_directory):
+        raise FileNotFoundError(f"Source directory {source_directory} does not exist.")
+
+    # Create the target directory if it does not exist
+    target_dir_path = Path(target_directory)
+    if not target_dir_path.exists():
+        target_dir_path.mkdir(parents=True)
+
+    # Initialize file count
+    files_moved = 0
+
+    # Iterate through files in the source directory and its subdirectories
+    for root, _, files in os.walk(source_directory):
+        for file in files:
+            # Get the full path of the file
+            file_path = Path(root) / file
+
+            # Check if the file has one of the specified extensions
+            if file_path.suffix.lower() in ['.txt', '.docx', '.xlsx', '.csv']:
+                # Get the target file path
+                target_file_path = target_dir_path / file
+
+                # Rename the file if it already exists in the target directory
+                if target_file_path.exists():
+                    base_name, ext = file.rsplit('.', maxsplit=1)
+                    n = 1
+                    while True:
+                        new_file_name = f"{base_name}-{n}.{ext}"
+                        new_target_file_path = target_dir_path / new_file_name

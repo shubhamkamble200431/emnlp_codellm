@@ -1,0 +1,69 @@
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+import cv2
+import os
+
+def task_func(file_path, onpick):
+    """
+    Draw the color histogram of an image in 3D and call a function when a data point is selected.
+
+    Parameters:
+    file_path (str): The path to the image file.
+    onpick (function): The function to be called when a data point is picked.
+
+    Returns:
+    matplotlib.axes.Axes: The Axes object of the 3D plot.
+
+    Raises:
+    FileNotFoundError: If the image file does not exist.
+    
+    Requirements:
+    - matplotlib
+    - mpl_toolkits.mplot3d
+    - numpy
+    - cv2
+    - os
+    - tempfile
+    
+    Example:
+    >>> def onpick(event):
+    ...     ind = event.ind
+    ...     print(f'You picked data point(s) {ind}')
+    >>> np.random.seed(42)
+    >>> dummy_img_path = 'image.jpg'
+    >>> dummy_img = np.random.randint(0, 255, (20, 20, 3), dtype=np.uint8)
+    >>> cv2.imwrite(dummy_img_path, dummy_img)
+    True
+    >>> ax = task_func('image.jpg', onpick)
+    >>> os.remove(dummy_img_path)
+    """
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError("The image file does not exist.")
+    
+    img = cv2.imread(file_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
+    
+    fig, ax = plt.subplots(subplots=1, figsize=(10, 6))
+    ax.bar(range(256), hist, color='b')
+    ax.set_xlabel('Intensity')
+    ax.set_ylabel('Frequency')
+    
+    # Set up the 3D plot
+    X, Y = np.meshgrid(np.arange(256), np.arange(256))
+    Z = hist.reshape(256, 256)
+    ax.plot_surface(X, Y, Z, cmap='viridis', shade=True)
+    
+    # Connect the surface with lines
+    for i in range(256):
+        for j in range(256):
+            if i < 255:
+                ax.plot([i, i+1], [j, j], [Z[i, j], Z[i+1, j]], 'k-', lw=0.5)
+            if j < 255:
+                ax.plot([i, i], [j, j+1], [Z[i, j], Z[i, j+1]], 'k-', lw=0.5)
+    
+    ax.format_coord = lambda x, y: f'({x}, {y})'
+    ax.callbacks.connect('pick_event', onpick)
+    
+    return ax

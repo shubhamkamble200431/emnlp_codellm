@@ -1,0 +1,31 @@
+import pytz
+from dateutil import parser
+
+def task_func(date_str, from_tz, to_tz):
+    """
+    Converts a date time from one timezone to another.
+
+    Parameters:
+    date_str (str): The date string in "yyyy-mm-dd hh:mm:ss" format.
+    from_tz (str): The timezone of the given date string.
+    to_tz (str): The timezone to which the date should be converted.
+
+    Returns:
+    str: The converted datetime string in "yyyy-mm-dd hh:mm:ss" format.
+
+    Requirements:
+    - pytz
+    - dateutil.parser
+
+    Example:
+    >>> task_func('2022-03-01 12:00:00', 'UTC', 'America/New_York')
+    '2022-03-01 07:00:00'
+    """
+    # Convert the input string to a datetime object with the given timezone
+    local_date = parser.parse(date_str).astimezone(timezone(from_tz))
+
+    # Convert the datetime object to the desired timezone
+    converted_date = local_date.astimezone(timezone(to_tz))
+
+    # Return the converted date as a string in "yyyy-mm-dd hh:mm:ss" format
+    return converted_date.strftime('%Y-%m-%d %H:%M:%S')

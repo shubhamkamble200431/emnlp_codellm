@@ -1,0 +1,57 @@
+import pandas as pd
+import json
+import numpy as np
+
+# Constants
+COLUMNS = ['email', 'list']
+
+def task_func(json_file):
+    """
+    Load e-mail data from a JSON file, convert it into a Pandas DataFrame, calculate the sum and mean
+    of the list associated with each e-mail, and then record those values. Additionally, it plots the sum
+    and mean values for each email.
+
+    If there is no e-mail data, return an empty dataframe with the right columns (['email', 'list', 'sum', 'mean']), and None as the plot.
+
+    Parameters:
+    json_file (str): The path to the JSON file. The JSON file should have the structure:
+                     [
+                         {"email": "email1@example.com", "list": [value1, value2, ...]},
+                         ...
+                     ]
+
+    Returns:
+    tuple: A tuple containing:
+        - DataFrame: A pandas DataFrame with columns ['email', 'list', 'sum', 'mean'].
+        - Axes: The Axes object for the plot. None if the dataframe is empty.
+
+    Requirements:
+    - pandas
+    - json
+    - numpy
+
+    Example:
+    >>> df, ax = task_func('data/task_func/json_1.json')
+    >>> print(df)
+    """
+    # Load JSON data and convert it into a pandas DataFrame
+    with open(json_file, 'r') as file:
+        data = json.load(file)
+
+    emails = {entry['email']: entry['list'] for entry in data}
+    df = pd.DataFrame(columns=COLUMNS)
+
+    for email, lst in emails.items():
+        if lst:
+            df.loc[email] = [email, lst, sum(lst), np.mean(lst)]
+
+    # Plotting
+    if not df.empty:
+        ax = df[['sum', 'mean']].plot(kind='bar', stacked=True)
+        ax.set_xlabel('Email')
+        ax.set_ylabel('Value')
+        ax.set_title('Sum vs Mean of Lists by Email')
+    else:
+        ax = None
+
+    return df, ax

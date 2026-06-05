@@ -1,0 +1,30 @@
+import re
+import pandas as pd
+
+def task_func(input_df):
+    """
+    Cleans the text in a pandas DataFrame column named 'text' by removing all special characters, punctuation marks, and spaces, then calculates the length of the cleaned text.
+
+    Requirements:
+    - re
+    - pandas
+
+    Parameters:
+    - input_df (pandas.DataFrame): DataFrame with a column 'text' containing strings with alphanumeric and/or special characters.
+
+    Returns:
+    - pandas.DataFrame: A DataFrame with two new columns 'clean_text' and 'text_length', where 'clean_text' is the cleaned text and 'text_length' is its length.
+
+    Examples:
+    >>> df = pd.DataFrame({'text': ['Special $#! characters   spaces 888323']})
+    >>> print(task_func(df))
+                          clean_text  text_length
+    0  Specialcharactersspaces888323           29
+    >>> df = pd.DataFrame({'text': ['Hello, World!']})
+    >>> print(task_func(df))
+       clean_text  text_length
+    0  HelloWorld           10
+    """
+input_df['clean_text'] = input_df['text'].str.replace(r'[^a-zA-Z0-9 ]+', '')
+input_df['text_length'] = input_df['clean_text'].apply(len)
+return input_df[['clean_text', 'text_length']]

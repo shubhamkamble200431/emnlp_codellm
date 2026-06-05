@@ -1,0 +1,45 @@
+import bs4
+import requests
+import re
+import csv
+
+def task_func(url="http://example.com", csv_path="emails.csv", 
+          regex=r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b", 
+          headers={'User-Agent': 'Mozilla/5.0'}):
+    """
+    Scrapes a web page to extract all email addresses using a specified regular expression pattern and writes them to a CSV file. The csv file is
+    always created eventhough no email is found in the url. The header of the csv should be "Emails".
+
+    Parameters:
+    - url (str): The URL of the web page to scrape. Default is "http://example.com".
+    - csv_path (str): The filesystem path where the CSV file should be saved. Default is "emails.csv".
+    - regex (str): The regular expression pattern used to identify email addresses. Default is a pattern that matches common email formats.
+    - headers (dict): The HTTP headers to use for the request. Default includes a User-Agent header.
+
+    Returns:
+    - str: The path to the CSV file where the extracted email addresses have been saved.
+
+    Requirements:
+    - bs4
+    - requests
+    - re
+    - csv
+    
+    Examples:
+    >>> task_func()
+    'emails.csv'
+    >>> task_func(url="http://another-example.com", csv_path="another_emails.csv")
+    'another_emails.csv'
+    """
+response = requests.get(url, headers=headers)
+soup = bs4.BeautifulSoup(response.text, 'html.parser')
+email_addresses = soup.find_all(text=re.compile(regex))
+with open(csv_path, 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    if email_addresses:
+        writer.writerow(["Emails"])
+        for email in email_addresses:
+            writer.writerow([email])
+    else:
+        writer.writerow(["No emails found"])
+return csv_path

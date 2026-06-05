@@ -1,0 +1,35 @@
+import itertools
+from typing import Any
+from scipy import stats
+
+
+def task_func(input_list: list, repetitions: int) -> Any:
+    """
+    Calculate the mode of a list of elements with multiple repetitions of the original list.
+    
+    Functionality: 
+    - Takes a list and a repetition count as input.
+    - Flattens the list with multiple repetitions.
+    - Calculates the mode of the flattened list.
+    
+    Parameters:
+    - input_list (list): A list containing elements (can be of any hashable type).
+    - repetitions (int): The number of times the original list should be repeated.
+
+    Requirements:
+    - typing
+    - itertools
+    - scipy
+
+    Returns:
+    - scipy.stats.ModeResult: An object containing the mode(s) and count(s) of the most frequently occurring element(s) in the flattened list.
+    
+    Examples:
+    >>> task_func(['A', 'B', 'C'], 10)
+    ModeResult(mode=array(['A'], dtype='<U1'), count=array([10]))
+    
+    >>> task_func([1, 2, 3], 5)
+    ModeResult(mode=array([1]), count=array([5]))
+    """
+    flattened = list(chain.from_iterable(repeat(input_list, repetitions)))
+    return stats.mode(flattened)  # Use scipy's mode function to get the mode result

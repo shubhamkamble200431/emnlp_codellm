@@ -1,0 +1,58 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+COLORS = ['r', 'g', 'b']
+
+def task_func(df, group_col, value_col):
+    """
+    Create a bar chart of data in multiple groups with error bars.
+
+    Parameters:
+    - df (DataFrame): The input DataFrame containing the data.
+    - group_col (str): The name of the column to group the data by.
+    - value_col (str): The name of the column containing the values to plot.
+
+    Returns:
+    - Axes: A matplotlib axes object with the bar chart.
+
+    Requirements:
+    - matplotlib.pyplot
+    - numpy
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({'Group': ['A', 'B', 'A', 'B', 'A', 'B'], 'Value': [1, 2, 3, 4, 5, 6]})
+    >>> ax = task_func(df, 'Group', 'Value')
+    >>> len(ax.patches)
+    2
+    >>> plt.close()
+
+    Note:
+    - The function uses a predefined set of colors for the bars. If there are more groups than colors,
+      the colors will repeat from the beginning of the COLORS list.
+    - This function use "Bar chart of {value_col} by {group_col}" for the plot title.
+    - This function use value of variables group_col and value_col as the xlabel and ylabel respectively.
+
+    Raises:
+    -This function will raise TypeError if the 'Value' has non-numeric values.
+    """
+    # Check if all values in the specified column can be converted to float
+    if not pd.to_numeric(df[value_col], errors='coerce').isnull().any():
+        # Sort the DataFrame by group and then value
+        sorted_df = df.sort_values([group_col, value_col])
+
+        # Calculate the means and standard deviations for each group
+        means = sorted_df.groupby(group_col)[value_col].mean()
+        std_devs = sorted_df.groupby(group_col)[value_col].std()
+
+        # Generate x positions
+        x_positions = np.arange(len(sorted_df[group_col]))
+
+        # Plotting the bars with error bars
+        ax = plt.bar(x_positions, means, yerr=std_devs, color=COLORS)
+
+        # Setting labels and title
+        ax.set_xlabel(value_col)
+        ax.set_ylabel('Mean Value')

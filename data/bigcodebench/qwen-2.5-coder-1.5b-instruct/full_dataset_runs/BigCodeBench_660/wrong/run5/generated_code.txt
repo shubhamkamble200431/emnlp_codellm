@@ -1,0 +1,59 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+
+
+def task_func(x, y, labels):
+    """
+    Scale the "x" and "y" arrays using the standard scaler of sklearn and plot them with given labels.
+    Each pair of x and y arrays are scaled independently and plotted as a separate series with a label.
+
+    Parameters:
+    - x (list of np.ndarray): List of numpy arrays representing the x-values of the data points.
+    - y (list of np.ndarray): List of numpy arrays representing the y-values of the data points.
+    - labels (list of str): List of strings representing the labels for each data series.
+
+    Returns:
+    - matplotlib.figure.Figure: The figure object containing the plot.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - sklearn.preprocessing
+
+    Example:
+    >>> x = [np.array([1,2,3]), np.array([4,5,6]), np.array([7,8,9])]
+    >>> y = [np.array([4,5,6]), np.array([7,8,9]), np.array([10,11,12])]
+    >>> labels = ['A', 'B', 'C']
+    >>> fig = task_func(x, y, labels)
+    >>> plt.show()
+    """
+    # Initialize lists to store standardized values
+    x_standardized = []
+    y_standardized = []
+
+    # Iterate over each array in x and y
+    for i in range(len(x)):
+        # Create a StandardScaler instance
+        scaler = StandardScaler()
+
+        # Fit and transform the current array
+        standardized_array = scaler.fit_transform(y[i])
+
+        # Append the standardized array to the list
+        x_standardized.append(scaler.transform(x[i]))
+        y_standardized.append(standardized_array)
+
+    # Convert lists to np arrays
+    x_standardized = np.vstack(x_standardized)
+    y_standardized = np.vstack(y_standardized)
+
+    # Plotting
+    for i in range(len(labels)):
+        plt.plot(x_standardized[:, i], y_standardized[:, i], label=labels[i])
+
+    plt.xlabel('Standardized X')
+    plt.ylabel('Standardized Y')
+    plt.title('Scalibrated Data Series')
+    plt.legend()
+    return plt.gcf()  # Return the figure object

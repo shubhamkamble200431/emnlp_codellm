@@ -1,0 +1,77 @@
+import pandas as pd
+from scipy.stats import chi2_contingency
+
+def task_func(df, columns=['A', 'B', 'C'], larger=50, equal=900):
+    """
+    Filters a pandas DataFrame based on the values of specific rows, and performs
+    a chi-square independence test on the first two columns.
+
+    The function filters rows based on the following criteria:
+        Keep only rows where:
+            The value of the second column: df['second'] > larger
+            and
+            The value of the third column: df['third'] == equal
+    
+    After filtering a conigency table of the first two columns is computed,
+    which is then used in the chi2 independence test. The p_value of the test
+    is returned.        
+
+    Parameters:
+    df (pd.DataFrame): A DataFrame containing at least the columns specified in the 'columns' parameter.
+    columns (list): A list of column names to consider for the operation, defaulting to ['A', 'B', 'C'].
+                    The first column should contain categorical data, the second numerical data (used for filtering with values > 'larger'),
+                    and the third numerical data (used for filtering with a fixed value of 'equal').
+    larger (float, optional): Used for filtering rows against the second column where values > 'larger'.
+                              Defaults to 50.
+    equal (float, optional): Used for filtering rows against the third column where values == equal.
+                             Defaults to 900.
+
+    Returns:
+    float: The p-value from the chi-square independence test, indicating the statistical significance.
+           
+    Raises:
+    ValueError: If there's insufficient data for the test (no rows meeting the criteria).
+    ValueError: If the number of specified columns is not 3.
+    ValueError: If the specified columns are not contained in df.
+    
+
+    Requirements:
+    - pandas
+    - scipy.stats
+
+    Example:
+    >>> df = pd.DataFrame({
+    ...     'A': ['Yes', 'No', 'Yes', 'No'],
+    ...     'B': [55, 70, 40, 85],
+    ...     'C': [900, 900, 800, 900]
+    ... })
+    >>> task_func(df)
+    0.22313016014842973
+
+    >>> df = pd.DataFrame({
+    ...     'test': ['A', 'b', 'b', 'a', 'c', 'd'],
+    ...     'hi': [45, 2, 2, 3, 4, 4],
+    ...     'column3': [50, 50, 50, 50, 50, 50, ]
+    ... })
+    >>> task_func(df, ['test', 'hi', 'column3'], larger=2, equal=50)
+    0.23810330555354436
+    """
+    if len(columns) != 3:
+        raise ValueError("The number of specified columns must be 3.")
+
+    if not all(col in df.columns for col in columns):
+        raise ValueError("All specified columns must be present in the DataFrame.")
+
+    # Filter the DataFrame based on the given criteria
+    filtered_df = df[(df[columns[1]] > larger) & (df[columns[2]] == equal)]
+
+    if filtered_df.empty:
+        raise ValueError("There's insufficient data for the test.")
+
+    # Compute the contingency table
+    contingency_table = pd.crosstab(filtered_df[columns[0]], filtered_df[columns[1]])
+
+    # Perform the chi-square independence test
+    chi2_statistic, p_value, dof, expected = chi2_contingency(contingency_table)
+
+    return p_value

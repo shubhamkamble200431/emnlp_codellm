@@ -1,0 +1,50 @@
+import re
+import os
+
+
+def task_func(request):
+    """
+    Handles an HTTP GET request to retrieve a static file from the server.
+
+    This function processes an HTTP GET request, extracts the filename from it, checks the existence of the file
+    in the server's directory, and returns an HTTP response. The response either contains the file content (if found) or an
+    appropriate error message (if not found or if the request is invalid).
+
+    Parameters:
+    - request (str): An HTTP GET request in string format. The expected format is "GET /<filename> HTTP/1.1".
+
+    Returns:
+    - str: An HTTP response string, which includes the status code, content length (for 200 OK responses), and the file content
+           or an error message.
+
+    Requirements:
+    - os
+    - re
+
+    Examples:
+    >>> task_func("GET /test.txt HTTP/1.1")
+    "HTTP/1.1 200 OK\r\nContent-Length: <size of test.txt>\r\n\r\n<contents of test.txt>"
+    >>> task_func("GET /nonexistent.txt HTTP/1.1")
+    "HTTP/1.1 404 NOT FOUND\r\n\r\nFile Not Found"
+    >>> task_func("INVALID REQUEST")
+    "HTTP/1.1 400 BAD REQUEST\r\n\r\nBad Request"
+    >>> task_func("GET /restricted.txt HTTP/1.1") # Assuming an I/O error occurs
+    "HTTP/1.1 500 INTERNAL SERVER ERROR\r\n\r\nInternal Server Error"
+    """
+    # Check if the request is valid
+    match = re.match(r'GET \/([^ ]+) HTTP\/1\.1', request)
+    if not match:
+        return "HTTP/1.1 400 BAD REQUEST\r\n\r\nBad Request"
+
+    filename = match.group(1)
+
+    # Attempt to open the file
+    try:
+        with open(filename, 'rb') as f:
+            content = f.read()
+            size = len(content)
+            return f"HTTP/1.1 200 OK\r\nContent-Length: {size}\r\n\r\n{content.decode('utf-8')}"
+    except FileNotFoundError:
+        return "HTTP/1.1 404 NOT FOUND\r\n\r\nFile Not Found"
+    except IOError as e:
+        print(f"I/O error

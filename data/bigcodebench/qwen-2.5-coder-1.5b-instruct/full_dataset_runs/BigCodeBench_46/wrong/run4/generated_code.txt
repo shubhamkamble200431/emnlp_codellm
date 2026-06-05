@@ -1,0 +1,46 @@
+from scipy.stats import zscore
+import matplotlib.pyplot as plt
+
+
+def task_func(df):
+    """
+    Calculate Z-scores for numeric columns in a DataFrame and draw a histogram for each column.
+    - Missing values are replaced by the column's average.
+    - The histograms are plotted with 10 bins.
+
+    Parameters:
+    - df (pandas.DataFrame): The input pandas DataFrame with numeric columns.
+
+    Returns:
+    - tuple:
+        1. pandas.DataFrame: A DataFrame with computed z-scores.
+        2. list: A list of Axes objects representing the histograms of the numeric columns.
+
+    Requirements:
+    - pandas.
+    - numpy.
+    - scipy.stats.zscore.
+    - matplotlib.pyplot.
+
+    Example:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df_input = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7.0, np.nan, 9.0]], columns=["col1", "col2", "col3"])
+    >>> zscore_output, plots = task_func(df_input)
+    """
+    # Replace missing values with the mean of the respective column
+    df.fillna(df.mean(), inplace=True)
+
+    # Calculate Z-scores
+    z_scores = zscore(df)
+
+    # Create a new DataFrame with z-scores
+    z_score_df = pd.DataFrame(z_scores, index=df.index, columns=df.columns)
+
+    # Plot histograms for each numeric column
+    plots = []
+    for col in df.columns:
+        plot = df[col].plot(kind='hist', bins=10, alpha=0.8, color='blue')
+        plots.append(plot)
+
+    return z_score_df, plots

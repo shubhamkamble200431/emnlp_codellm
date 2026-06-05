@@ -1,0 +1,46 @@
+import json
+import os
+
+# Constants
+PREFIXES = ["is_", "has_", "can_", "should_"]
+
+def task_func(directory):
+    """
+    Read all JSON files from the specified directory, count the occurrence of keys starting with certain prefixes 
+    (defined in the PREFIXES constant), and return a dictionary of statistics.
+
+    Parameters:
+    - directory (str): The directory path where the JSON files are located.
+
+    Returns:
+    - dict: A dictionary with keys as prefixes (from PREFIXES) and values as their counts in the JSON files.
+
+    Requirements:
+    - json
+    - os
+
+    Example:
+    >>> task_func('/path/to/json/files')
+    {'is_': 10, 'has_': 5, 'can_': 3, 'should_': 2}
+    >>> task_func('/another/path/to/json/files')
+    {'is_': 8, 'has_': 6, 'can_': 1, 'should_': 4}
+    """
+    # Initialize a dictionary to store the prefix counts
+    prefix_counts = {prefix: 0 for prefix in PREFIXES}
+
+    # Walk through the directory and its subdirectories
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.json'):
+                file_path = os.path.join(root, file)
+
+                # Open and load the JSON file
+                with open(file_path, 'r') as f:
+                    data = json.load(f)
+
+                # Count occurrences of each key starting with any prefix
+                for key in data:
+                    if key.startswith(tuple(PREFIXES)):
+                        prefix_counts[key] += 1
+
+    return prefix_counts

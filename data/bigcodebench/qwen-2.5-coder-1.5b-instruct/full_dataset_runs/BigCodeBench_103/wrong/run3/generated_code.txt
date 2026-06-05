@@ -1,0 +1,54 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def task_func(temperatures):
+    """
+    Calculate and plot the daytime temperatures for New York over a given period. The plot uses Arial font for display.
+
+    Parameters:
+        temperatures (pandas.DataFrame): The temperatures data as a pandas DataFrame with a DateTimeIndex 
+                                         in the 'America/New_York' timezone and a 'temperature' column.
+
+    Returns:
+        matplotlib.axes.Axes: The Axes object containing the temperature plot.
+        
+    for the returned plot,  set the xlabel as 'Date', ylabel as 'Temperature (°C)' and
+    title as Daily Temperatures in New York
+
+    Raises:
+        ValueError: If the input DataFrame is not in the expected format or empty.
+
+    Requirements:
+        - matplotlib
+        - pandas
+
+    Example:
+        >>> temperatures = pd.DataFrame({
+        ...     'temperature': [random.randint(-10, 30) for _ in range(365)],
+        ...     'date': pd.date_range(start='01-01-2023', periods=365, tz='America/New_York')
+        ... }).set_index('date')
+        >>> ax = task_func(temperatures)
+        >>> type(ax)
+        <class 'matplotlib.axes._axes.Axes'>
+    """
+    if not isinstance(temperatures, pd.DataFrame) or temperatures.empty:
+        raise ValueError("Input must be a non-empty pandas DataFrame.")
+
+    # Set the timezone to America/New_York
+    temperatures.index = temperatures.index.tz_convert('America/New_York')
+
+    # Extract daytime temperatures (assuming 8 AM to 4 PM)
+    daytime_temps = temperatures.between_time('08:00', '16:00')
+
+    # Plotting
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(daytime_temps.index, daytime_temps['temperature'], label='Daytime Temperature')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Temperature (°C)')
+    ax.title('Daily Temperatures in New York')
+    ax.legend()
+
+    # Set font family to Arial
+    ax.set_fontfamily('Arial')
+
+    return ax

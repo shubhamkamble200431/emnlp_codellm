@@ -1,0 +1,51 @@
+import matplotlib
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+
+def task_func(df):
+    """
+    Standardize 'Age' and 'Score' columns in a pandas DataFrame, remove duplicate entries based on 'Name', and plot a scatter plot of these standardized values.
+
+    Parameters:
+    df (pandas.DataFrame): DataFrame containing 'Name', 'Age', and 'Score' columns.
+
+    Returns:
+    pandas.DataFrame: DataFrame with standardized 'Age' and 'Score', duplicates removed.
+    matplotlib.axes.Axes: Axes object of the scatter plot.
+
+    Note:
+    - The function use "Scatter Plot of Standardized Age and Score" for the plot title.
+    - The function use "Age (standardized)" and "Score (standardized)" as the xlabel and ylabel respectively.
+
+    Requirements:
+    - pandas
+    - numpy
+    - matplotlib.pyplot
+    - sklearn.preprocessing
+
+    Example:
+    >>> import pandas as pd
+    >>> data = pd.DataFrame([{'Name': 'James', 'Age': 30, 'Score': 85},{'Name': 'James', 'Age': 35, 'Score': 90},{'Name': 'Lily', 'Age': 28, 'Score': 92},{'Name': 'Sam', 'Age': 40, 'Score': 88},{'Name': 'Nick', 'Age': 50, 'Score': 80}])
+    >>> modified_df, plot_axes = task_func(data)
+    >>> modified_df.head()
+        Name       Age     Score
+    0  James -0.797724 -0.285365
+    2   Lily -1.025645  1.312679
+    3    Sam  0.341882  0.399511
+    4   Nick  1.481487 -1.426825
+    """
+    # Standardize 'Age' and 'Score'
+    scaler = StandardScaler()
+    df[['Age', 'Score']] = scaler.fit_transform(df[['Age', 'Score']])
+
+    # Remove duplicate entries based on 'Name'
+    df.drop_duplicates(subset='Name', inplace=True)
+
+    # Create a scatter plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.scatter(df['Age'], df['Score'])
+    ax.set_title('Scatter Plot of Standardized Age and Score')
+    ax.set_xlabel('Age (standardized)')
+    ax.set_ylabel('Score (standardized)')
+
+    return df, ax

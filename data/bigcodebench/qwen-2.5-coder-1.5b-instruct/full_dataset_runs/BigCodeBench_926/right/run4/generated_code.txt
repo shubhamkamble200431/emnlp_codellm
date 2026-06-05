@@ -1,0 +1,39 @@
+import pandas as pd
+import sqlite3
+
+def task_func(db_path: str, table_name: str, column_name: str) -> pd.DataFrame:
+    """
+    Loads data from an SQLite database into a Pandas DataFrame and performs a string replacement operation
+    on a specified column. Specifically, replaces all occurrences of the newline character '\n' with the HTML line
+    break tag '<br>'.
+    
+    Requirements:
+    - pandas
+    - sqlite3
+    
+    Parameters:
+    - db_path (str): The path to the SQLite database file.
+    - table_name (str): The name of the table from which to load data.
+    - column_name (str): The name of the column in which to perform string replacement.
+    
+    Returns:
+    pd.DataFrame: The modified DataFrame with replaced strings in the specified column.
+
+    Examples:
+    >>> df = task_func('./data.db', 'messages', 'content')
+    >>> df.loc[0, 'content']  # Assuming the first row originally contained "Hello\nWorld"
+    'Hello<br>World'
+    >>> df = task_func('./another_data.db', 'comments', 'text')
+    >>> df.loc[1, 'text']  # Assuming the second row originally contained "Good\nMorning"
+    'Good<br>Morning'
+    """
+    conn = sqlite3.connect(db_path)
+    query = f"SELECT * FROM {table_name}"
+    df = pd.read_sql_query(query, conn)
+
+    # Replace newline characters with <br> tags in the specified column
+    df[column_name] = df[column_name].str.replace('\n', '<br>')
+
+    conn.close()
+
+    return df

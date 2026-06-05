@@ -1,0 +1,54 @@
+import pandas as pd
+import statistics
+import random
+
+def task_func(students, subjects, seed=None):
+    """
+    Create a grade report for a list of students across various subjects. Each student's grades are randomly generated, 
+    and the report includes the average grade for each student. The randomness is seeded for reproducibility if a seed is provided.
+
+    Parameters:
+    students (list of str): The students for whom the report is being generated.
+    subjects (list of str): The subjects included in the report.
+    seed (int, optional): A seed for the random number generator to ensure reproducibility. If None, the randomness is seeded by the system.
+
+    Returns:
+    DataFrame: A pandas DataFrame containing each student's grades across the subjects and their average grade. 
+               Columns are ['Student', 'Subject1', 'Subject2', ..., 'Average Grade'].
+
+    Requirements:
+    - pandas
+    - statistics
+    - random
+
+    Example:
+    >>> students = ['Alice', 'Bob', 'Charlie']
+    >>> subjects = ['Math', 'Physics', 'English']
+    >>> report = task_func(students, subjects, seed=123)
+    >>> print(report)
+       Student  Math  Physics  English  Average Grade
+    0    Alice     6       34       11      17.000000
+    1      Bob    98       52       34      61.333333
+    2  Charlie    13        4       48      21.666667
+    """
+    # Set the random seed if provided
+    if seed is not None:
+        random.seed(seed)
+
+    # Initialize a dictionary to store grades for each subject
+    grades_dict = {subject: [] for subject in subjects}
+
+    # Generate random grades for each student and subject
+    for student in students:
+        for subject in subjects:
+            grades_dict[subject].append(random.randint(0, 100))
+
+    # Calculate the average grade for each student
+    averages = [sum(grades) / len(grades) for grades in grades_dict.values()]
+
+    # Create a DataFrame with grades and average grades
+    df = pd.DataFrame({
+        'Student': students,
+        **{subject: grades for subject, grades in grades_dict.items()},
+        'Average Grade': averages
+    })

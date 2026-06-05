@@ -1,0 +1,36 @@
+from itertools import chain
+import numpy as np
+from sklearn.cluster import KMeans
+
+
+def task_func(L):
+    """
+    Convert a list of lists into a list of integers, apply the KMeans clustering, 
+    and return a scatter plot 'matplotlib.axes.Axes' with data points color-coded by their cluster.
+
+    Requirements:
+    - itertools.chain
+    - numpy
+    - sklearn.cluster
+
+    Parameters:
+    L (list of lists): A list of lists where each sublist contains integers.
+
+    Returns:
+    matplotlib.axes.Axes: An Axes object representing the scatter plot.
+
+    Example:
+    >>> ax = task_func([[1, 2, 3], [50, 60, 70], [100, 110, 120]])
+    """
+    # Flatten the list of lists to a single list of integers
+    flattened_list = list(chain.from_iterable(L))
+
+    # Apply KMeans clustering
+    kmeans = KMeans(n_clusters=3)  # Choose an appropriate number of clusters
+    labels = kmeans.fit_predict(flattened_list.reshape(-1, 1))
+
+    # Create a scatter plot
+    fig, ax = plt.subplots()
+    ax.scatter(range(len(flattened_list)), flattened_list, c=labels, cmap='viridis')
+
+    return ax

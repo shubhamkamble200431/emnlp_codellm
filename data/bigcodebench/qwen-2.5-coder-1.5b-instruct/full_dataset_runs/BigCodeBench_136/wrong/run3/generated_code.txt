@@ -1,0 +1,50 @@
+import pandas as pd
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+def task_func(df):
+    """
+    Perform Principal Component Analysis (PCA) on the dataframe and visualize the two main components.
+
+    Parameters:
+        df (DataFrame): The input dataframe containing numerical data.
+
+    Returns:
+        DataFrame: A pandas DataFrame with the principal components named 'Principal Component 1' and 'Principal Component 2'.
+        Axes: A Matplotlib Axes object representing the scatter plot of the two principal components. The plot includes:
+              - Title: '2 Component PCA'
+              - X-axis label: 'Principal Component 1'
+              - Y-axis label: 'Principal Component 2'
+
+    Raises:
+        ValueError: If the input is not a DataFrame, or if the DataFrame is empty.
+
+    Requirements:
+        - pandas
+        - sklearn.decomposition
+        - matplotlib.pyplot
+
+    Example:
+        >>> df = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)), columns=list('ABCD'))
+        >>> pca_df, ax = task_func(df)
+        >>> plt.show()
+    """
+    if not isinstance(df, pd.DataFrame):
+        raise ValueError("Input must be a DataFrame.")
+    
+    if df.empty:
+        raise ValueError("DataFrame cannot be empty.")
+    
+    # Perform PCA
+    pca = PCA(n_components=2)
+    df_pca = pca.fit_transform(df)
+    
+    # Create a new DataFrame for the principal components
+    pca_df = pd.DataFrame(data=df_pca, columns=['Principal Component 1', 'Principal Component 2'])
+    
+    # Plotting
+    ax = plt.scatter(pca_df['Principal Component 1'], pca_df['Principal Component 2'], cmap='viridis')
+    plt.title('2 Component PCA')
+    plt.xlabel('Principal Component 1')
+    plt.ylabel('Principal Component 2')
+    return pca_df, ax

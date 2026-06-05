@@ -1,0 +1,41 @@
+from datetime import datetime
+import json
+
+SERVER_ADDRESS = "localhost"
+BUFFER_SIZE = 1024
+
+
+def task_func(client_socket):
+    """
+    Responds to a client's request by sending a JSON-formatted message containing
+    the current server time and a greeting.
+
+    Parameters:
+    - client_socket (socket.socket): The client socket from which the request is received.
+
+    Requirements:
+    - datetime.datetime
+    - json
+
+    Returns:
+    - None
+
+    Example:
+    >>> import socket
+    >>> server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    >>> server_socket.bind((SERVER_ADDRESS, 0))  # Bind to a free port
+    >>> server_socket.bind((SERVER_ADDRESS, 8080))
+    >>> server_socket.listen(1)
+    >>> try:
+    ...     client_socket, _ = server_socket.accept()
+    ...     task_func(client_socket)
+    ... finally:
+    ...     server_socket.close()
+    """
+with client_socket.recv(BUFFER_SIZE).decode('utf-8') as req:
+    response_dict = {
+        'current_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'greeting': 'Hello, client!'
+    }
+    response_json = json.dumps(response_dict)
+    client_socket.sendall(response_json.encode('utf-8'))

@@ -1,0 +1,45 @@
+import matplotlib.pyplot as plt
+from itertools import zip_longest
+
+
+# Constants
+COLORS = ['red', 'green', 'blue', 'yellow', 'purple']
+
+def task_func(data, labels):
+    """    
+    Plot a list of data with different colors. If there are more data series than the predefined colors, 
+    the function cycles through the colors. In case of even more series than colors + labels, 'black' is used.
+    
+    Parameters:
+    data (list): A list of lists, each representing a series of data.
+    labels (list): A list of labels for the data series.
+    
+    Returns:
+    matplotlib.axes.Axes: The Axes object of the plot.
+    
+    Requirements:
+    - matplotlib.pyplot
+    - itertools.zip_longest
+    - Predefined colors are ['red', 'green', 'blue', 'yellow', 'purple'].
+    
+    Example:
+    >>> data = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6], [3, 4, 5, 6, 7]]
+    >>> labels = ['Series 1', 'Series 2', 'Series 3']
+    >>> ax = task_func(data, labels)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    n_series = len(data)
+    n_colors = len(COLORS)
+
+    if n_series > n_colors:
+        colors_cycle = itertools.cycle(COLORS)
+        colors_list = [next(colors_cycle) if i < n_series else 'black' for i in range(n_series)]
+    else:
+        colors_list = COLORS[:n_series]
+
+    fig, ax = plt.subplots()
+    for color, series_data in zip_longest(colors_list, data):
+        ax.plot(series_data, color=color)
+
+    return ax

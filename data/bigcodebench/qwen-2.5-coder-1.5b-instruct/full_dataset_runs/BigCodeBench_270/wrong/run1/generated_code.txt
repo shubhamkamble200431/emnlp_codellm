@@ -1,0 +1,25 @@
+import re
+from collections import Counter
+
+def task_func(sentence):
+    """
+    Count the occurrence of each word in a sentence and return the result as a dictionary.
+    This function uses a regular expression to find words and a Counter to count their occurrences.
+
+    Parameters:
+    sentence (str): The sentence to count the words in.
+
+    Returns:
+    dict: A dictionary where the keys are the words and the values are their counts.
+
+    Requirements:
+    - re
+    - collections.Counter
+    
+    Example:
+    >>> task_func("apple banana apple orange orange orange")
+    {'apple': 2, 'banana': 1, 'orange': 3}
+    """
+    words = re.findall(r'\b\w+\b', sentence.lower())
+    word_count = Counter(words)
+    return word_count

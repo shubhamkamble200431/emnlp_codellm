@@ -1,0 +1,42 @@
+import numpy as np
+import random
+from datetime import datetime
+
+def task_func(rows=3, columns=2, start_date=datetime(2021, 1, 1), end_date=datetime(2021, 12, 31), seed=0):
+    """
+    Generates a matrix of given dimensions (rows x columns) containing unique dates between 
+    a specified start date and end date.
+    
+    Parameters:
+    - rows (int): The number of rows for the output matrix. Default is 3.
+    - columns (int): The number of columns for the output matrix. Default is 2.
+    - start_date (datetime): The start date for the range of unique dates. Default is datetime(2021, 1, 1).
+    - end_date (datetime): The end date for the range of unique dates. Default is datetime(2021, 12, 31).
+    
+    Returns:
+    - ndarray: A numpy ndarray with unique dates in the shape (rows, columns).
+    
+    Requirements:
+    - numpy
+    - itertools
+    - datetime
+    - random
+    
+    Example:
+    >>> matrix = task_func(2, 2, datetime(2021, 1, 1), datetime(2021, 1, 10))
+    >>> print(matrix)
+    [['2021-01-03T00:00:00.000000000', '2021-01-07T00:00:00.000000000'],
+     ['2021-01-09T00:00:00.000000000', '2021-01-04T00:00:00.000000000']]
+    """
+    # Seed the random number generator
+    random.seed(seed)
+
+    # Generate all possible dates within the specified range
+    all_dates = []
+    current_date = start_date
+    while current_date <= end_date:
+        all_dates.append(current_date)
+        current_date += datetime.timedelta(days=1)
+
+    # Select unique dates randomly
+    selected_dates = random.sample(all_dates, min(len(all_dates), rows * columns))

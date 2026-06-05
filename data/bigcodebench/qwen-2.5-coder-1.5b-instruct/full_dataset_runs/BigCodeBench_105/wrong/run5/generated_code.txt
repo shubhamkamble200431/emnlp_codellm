@@ -1,0 +1,33 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def task_func(df):
+    """
+    Perform exploratory data analysis on a dataframe. This function converts the 'date' column to an ordinal format,
+    creates a correlation matrix, and generates a pair plot of the dataframe.
+
+    Parameters:
+        df (pandas.DataFrame): A dataframe with columns 'group', 'date', and 'value'. The 'date' column should be in datetime format.
+
+    Returns:
+        matplotlib.figure.Figure: The figure object for the correlation matrix heatmap.
+        seaborn.axisgrid.PairGrid: The PairGrid object for the pair plot.
+
+        The title of the plot is 'Correlation Matrix'. 
+    Raises:
+        ValueError: If the dataframe is empty, if required columns are missing, or if 'date' column is not in datetime format.
+
+    Requirements:
+        - pandas
+        - matplotlib.pyplot
+        - seaborn
+
+    Example:
+        >>> df = pd.DataFrame({
+        ...     "group": ["A", "A", "A", "B", "B"],
+        ...     "date": pd.to_datetime(["2022-01-02", "2022-01-13", "2022-02-01", "2022-02-23", "2022-03-05"]),
+        ...     "value": [10, 20, 16, 31, 56],
+        ... })
+        >>> heatmap_fig, pairplot_grid = task_func(df)
+    """

@@ -1,0 +1,58 @@
+import pandas as pd
+import folium
+from geopy.geocoders import Photon
+
+def task_func(dic):
+    """
+    Generates a Folium map with markers for specified locations. It preprocesses the input to handle
+    both direct geographical coordinates and address strings. For address strings, it dynamically resolves
+    their latitude and longitude using the Photon geolocation service. This flexible input handling
+    allows for easy mapping of various location types.
+
+    Parameters:
+        dic (dict): A dictionary with location names as keys. Each key can either map to a dictionary
+                    {'Lat': latitude, 'Lon': longitude} for direct coordinates, or to a string indicating
+                    the location's address for geolocation lookup using Photon.
+
+    Returns:
+        folium.Map: A Folium map object with markers for each specified location.
+
+    Requirements:
+    - pandas
+    - folium
+    - geopy.geocoders.Photon
+
+    Notes:
+    - The geolocator, instantiated as Photon(user_agent="geoapiExercises"), plays a crucial role in enabling
+    the function to handle string addresses by converting them into latitude and longitude, thus broadening
+    the scope of input data that can be mapped.
+
+    Examples:
+    >>> locations = {'Place1': {'Lat': 0, 'Lon': 0}, 'Place2': 'New York, USA'}
+    >>> result = task_func(locations)
+    >>> isinstance(result, folium.Map)
+    True
+    >>> [0.0, 0.0] == result.location
+    True
+    """
+    lat_lons = {}
+
+    for loc, details in dic.items():
+        if 'Lat' in details:
+            lat_lons[loc] = (details['Lat'], details['Lon'])
+        else:
+            try:
+                # Get coordinates from address using Photon
+                coords = geolocator.geocode(details)
+                lat_lons[loc] = (coords.latitude, coords.longitude)
+            except Exception as e:
+                print(f"Error resolving address {details}: {e}")
+
+    # Create a Folium map centered at the centroid of all locations
+    center_lat, center_lon = sum(lat_lons.values(), (0, 0)) / len(lat_lons)
+    m = folium.Map(location=[center_lat, center_lon], zoom_start=6)
+
+    for loc, (lat, lon) in lat_lons.items():
+        folium.Marker([lat, lon]).add_to(m)
+
+    return m

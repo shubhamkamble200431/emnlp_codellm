@@ -1,0 +1,61 @@
+import random
+import string
+import pandas as pd
+
+
+def task_func(n_rows=1000):
+    """
+    Generate a histogram of the frequency of the top 30 unique random 3-letter strings.
+    The function creates random strings, each consisting of 3 letters from the lowercase English alphabet.
+    It then plots a histogram showing the frequencies of the top 30 most common strings among the generated set.
+
+    Parameters:
+    - n_rows (int): Number of random 3-letter strings to generate.
+    Must be positive. Default is 1000.
+
+    Returns:
+    - ax (matplotlib.axes.Axes): A Matplotlib Axes object containing the histogram.
+    Each bar represents one of the top 30 most frequent 3-letter strings.
+
+    Raises:
+    - ValueError: If `n_rows` is less than or equal to 0.
+
+    Requirements:
+    - random
+    - string
+    - pandas
+    
+    Example:
+    >>> ax = task_func(1000)
+    >>> ax.get_title()
+    'Top 30 Frequencies of Random 3-Letter Strings'
+    """
+    if n_rows <= 0:
+        raise ValueError("n_rows must be a positive integer")
+
+    # Define the alphabet and the length of the strings
+    alphabet = string.ascii_lowercase
+    string_length = 3
+
+    # Generate n_rows random 3-letter strings
+    random_strings = [random.choices(alphabet, k=string_length) for _ in range(n_rows)]
+
+    # Create a DataFrame with the strings
+    df = pd.DataFrame(random_strings)
+
+    # Count the frequency of each string
+    freq_df = df.value_counts().reset_index(name='frequency')
+
+    # Sort the DataFrame by frequency in descending order
+    freq_df.sort_values(by='frequency', ascending=False, inplace=True)
+
+    # Select the top 30 most frequent strings
+    top_30_strings = freq_df[:30]['index']
+
+    # Plot the histogram of the top 30 strings
+    ax = freq_df.groupby('index')['frequency'].plot(kind='bar')
+    ax.set_xlabel('Random 3-Letter String')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Top 30 Frequencies of Random 3-Letter Strings')
+
+    return ax

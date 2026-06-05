@@ -1,0 +1,44 @@
+import pytz
+from dateutil.parser import parse
+
+# Constants
+TIME_FORMAT = "%d/%m/%y %H:%M:%S.%f"
+
+
+def task_func(time_string, from_tz, to_tz):
+    """
+    Converts a time string from one timezone to another, considering various cases such as daylight saving time.
+
+    Parameters:
+    - time_string (str): A time string in the format 'dd/mm/yy HH:MM:SS.fff'. This string should represent a valid date and time.
+    - from_tz (str): The timezone of the given time string. The timezone should be a valid IANA timezone name (e.g., 'UTC', 'America/New_York').
+    - to_tz (str): The target timezone to which the time string should be converted. This should also be a valid IANA timezone name (e.g., 'Asia/Tokyo').
+
+    Returns:
+    - str: The converted time string in the format 'dd/mm/yy HH:MM:SS.fff'. The conversion takes into account any differences in daylight saving rules between the source and target timezones.
+
+    Requirements:
+    - pytz
+    - dateutil
+
+    Example:
+    >>> task_func('30/03/09 16:31:32.123', 'UTC', 'America/New_York')
+    '30/03/09 12:31:32.123000'
+
+    Note: The example assumes no daylight saving time shift between the given timezones at the specified date and time.
+    """
+    # Parse the input time string into a datetime object with the original timezone
+    local_time = parse(time_string)
+
+    # Create timezone objects for both the source and target timezones
+    from_timezone = timezone(from_tz)
+    to_timezone = timezone(to_tz)
+
+    # Convert the datetime object from the source timezone to UTC
+    utc_time = local_time.astimezone(from_timezone).astimezone(pytz.utc)
+
+    # Convert the UTC datetime object to the target timezone
+    target_time = utc_time.astimezone(to_timezone)
+
+    # Format the resulting datetime object back into a string
+    return target_time.strftime(TIME_FORMAT)

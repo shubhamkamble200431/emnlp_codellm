@@ -1,0 +1,70 @@
+import urllib.request
+from pyquery import PyQuery as pq
+from datetime import datetime
+import pandas as pd
+
+def task_func(url):
+    """
+    Extracts the text and href attributes of all anchor tags from a given URL's HTML content, 
+    and returns this data in a pandas DataFrame along with the time of data extraction.
+
+    Parameters:
+    url (str): The URL from which to fetch the HTML content.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with columns 'text', 'href', and 'fetch_time'. Each row 
+                      corresponds to an anchor tag in the HTML, with 'text' and 'href' containing 
+                      the text and the hyperlink reference of the anchor tag, respectively. 
+                      'fetch_time' contains the timestamp of when the data was fetched in the format
+                        'YYYY-MM-DD HH:MM:SS'.
+
+    Raises:
+    ValueError: If the provided URL is invalid or empty.
+    URLError: If there is an issue with network connectivity or the server.
+
+    Requirements:
+    - urllib.request
+    - pyquery
+    - datime
+    - pandas
+    - urllib.error
+
+    Example:
+    >>> df = task_func('https://en.wikibooks.org/wiki/Main_Page')
+
+    Note:
+    The function requires internet connectivity to fetch HTML content.
+    """
+    if not url:
+        raise ValueError("URL cannot be empty")
+
+    try:
+        # Fetch HTML content from the URL
+        response = urllib.request.urlopen(url)
+        html_content = response.read()
+
+        # Parse HTML using PyQuery
+        doc = pq(html_content)
+
+        # Initialize an empty list to store anchor tag data
+        data = []
+
+        # Iterate over each anchor tag in the parsed HTML
+        for anchor_tag in doc('a'):
+            # Extract text and href attributes
+            text = anchor_tag.text.strip()
+            href = anchor_tag.attr('href')
+
+            # Append extracted data to the list
+            data.append((text, href, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+
+    except urllib.error.URLError:
+        raise URLError("Failed to access the provided URL")
+
+    except Exception as e:
+        raise Exception(f"An error occurred: {e}")
+
+    # Convert the data list into a DataFrame
+    df = pd.DataFrame(data, columns=['text', 'href', 'fetch_time'])
+
+    return df

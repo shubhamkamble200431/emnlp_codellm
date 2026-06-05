@@ -1,0 +1,56 @@
+import re
+import urllib.parse
+import requests
+import json
+
+def task_func(myString, API_KEY):
+    """
+    Extracts all URLs from the provided string, analyzes each URL to extract the domain, and uses the IP API to get the geolocation data for each domain.
+    
+    Parameters:
+    myString (str): The string from which URLs are to be extracted.
+    API_KEY (str): The API key for accessing the IP API service which provides geolocation data.
+    
+    Returns:
+    dict: A dictionary mapping domains to their geolocation data as returned by the IP API. Each entry contains fields like 'status', 'country', 'region', 'city', etc. If an API request fails, the corresponding value will be None.
+    
+    Requirements:
+    - re
+    - urllib.parse
+    - requests
+    - json
+    
+    Example:
+    >>> task_func("Check these links: http://www.google.com, https://www.python.org")
+    {'www.google.com': {'status': 'success', 'country': 'United States', 'countryCode': 'US', 'region': 'CA', 'regionName': 'California', 'city': 'Mountain View', 'zip': '94043', 'lat': '37.4192', 'lon': '-122.0574', 'timezone': 'America/Los_Angeles', 'isp': 'Google LLC', 'org': 'Google LLC', 'as': 'AS15169 Google LLC', 'query': '172.217.12.142'}, 'www.python.org': {'status': 'success', 'country': 'United States', 'countryCode': 'US', 'region': 'OR', 'regionName': 'Oregon', 'city': 'Boardman', 'zip': '97818', 'lat': '45.8696', 'lon': '-119.688', 'timezone': 'America/Los_Angeles', 'isp': 'Amazon.com, Inc.', 'org': 'Amazon Data Services NoVa', 'as': 'AS16509 Amazon.com, Inc.', 'query': '151.101.193.223'}}
+    """
+    def get_geolocation(url):
+        response = requests.get(f"https://api.ipify.org?format=json&key={API_KEY}")
+        if response.status_code == 200:
+            ip_info = response.json()
+            return {
+                'status': 'success',
+                'ip': ip_info['ip'],
+                'country': ip_info['country'],
+                'countryCode': ip_info['countryCode'],
+                'region': ip_info['region'],
+                'regionName': ip_info['regionName'],
+                'city': ip_info['city'],
+                'zip': ip_info['zip'],
+                'lat': ip_info['latitude'],
+                'lon': ip_info['longitude'],
+                'timezone': ip_info['timezone'],
+                'isp': ip_info['isp'],
+                'org': ip_info['org'],
+                'as': ip_info['asn'],
+                'query': url
+            }
+        else:
+            return {
+                'status': 'failure',
+                'query': url
+            }
+
+    urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', myString)
+    results = {url: get_geolocation(url) for url in urls}
+    return results

@@ -1,0 +1,52 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+def task_func(s1, s2):
+    """
+    Visualize two Series using a swarm plot with a highlight on their intersecting data points.
+
+    This function creates a swarm plot to visually compare two pandas Series. 
+    It highlights the intersection points between these two series by drawing red dashed lines at the intersecting data points.
+
+    Parameters:
+    - s1 (pd.Series): The first series of data. This series must have a unique name that identifies it in the plot.
+    - s2 (pd.Series): The second series of data. Similar to s1, this series must also have a unique name.
+
+    Returns:
+    - ax (matplotlib.Axes): The Axes object of the plotted swarm chart. This object can be used for further customization of the plot if required.
+    intersection_count (int): The number of unique intersecting data points between s1 and s2. 
+    This count gives a quick numerical summary of the overlap between the two series.
+
+    Requirements:
+    - pandas
+    - seaborn
+    - matplotlib
+
+    Example:
+    >>> s1 = pd.Series([1, 2, 3, 4, 5], name='Series1')
+    >>> s2 = pd.Series([4, 5, 6, 7, 8], name='Series2')
+    >>> ax, count = task_func(s1, s2)
+    >>> ax.get_title()
+    'Overlap Between Series1 and Series2'
+    """
+    # Create the swarm plot
+    ax = sns.swarmplot(x=s1.index, y=s1, label=s1.name, color='blue', edgecolor='black')
+    sns.swarmplot(x=s2.index, y=s2, label=s2.name, color='red', edgecolor='black')
+
+    # Find the unique intersecting data points
+    intersecting_indices = s1[s1.isin(s2)].index
+    intersection_points = [s1[index] for index in intersecting_indices]
+    intersection_count = len(intersection_points)
+
+    # Highlight the intersecting points
+    for i in range(len(intersecting_points)):
+        for j in range(i + 1, len(intersecting_points)):
+            ax.plot((intersecting_indices[i], intersecting_indices[j]), (intersection_points[i], intersection_points[j]), 'r--')
+
+    # Add title and legend
+    ax.set_title('Overlap Between Series1 and Series2')
+    ax.legend()
+
+    return ax, intersection

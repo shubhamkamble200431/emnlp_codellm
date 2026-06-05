@@ -1,0 +1,52 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+
+def task_func(df):
+    """
+    Normalize the last column of the DataFrame using MinMaxScaler from sklearn and plot the normalized data.
+
+    Parameters:
+    - df (DataFrame): The input DataFrame.
+    - bins (int, optional): Number of bins for the histogram. Defaults to 20.
+
+    Returns:
+    - DataFrame: A pandas DataFrame where the last column has been normalized.
+    - Axes: A Matplotlib Axes object representing the plot of the normalized last column. The plot includes:
+      - Title: 'Normalized Data of <column_name>'
+      - X-axis label: 'Index'
+      - Y-axis label: 'Normalized Value'
+
+    Raises:
+    - ValueError: If the input is not a DataFrame or if the DataFrame is empty.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+    - sklearn
+
+    Example:
+    >>> df = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)), columns=list('ABCD'))
+    >>> normalized_df, ax = task_func(df)
+    >>> plt.show()
+    """
+    # Ensure the input is a DataFrame
+    if not isinstance(df, pd.DataFrame) or len(df) == 0:
+        raise ValueError("Input must be a non-empty DataFrame.")
+
+    # Extract the last column
+    last_column = df.iloc[:, -1]
+
+    # Normalize the last column using MinMaxScaler
+    scaler = MinMaxScaler()
+    normalized_data = scaler.fit_transform(last_column.values.reshape(-1, 1))
+
+    # Create a new DataFrame with the normalized data
+    normalized_df = pd.DataFrame(normalized_data, columns=[df.columns[-1]])
+
+    # Plot the normalized data
+    ax = normalized_df.plot(kind='hist', bins=bins, title=f'Normalized Data of {df.columns[-1]}')
+    ax.set_xlabel('Index')
+    ax.set_ylabel('Normalized Value')
+
+    return normalized_df, ax

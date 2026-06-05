@@ -1,0 +1,53 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+def task_func(df):
+    """
+    Standardize the 'age' and 'income' columns for each group by 'id' in a Pandas DataFrame, and return the standardized DataFrame.
+
+    Parameters:
+    df (DataFrame): A pandas DataFrame with columns ['id', 'age', 'income'].
+
+    Returns:
+    DataFrame: The pandas DataFrame after standardizing 'age' and 'income' columns.
+
+    Raises:
+    - This function will raise ValueError if the DataFrame does not have the 'id', 'age', and 'income' columns.
+
+    Requirements:
+    - pandas
+    - sklearn.preprocessing.StandardScaler
+
+    Example:
+    >>> df = pd.DataFrame({ 'id': [1, 1, 2, 2, 3, 3], 'age': [25, 26, 35, 36, 28, 29], 'income': [50000, 60000, 70000, 80000, 90000, 100000]})
+    >>> df_standardized = task_func(df)
+    >>> print(df_standardized.iloc[0]['age'] == 25)
+    False
+    """
+    # Check if the required columns exist in the DataFrame
+    required_cols = ['id', 'age', 'income']
+    if not all(col in df.columns for col in required_cols):
+        raise ValueError("The DataFrame does not have the required columns: id, age, income")
+
+    # Group the DataFrame by 'id'
+    grouped_df = df.groupby('id')
+
+    # Initialize a list to store the standardized dataframes
+    standardized_dfs = []
+
+    # Loop through each group
+    for name, group in grouped_df:
+        # Create a copy of the current group
+        standardized_group = group.copy()
+
+        # Fit the StandardScaler on the 'age' and 'income' columns of the group
+        scaler = StandardScaler()
+        standardized_group[['age', 'income']] = scaler.fit_transform(standardized_group[['age', 'income']])
+
+        # Append the standardized group to the list
+        standardized_dfs.append(standardized_group)
+
+    # Concatenate the standardized dataframes into one
+    result_df = pd.concat(standardized_dfs, ignore_index=True)
+
+    return result_df

@@ -1,0 +1,46 @@
+import re
+import os
+import glob
+from pathlib import Path
+
+
+def task_func(pattern, directory, extensions):
+    """
+    Find all files in a specific directory that contain a regex pattern in their contents in a case insensitive manner.
+    
+    Parameters:
+    pattern (str): The regex pattern to match.
+    directory (str): The directory to search in.
+    extensions (list): The file extensions to consider. 
+    
+    Returns:
+    list: A list of absolute file paths that contain the pattern.
+    
+    Requirements:
+    - os
+    - glob
+    - pathlib
+    - re
+
+    Example:
+    >>> import tempfile
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> with open(os.path.join(temp_dir, 'hello.txt'), 'w') as f:
+    ...     _ = f.write('Hello, this is a test file.')
+    >>> with open(os.path.join(temp_dir, 'hello.md'), 'w') as f:
+    ...     _ = f.write('# Notes')
+    >>> matches = task_func('Hello', temp_dir, ['*.txt', '*.md'])
+    >>> str(matches[0]).endswith('hello.txt')
+    True
+    """
+    pattern = re.compile(pattern, re.IGNORECASE)
+    matches = []
+    for ext in extensions:
+        for root, dirs, files in os.walk(directory):
+            for filename in files:
+                if filename.endswith(ext):
+                    filepath = os.path.abspath(os.path.join(root, filename))
+                    with open(filepath, 'r') as f:
+                        if pattern.search(f.read()):
+                            matches.append(filepath)
+    return matches

@@ -1,0 +1,51 @@
+import string
+import random
+
+
+def task_func(text, seed=None):
+    """
+    Generates a password that mirrors the structure of the given text by replacing alphabetic
+    characters with random ascii lowercase letters, digits with random single-digit numbers,
+    spaces wth either a random digit or random lowercase letter at equal probabilities, and
+    leaving other characters unchanged.
+
+    Parameters:
+    - text (str): The text to be mirrored in the generated password. Must not be empty.
+    - seed (int, optional): Seed for the random number generator. Defaults to None (not set).
+
+    Returns:
+    - str: The generated password.
+
+    Raises:
+    - ValueError: If the input text is empty.
+
+    Requirements:
+    - random
+    - string
+
+    Note:
+    - This function does not handle high Unicode characters and focuses only on ASCII values.
+
+    Examples:
+    >>> task_func("hello world! 123", 0)
+    'mbqmp3jytre!v553'
+    >>> task_func("apple321#", seed=42)
+    'uahev901#'
+    """
+    if len(text) == 0:
+        raise ValueError("Input text cannot be empty")
+
+    random.seed(seed)
+
+    def mirror_char(char):
+        if char.isalpha():
+            return random.choice(string.ascii_lowercase)
+        elif char.isdigit():
+            return str(random.randint(0, 9))
+        elif char.isspace():
+            choices = [random.choice(string.digits), random.choice(string.ascii_lowercase)]
+            return random.choice(choices)
+        else:
+            return char
+
+    return ''.join(mirror_char(c) for c in text)

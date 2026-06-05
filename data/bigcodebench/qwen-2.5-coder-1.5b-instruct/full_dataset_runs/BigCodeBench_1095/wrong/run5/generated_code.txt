@@ -1,0 +1,40 @@
+from nltk.tokenize import RegexpTokenizer
+from string import punctuation
+import os
+
+
+def task_func(text, output_filename):
+    """
+    Extracts words from the input text that begin with the '$' character and saves them to a specified file,
+    excluding any words that are solely composed of punctuation characters.
+
+    This function is useful for processing texts where '$' is used to denote special terms or entities and saves
+    these terms to a file for further analysis or usage.
+
+    Parameters:
+    input_text (str): The text from which to extract '$' prefixed words.
+    output_filename (str): The filename for the output file where the extracted words will be saved.
+
+    Returns:
+    str: The absolute path to the output file containing the '$' prefixed words.
+
+    Requirements:
+    - nltk.tokenize.RegexpTokenizer
+    - string.punctuation
+    - os
+
+    Example:
+    >>> example_text = "$example $valid $!invalid $$ alsoInvalid"
+    >>> task_func(example_text, 'extracted_dollar_words.txt')
+    '/absolute/path/to/extracted_dollar_words.txt'
+    """
+    tokenizer = RegexpTokenizer(r'\b\$(\w+)\b')
+    extracted_words = [word.lower() for word in tokenizer.tokenize(text) if word.isalpha()]
+
+    # Filter out words that are purely punctuation
+    valid_words = [word for word in extracted_words if word not in punctuation]
+
+    with open(output_filename, 'w') as file:
+        file.write('\n'.join(valid_words))
+
+    return os.path.abspath(output_filename)

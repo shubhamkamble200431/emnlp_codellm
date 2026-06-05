@@ -1,0 +1,39 @@
+import urllib.request
+import os
+import json
+import pandas as pd
+
+# Constants
+TARGET_JSON_FILE = "downloaded_file.json"
+
+
+def task_func(url):
+    """
+    This function retrieves a JSON file from the given URL using urllib.request.urlretrieve,
+    temporarily saving it as 'downloaded_file.json'. It then opens and reads this file,
+    converts the JSON content into a pandas DataFrame, and finally deletes the temporary JSON file.
+
+    Parameters:
+    url (str): The URL of the JSON file to be downloaded.
+
+    Returns:
+    pandas.DataFrame: A DataFrame constructed from the JSON data in the downloaded file.
+
+    Requirements:
+    - urllib.request
+    - os
+    - json
+    - pandas
+
+    Example:
+    >>> task_func('http://example.com/employees.json')
+        name  age           city
+    0  Alice   25       New York
+    1    Bob   30  San Francisco
+    """
+urllib.request.urlretrieve(url, TARGET_JSON_FILE)
+with open(TARGET_JSON_FILE) as f:
+    data = json.load(f)
+df = pd.DataFrame(data)
+os.remove(TARGET_JSON_FILE)
+return df

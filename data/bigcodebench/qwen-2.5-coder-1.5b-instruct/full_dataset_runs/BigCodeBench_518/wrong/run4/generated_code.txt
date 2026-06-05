@@ -1,0 +1,51 @@
+import pandas as pd
+from scipy.spatial.distance import pdist, squareform
+
+
+def task_func(array):
+    """
+    Generate a Pandas DataFrame from a 2D list and calculate a distance matrix.
+
+    This function converts a 2D list into a DataFrame, with columns named alphabetically starting from 'A'.
+    It uses the `chr()` function, which converts an integer to its corresponding Unicode character,
+    to dynamically assign alphabetical labels to each column based on their index. The function then
+    computes the Euclidean distance matrix between rows.
+
+    Parameters:
+    array (list of list of int): The 2D list representing the data.
+                                 Each sublist must contain only integers or floats. If the input does not
+                                 conform to this structure, a TypeError is raised.
+
+    Returns:
+    - df (pd.DataFrame): data converted from 2D list.
+    - distance_matrix (pd.DataFrame): output distance matrix.
+
+    Requirements:
+    - pandas
+    - scipy.spatial.distance.pdist
+    - scipy.spatial.distance.squareform
+
+    Example:
+    >>> df, distance_matrix = task_func([[1,2,3,4,5], [6,7,8,9,10]])
+    >>> print(df)
+       A  B  C  D   E
+    0  1  2  3  4   5
+    1  6  7  8  9  10
+    >>> print(distance_matrix)
+              0         1
+    0   0.00000  11.18034
+    1  11.18034   0.00000
+    """
+    if not all(isinstance(sublist, list) for sublist in array) or any(not all(isinstance(x, (int, float)) for x in sublist) for sublist in array):
+        raise TypeError("Input should be a 2D list of integers or floats.")
+
+    # Create a DataFrame from the input list
+    df = pd.DataFrame(array)
+
+    # Convert the DataFrame to a square matrix using pdist
+    dist_matrix = pdist(df.values)
+
+    # Convert the distance matrix back to a DataFrame with appropriate column names
+    distance_matrix = pd.DataFrame(squareform(dist_matrix), columns=df.columns, index=df.columns)
+
+    return df, distance_matrix

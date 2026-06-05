@@ -1,0 +1,43 @@
+from itertools import combinations
+import math
+
+def task_func(x, w):
+    """
+    Find the continuous substring of x, which has the maximum total weight, given a dictionary where the keys are characters and the values are their weights.
+
+    Parameters:
+    - x (str): The input string.
+    - w (dict): The dictionary of character weights.
+
+    Returns:
+    - max_substr (str): The continuous substring with the highest weight.
+
+    Requirements:
+    - itertools
+    - math
+
+    Example:
+    >>> task_func('c', {'a': 1, 'b': 2, 'c': 3})
+    'c'
+    >>> task_func('abc', {'a': 10, 'b': -5, 'c': 3})
+    'a'
+    """
+    max_weight = float('-inf')
+    max_substr = ''
+
+    for i in range(len(x)):
+        current_weight = 0
+        current_substr = ''
+
+        for j in range(i, len(x)):
+            if current_weight + w[x[j]] > max_weight:
+                max_weight = current_weight + w[x[j]]
+                max_substr = current_substr + x[j]
+
+            current_weight += w[x[j]]
+            current_substr += x[j]
+
+            if current_weight == max_weight:
+                return max_substr
+
+    return max_substr

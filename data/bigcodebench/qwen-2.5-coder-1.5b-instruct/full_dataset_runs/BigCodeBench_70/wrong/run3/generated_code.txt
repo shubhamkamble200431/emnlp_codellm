@@ -1,0 +1,72 @@
+import pandas as pd
+import json
+import numpy as np
+
+# Constants
+COLUMNS = ['email', 'list']
+
+def task_func(json_file):
+    """
+    Load e-mail data from a JSON file, convert it into a Pandas DataFrame, calculate the sum and mean
+    of the list associated with each e-mail, and then record those values. Additionally, it plots the sum
+    and mean values for each email.
+
+    If there is no e-mail data, return an empty dataframe with the right columns (['email', 'list', 'sum', 'mean']), and None as the plot.
+
+    Parameters:
+    json_file (str): The path to the JSON file. The JSON file should have the structure:
+                     [
+                         {"email": "email1@example.com", "list": [value1, value2, ...]},
+                         ...
+                     ]
+
+    Returns:
+    tuple: A tuple containing:
+        - DataFrame: A pandas DataFrame with columns ['email', 'list', 'sum', 'mean'].
+        - Axes: The Axes object for the plot. None if the dataframe is empty.
+
+    Requirements:
+    - pandas
+    - json
+    - numpy
+
+    Example:
+    >>> df, ax = task_func('data/task_func/json_1.json')
+    >>> print(df)
+    """
+    try:
+        # Load JSON data
+        with open(json_file) as f:
+            data = json.load(f)
+
+        # Initialize an empty DataFrame
+        df = pd.DataFrame(columns=COLUMNS)
+
+        # Iterate through the JSON data
+        for entry in data:
+            # Extract email and list
+            email = entry['email']
+            list_values = entry['list']
+
+            # Calculate sum and mean of the list
+            total_sum = sum(list_values)
+            average_mean = np.mean(list_values)
+
+            # Append to DataFrame
+            new_row = pd.DataFrame({'email': [email], 'list': [list_values], 'sum': [total_sum], 'mean': [average_mean]})
+            df = pd.concat([df, new_row], ignore_index=True)
+
+        # Check if the DataFrame is empty
+        if df.empty:
+            return df, None  # Return empty DataFrame and None for plot
+
+        # Plotting
+        ax = df.groupby(['email']).agg({'sum': ['sum'], 'mean': ['mean']}).reset_index()
+        ax.columns = COLUMNS[:-2] + [f'{col}_sum', f'{col}_mean']  # Rename columns
+        ax.plot(x='email', y=[col for col in df.columns[:-3]], kind='line')
+
+        return df, ax
+
+    except FileNotFoundError:
+        print("File not found.")
+        return None, None

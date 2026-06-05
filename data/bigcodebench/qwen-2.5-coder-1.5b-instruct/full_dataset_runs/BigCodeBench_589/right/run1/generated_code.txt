@@ -1,0 +1,54 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.cluster import KMeans
+# Constants for configuration
+RANGE = 100
+SIZE = 1000
+CLUSTERS = 5
+
+
+def task_func():
+    """
+    Generates a set of 2D random points within a specified range and size,
+    applies KMeans clustering to these points, and plots the results with
+    cluster centroids.
+
+    The function creates a scatter plot of the clustered points with each
+    cluster displayed in a different color and the centroids of these clusters
+    highlighted.
+
+    Requirements:
+        - numpy
+        - sklearn.cluster
+        - matplotlib.pyplot
+
+    Returns:
+        A tuple containing the numpy array of data points and the fitted KMeans model.
+
+    Example:
+    >>> data, kmeans = task_func()
+    >>> isinstance(data, np.ndarray)  # Check if data is a numpy array
+    True
+    >>> data.shape == (1000, 2)  # Verify the shape of the data array
+    True
+    >>> isinstance(kmeans, KMeans)  # Confirm kmeans is an instance of KMeans
+    True
+    >>> len(kmeans.cluster_centers_) == 5  # Check the number of clusters
+    True
+    """
+    # Generate random points
+    x = np.random.rand(SIZE)
+    y = np.random.rand(SIZE)
+
+    # Combine into a single dataset with labels
+    dataset = np.column_stack((x, y))
+
+    # Apply KMeans clustering
+    kmeans = KMeans(n_clusters=CLUSTERS, random_state=42).fit(dataset)
+
+    # Plotting
+    plt.scatter(x, y, c=kmeans.labels_, cmap='viridis')
+    centroids = kmeans.cluster_centers_
+    plt.scatter(centroids[:, 0], centroids[:, 1], s=300, marker='*', color='black')
+
+    return dataset, kmeans

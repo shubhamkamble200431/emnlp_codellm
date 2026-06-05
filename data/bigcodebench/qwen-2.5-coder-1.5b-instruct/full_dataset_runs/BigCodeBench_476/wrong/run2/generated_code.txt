@@ -1,0 +1,50 @@
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+
+def task_func(X, Y):
+    """
+    Adjust a quadratic function to the given data (X, Y) and plot the data along with the fit.
+
+    Parameters:
+    - X (list or numpy.array): The X data points.
+    - Y (list or numpy.array): The Y data points.
+
+    Returns:
+    tuple:
+    - list: The optimized parameters of the quadratic function (a, b, c).
+    - matplotlib.axes.Axes: The plot showing the scatter data points and the quadratic fit.
+
+    Requirements:
+    - matplotlib.pyplot
+    - scipy.optimize.curve_fit
+
+    Example:
+    >>> import numpy as np
+    >>> np.random.seed(42)
+    >>> X = np.linspace(-10, 10, 100)
+    >>> Y = 3*X**2 + 2*X + 1 + np.random.normal(0, 20, len(X))
+    >>> params, ax = task_func(X, Y)
+    >>> params
+    [3.0366511660907975, 2.1379326607136035, -2.3233168384548284]
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    def quadratic_function(X, a, b, c):
+        return a * X**2 + b * X + c
+
+    popt, pcov = curve_fit(quadratic_function, X, Y)
+
+    plt.scatter(X, Y, color='red', label='Data Points')
+    x_fit = np.linspace(min(X), max(X), 100)
+    y_fit = quadratic_function(x_fit, *popt)
+    plt.plot(x_fit, y_fit, color='blue', label='Quadratic Fit')
+
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Scatter Plot with Quadratic Fit')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    return popt, ax

@@ -1,0 +1,61 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from random import randint
+import math
+
+def task_func(POINTS=100):
+    """
+    Simulates a random walk in a two-dimensional space and draws the path using matplotlib.
+    The walk is determined by randomly choosing directions at each step. The function generates
+    two numpy arrays representing the x and y coordinates of each step and plots these points
+    to visualize the path of the walk.
+
+    Parameters:
+        POINTS (int): The number of steps in the random walk. Default is 100.
+
+    Returns:
+        A matplotlib figure object representing the plot of the random walk.
+
+    Requirements:
+        - numpy
+        - matplotlib.pyplot
+        - random.randint
+        - math
+
+    Examples:
+        >>> import matplotlib
+        >>> fig = task_func(200)  # Displays a plot of a random walk with 200 steps
+        >>> isinstance(fig, matplotlib.figure.Figure)
+        True
+    """
+
+    # Initialize arrays to store x and y coordinates
+    x_coords = []
+    y_coords = []
+
+    # Perform the random walk
+    for _ in range(POINTS):
+        # Choose a direction (up, down, left, right)
+        direction = randint(1, 4)
+        if direction == 1:  # Up
+            y_coords.append(y_coords[-1] + 1)
+        elif direction == 2:  # Down
+            y_coords.append(y_coords[-1] - 1)
+        elif direction == 3:  # Left
+            x_coords.append(x_coords[-1] - 1)
+        else:  # Right
+            x_coords.append(x_coords[-1] + 1)
+
+    # Create a figure and axis
+    fig, ax = plt.subplots()
+
+    # Plot the random walk
+    ax.plot(x_coords, y_coords, 'o')
+
+    # Set labels and title
+    ax.set_xlabel('X Coordinate')
+    ax.set_ylabel('Y Coordinate')
+    ax.set_title('Random Walk Path')
+
+    # Show the plot
+    return fig

@@ -1,0 +1,48 @@
+import os
+from datetime import datetime
+
+# Constants
+LOG_DIR = './logs'
+
+def task_func(metrics, filename, log_dir=LOG_DIR):
+    """
+    This function writes a dictionary of metrics to a specified log file, appending a timestamp to each entry.
+    
+    Parameters:
+    - metrics (dict): A dictionary containing metric names as keys and their corresponding values.
+    - filename (str): The name of the file to which the metrics will be logged.
+    - log_dir (str, optional): The directory where the log file is stored. Default is './logs'.
+    
+    Returns:
+    - bool: True if the metrics were successfully written to the file, False otherwise.
+    
+    Requirements:
+    - os
+    - datetime
+    
+    Examples:
+    >>> metrics = {'accuracy': 0.98, 'loss': 0.05}
+    >>> task_func(metrics, 'metrics.log')
+    An error occurred: [Errno 2] No such file or directory: './logs/metrics.log'
+    False
+    
+    >>> metrics = {'precision': 0.75, 'recall': 0.80}
+    >>> task_func(metrics, 'evaluation.log')
+    An error occurred: [Errno 2] No such file or directory: './logs/evaluation.log'
+    False
+    """
+if not os.path.exists(log_dir):
+    try:
+        os.makedirs(log_dir)
+    except OSError as e:
+        return False
+
+try:
+    with open(os.path.join(log_dir, filename), 'a') as log_file:
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        for key, value in metrics.items():
+            log_file.write(f"{timestamp} - {key}: {value}\n")
+    return True
+except Exception as e:
+    print(f"An error occurred: {e}")
+    return False

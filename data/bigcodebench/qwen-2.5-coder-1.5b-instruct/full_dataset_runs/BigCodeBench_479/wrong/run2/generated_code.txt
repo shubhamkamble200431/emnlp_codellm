@@ -1,0 +1,64 @@
+import random
+import string
+import pandas as pd
+
+
+def task_func(data_list, seed=0):
+    """
+    Replace a random substring (a sequence of characters between two commas or at the beginning/end of the string)
+    in a list of strings with a random string (comprising ascii lowercase characters) with the same length as
+    the substituted characters.
+
+    Parameters:
+    data_list (list): Input list of strings.
+                      Within each string, each substring's leading and trailing whitespaces are removed.
+                      If empty, it will return a DataFrame with the Original String and Modified String
+                      columns that is otherwise empty.
+    seed (int, optional): The seed for random operations to ensure reproducibility. Defaults to 0.
+
+    Returns:
+    DataFrame: A pandas DataFrame with two columns - 'Original String' and 'Modified String'.
+               'Original String' contains the original strings from the input list, and 'Modified String'
+               contains the modified strings where a random substring has been replaced.
+
+    Requirements:
+    - pandas
+    - random
+    - string
+
+    Example:
+    >>> task_func(['lamp, bag, mirror', 'table, chair, bag, lamp'])
+               Original String          Modified String
+    0        lamp, bag, mirror        lamp, tkg, mirror
+    1  table, chair, bag, lamp  table, chair, bag, kuhm
+    """
+    if not isinstance(data_list, list):
+        raise ValueError("Input should be a list")
+
+    # Set random seed for reproducibility
+    random.seed(seed)
+
+    result = []
+    for item in data_list:
+        # Remove leading/trailing whitespaces
+        item = item.strip()
+
+        if not item:
+            continue
+
+        # Find all substrings to replace
+        patterns = re.findall(r'\b\w+\b', item)
+
+        if not patterns:
+            result.append({'Original String': item, 'Modified String': item})
+            continue
+
+        for pattern in patterns:
+            # Randomly select a replacement string of the same length
+            replacement = ''.join(random.choices(string.ascii_lowercase, k=len(pattern)))
+            # Construct the new string with the replacement substring
+            modified_item = item.replace(pattern, replacement)
+
+            result.append({'Original String': item, 'Modified String': modified_item})
+
+    return pd.DataFrame(result)

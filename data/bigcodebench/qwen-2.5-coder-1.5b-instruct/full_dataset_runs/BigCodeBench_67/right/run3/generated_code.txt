@@ -1,0 +1,40 @@
+import pandas as pd
+import re
+import os
+
+def task_func(dir_path: str, pattern: str = '^EMP'):
+    """
+    Look for all ascendingly sorted files in a directory that start with a given pattern, and return the number of files against their size. You should return a pandas DataFrame with 2 columns 'File' and 'Size' with correspond to the file name and the size respectively.
+
+    Parameters:
+    - dir_path (str): The path to the directory.
+    - pattern (str): The pattern to match. Default is '^EMP' (files starting with 'EMP').
+
+    Returns:
+    - pandas.DataFrame: A pandas DataFrame with file names and their sizes.
+
+    Requirements:
+    - pandas
+    - re
+    - os
+
+    Example:
+    >>> report = task_func('/path/to/directory')
+    >>> print(report)
+    """
+    def get_file_size(file_path):
+        try:
+            return os.path.getsize(file_path)
+        except Exception as e:
+            return None
+
+    files = []
+    for filename in os.listdir(dir_path):
+        if re.match(pattern, filename) and os.path.isfile(os.path.join(dir_path, filename)):
+            files.append((filename, get_file_size(os.path.join(dir_path, filename))))
+
+    df = pd.DataFrame(files, columns=['File', 'Size'])
+    df['Size'] = pd.to_numeric(df['Size'], errors='coerce')
+    df.dropna(subset=['Size'], inplace=True)
+
+    return df

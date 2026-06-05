@@ -1,0 +1,39 @@
+import ast
+import re
+
+def task_func(text_file: str) -> list:
+    """
+    Extract all string representations of dictionaries from a text file using regular expressions and 
+    convert them to Python dictionaries.
+
+    Parameters:
+    - text_file (str): The path to the text file.
+
+    Returns:
+    - list: A list of dictionaries. Each dictionary is parsed from the text file using regular expressions.
+
+    Requirements:
+    - ast
+    - re
+
+    Examples:
+    >>> f_1008("sample.txt")
+    [{'key1': 'value1'}, {'key2': 'value2'}]
+
+    >>> f_1008("another_sample.txt")
+    [{'name': 'John', 'age': 30}, {'name': 'Jane', 'age': 25}]
+    """
+    # Define a regex pattern to match Python dictionaries as strings
+    dict_pattern = r'(?P<dict_str>^\{.*\})'
+
+    # Read the content of the text file
+    with open(text_file, 'r') as file:
+        content = file.read()
+
+        # Find all matches in the content
+        matches = re.findall(dict_pattern, content)
+
+    # Convert each found string to a dictionary using ast.literal_eval
+    result = [ast.literal_eval(match) for match in matches]
+
+    return result

@@ -1,0 +1,35 @@
+import numpy as np
+from scipy.linalg import svd
+
+def task_func(rows=3, columns=2, seed=0):
+    """
+    Generate a matrix of random values with specified dimensions and perform Singular Value Decomposition (SVD) on it.
+
+    Requirements:
+    - numpy
+    - scipy.linalg.svd
+
+    Parameters:
+    - rows (int): Number of rows for the random matrix. Default is 3.
+    - columns (int): Number of columns for the random matrix. Default is 2.
+    - seed (int, optional): Seed for the random number generator to ensure reproducibility. Default is None.
+
+    Returns:
+    tuple: A tuple containing three elements:
+        - U (ndarray): The unitary matrix U.
+        - s (ndarray): The singular values, sorted in descending order.
+        - Vh (ndarray): The conjugate transpose of the unitary matrix V.
+
+    Example:
+    >>> U, s, Vh = task_func(3, 2, seed=42)
+    >>> print('U shape:', U.shape)
+    U shape: (3, 3)
+    >>> print('s shape:', s.shape)
+    s shape: (2,)
+    >>> print('Vh shape:', Vh.shape)
+    Vh shape: (2, 2)
+    """
+    rng = np.random.default_rng(seed)
+    matrix = rng.random((rows, columns))
+    U, s, Vh = svd(matrix)
+    return U, s, Vh

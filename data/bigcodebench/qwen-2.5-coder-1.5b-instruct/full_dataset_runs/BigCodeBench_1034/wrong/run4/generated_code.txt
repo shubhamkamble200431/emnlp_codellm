@@ -1,0 +1,61 @@
+import pandas as pd
+import numpy as np
+
+
+CATEGORIES = ["Electronics", "Clothing", "Home Decor", "Automotive", "Books"]
+
+
+def task_func(s1, s2):
+    """
+    Compares and visualizes the sales data of two stores for predefined categories.
+    The function generates a bar plot for categories where both stores have sales exceeding a specified threshold.
+    The Euclidean distance between the two series is also computed.
+    
+    Parameters:
+    s1 (pd.Series): Sales data for store 1, indexed by categories.
+    s2 (pd.Series): Sales data for store 2, indexed by categories.
+
+    Returns:
+    matplotlib.axes.Axes or None: A bar plot for categories where both stores' sales exceed the threshold of 200,
+    or None if no such categories exist.
+    float: The Euclidean distance between the two series or 0.0 if no categories meet the threshold.
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> np.random.seed(seed=32)
+    >>> s1 = pd.Series(np.random.randint(100, 500, size=5), index=CATEGORIES)
+    >>> s2 = pd.Series(np.random.randint(150, 600, size=5), index=CATEGORIES)
+    >>> ax, edit_distance = task_func(s1, s2)
+    >>> ax.get_title()
+    'Sales Comparison Above Threshold in Categories'
+    >>> edit_distance
+    387.5590277622236
+    """
+    threshold = 200
+    matching_categories = []
+    edit_distance = 0.0
+
+    # Find categories where both stores have sales above the threshold
+    for category in CATEGORIES:
+        if s1[category] > threshold and s2[category] > threshold:
+            matching_categories.append(category)
+
+    # If no matching categories found, return None
+    if not matching_categories:
+        return None, edit_distance
+
+    # Compute the Euclidean distance between the two series for the matching categories
+    for cat in matching_categories:
+        edit_distance += abs(s1[cat] - s2[cat])
+
+    # Create a bar plot for the matching categories
+    ax = s1[matching_categories].plot(kind='bar')
+    plt.title('Sales Comparison Above Threshold in Categories')
+    ax.set_xlabel('Categories')
+    ax.set_ylabel('Sales')
+
+    # Return the axis object and the calculated Euclidean distance
+    return ax, edit_distance

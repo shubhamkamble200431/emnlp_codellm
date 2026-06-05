@@ -1,0 +1,47 @@
+import csv
+import json
+import os
+
+
+def task_func(file_name):
+    """
+    Convert a csv file to a json file.
+    
+    Parameters:
+    file_name (str): The name of the csv file.
+    
+    Returns:
+    str: The file name of the created json file.
+
+    Requirements:
+    - csv
+    - json
+    - os
+
+    Raises:
+    FileNotFoundError: If the file does not exist.
+    
+    Example:
+    >>> import tempfile
+    >>> FILE_NAME = tempfile.NamedTemporaryFile(prefix='report_', suffix='.csv', dir='/tmp').name
+    >>> with open(FILE_NAME, 'w', newline='') as csvfile:
+    ...     fieldnames = ['id', 'name', 'age']
+    ...     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    ...     _ = writer.writeheader()
+    ...     _ = writer.writerow({'id': '1', 'name': 'John', 'age': '25'})
+    ...     _ = writer.writerow({'id': '2', 'name': 'Doe', 'age': '30'})
+    >>> json_file = task_func(FILE_NAME)
+    >>> print(json_file.startswith('/tmp/report_') and json_file.endswith('.json'))
+    True
+    """
+    if not os.path.exists(file_name):
+        raise FileNotFoundError(f"File '{file_name}' does not exist.")
+
+    with open(file_name, mode='r', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        data = list(reader)
+
+    with open(f"{os.path.splitext(file_name)[0]}.json", mode='w') as outfile:
+        json.dump(data, outfile, indent=4)
+
+    return f"{os.path.splitext(file_name)[0]}.json"

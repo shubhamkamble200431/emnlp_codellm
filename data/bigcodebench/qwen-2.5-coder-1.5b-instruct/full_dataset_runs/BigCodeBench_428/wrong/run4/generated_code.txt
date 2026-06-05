@@ -1,0 +1,42 @@
+import pandas as pd
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+
+
+def task_func(df1, df2):
+    """
+    Merge two dataframes on the 'id' column and then scale the numeric features.
+
+    This function merges two dataframes via outer join on the 'id' column, and scales the merged dataframe's
+    numeric features from df1 to have a mean of 0 and standard deviation of 1. It also returns a pair plot of
+    the scaled features from df1.
+
+    Parameters:
+    - df1 (pd.DataFrame): Left dataframe to merge into.
+    - df2 (pd.DataFrame): Right dataframe to merge from.
+
+    Returns:
+    - merged_df (pd.DataFrame): The partially scaled and merged dataframe.
+    - pair_plot (seaborn.axisgrid.PairGrid): Pair plot of the scaled dataframe.
+
+    Requirements:
+    - pandas
+    - sklearn
+    - seaborn
+
+    Example:
+    >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'feature1': [1.2, 3.4, 5.6], 'feature2': [2.3, 4.5, 6.7]})
+    >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'feature4': [4.5, 6.7, 8.9], 'feature5': [5.6, 7.8, 9.0]})
+    >>> scaled_df, plot = task_func(df1, df2)
+    >>> scaled_df
+       id  feature1  feature2  feature4  feature5
+    0   1 -1.224745 -1.224745       4.5       5.6
+    1   2  0.000000  0.000000       6.7       7.8
+    2   3  1.224745  1.224745       8.9       9.0
+    >>> type(scaled_df)
+    <class 'pandas.core.frame.DataFrame'>
+    >>> type(plot)
+    <class 'seaborn.axisgrid.PairGrid'>
+    """
+    # Merging the two dataframes on the 'id' column
+    merged_df = pd.merge(left=df

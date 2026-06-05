@@ -1,0 +1,66 @@
+from collections import Counter
+import random
+import matplotlib.pyplot as plt
+
+
+def task_func(num_rolls, num_dice, plot_path=None, random_seed=0):
+    """Simulate rolling a certain number of a standard six-sided dice several times, then
+    identify and display the distribution of the sums of the dice rolls in a bar plot.
+
+    Parameters:
+    - num_rolls (int): The number of times to roll the dice.
+    - num_dice (int): The number of dice to roll each time.
+    - plot_path (str, optional): Path to save the generated plot. If not provided, plot is not saved.
+    - random_seed (int): Random seed for reproducibility. Defaults to 0.
+
+    Returns:
+    tuple: A tuple containing the following elements:
+        - Counter: A Counter object with the count of each possible sum.
+        - Axes: A matplotlib Axes object representing the bar plot of the Distribution of Dice Roll Sums,
+                with Sum of Dice Roll on the x-axis and count on the y-axis.
+
+    Requirements:
+    - collections.Counter
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> result, ax = task_func(10000, 2, 'output.png')
+    >>> type(result)
+    <class 'collections.Counter'>
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Initialize a counter to keep track of the sum of dice rolls
+    sum_counts = Counter()
+
+    # Set the random seed for reproducibility
+    random.seed(random_seed)
+
+    # Simulate rolling the dice the specified number of times
+    for _ in range(num_rolls):
+        # Roll the dice
+        total_sum = sum(random.randint(1, 6) for _ in range(num_dice))
+        # Increment the count for the total sum
+        sum_counts[total_sum] += 1
+
+    # Generate the x and y data for the bar plot
+    x_values = list(sum_counts.keys())
+    y_values = list(sum_counts.values())
+
+    # Create the figure and axes
+    fig, ax = plt.subplots()
+
+    # Plot the bar chart
+    ax.bar(x_values, y_values)
+
+    # Add title and labels
+    ax.set_title('Distribution of Dice Roll Sums')
+    ax.set_xlabel('Sum of Dice Roll')
+    ax.set_ylabel('Count')
+
+    # Show the plot if plot_path is provided
+    if plot_path:
+        plt.savefig(plot_path)
+
+    return sum_counts, ax

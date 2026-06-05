@@ -1,0 +1,35 @@
+import subprocess
+import platform
+import time
+
+def task_func(url):
+    """
+    Open a web page in the default web browser in a background process.
+
+    Parameters:
+    url (str): The URL of the webpage to be opened.
+
+    Returns:
+    int: The return code of the subprocess.
+
+    Requirements:
+    - subprocess
+    - platform
+    - time
+
+    Example:
+    >>> task_func('https://www.google.com')
+    0
+    """
+    if platform.system() == 'Windows':
+        browser = "start"
+    else:
+        browser = "open"
+
+    try:
+        # Using subprocess.Popen to start the browser with the provided URL
+        p = subprocess.Popen([browser, url], shell=True)
+        return p.wait()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return 1

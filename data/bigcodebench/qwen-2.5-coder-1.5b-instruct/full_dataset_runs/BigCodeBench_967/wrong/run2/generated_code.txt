@@ -1,0 +1,35 @@
+import numpy as np
+from scipy import integrate
+import matplotlib.pyplot as plt
+
+
+def task_func(func, x_range=(-2, 2), num_points=1000):
+    """
+    Calculates and plots both a given function and its cumulative integral over a specified range,
+    using a linearly spaced range of x-values.
+
+    Parameters:
+    func (function): A function of a single variable to integrate and plot.
+    x_range (tuple, optional): The range (start, end) over which to evaluate `func`. Defaults to (-2, 2).
+    num_points (int, optional): Number of points to generate in `x_range`. Defaults to 1000.
+
+    Returns:
+    matplotlib.axes.Axes: The Axes object containing the plots of the function and its integral.
+
+    Requirements:
+    - numpy
+    - scipy
+    - matplotlib
+
+    Note:
+    - The plot includes a legend and labels for the x and y axes that include the function's name.
+
+    Example:
+    >>> ax = task_func(np.sin)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_legend_handles_labels()[-1]
+    ['sin(x)', 'Integral of sin(x)']
+    """
+x_vals = np.linspace(*x_range, num_points)
+y_vals = func(x_vals)

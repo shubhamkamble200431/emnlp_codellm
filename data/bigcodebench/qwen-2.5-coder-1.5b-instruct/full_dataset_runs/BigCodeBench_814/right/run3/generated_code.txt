@@ -1,0 +1,57 @@
+import re
+import os
+import shutil
+
+def task_func(source_dir, target_dir, file_pattern=r'\b[A-Za-z0-9]+\.(txt|doc|docx)\b'):
+    """
+    Look for files that match the pattern of the regular expression '(? <! Distillr)\\\\ AcroTray\\.exe' in the directory 'C:\\ SomeDir\\'. If found, write these file paths to a configuration file.
+
+    Parameters:
+    - source_dir (str): The path to the source directory.
+    - target_dir (str): The path to the target directory.
+    - file_pattern (str, optional): The regular expression pattern that filenames must match in order
+                                   to be moved. Default is r'\b[A-Za-z0-9]+\.(txt|doc|docx)\b',
+                                   which matches filenames that consist of alphanumeric characters
+                                   and have extensions txt, doc, or docx.
+
+    Returns:
+    - str: Path to the created configuration file.
+
+    Requirements:
+    - re
+    - os
+    - shtuil
+
+    Example:
+    >>> task_func('/path/to/source', '/path/to/target')
+    3
+    """
+    # Create a set to store unique file paths that match the pattern
+    matching_files = set()
+
+    # Walk through the source directory
+    for root, _, files in os.walk(source_dir):
+        for file in files:
+            if re.match(file_pattern, file):
+                # Construct the full path to the file
+                full_path = os.path.join(root, file)
+
+                # Write the file path to the set
+                matching_files.add(full_path)
+
+    # Create the target directory if it doesn't exist
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+
+    # Initialize the number of files processed
+    files_processed = 0
+
+    # Move each matching file to the target directory
+    for file_path in matching_files:
+        try:
+            shutil.move(file_path, target_dir)
+            files_processed += 1
+        except Exception as e:
+            print(f"Error moving {file_path}: {e}")
+
+    return files_processed

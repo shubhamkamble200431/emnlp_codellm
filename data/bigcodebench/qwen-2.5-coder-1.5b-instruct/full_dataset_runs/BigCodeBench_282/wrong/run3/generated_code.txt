@@ -1,0 +1,61 @@
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+import cv2
+import os
+
+def task_func(file_path, onpick):
+    """
+    Draw the color histogram of an image in 3D and call a function when a data point is selected.
+
+    Parameters:
+    file_path (str): The path to the image file.
+    onpick (function): The function to be called when a data point is picked.
+
+    Returns:
+    matplotlib.axes.Axes: The Axes object of the 3D plot.
+
+    Raises:
+    FileNotFoundError: If the image file does not exist.
+    
+    Requirements:
+    - matplotlib
+    - mpl_toolkits.mplot3d
+    - numpy
+    - cv2
+    - os
+    - tempfile
+    
+    Example:
+    >>> def onpick(event):
+    ...     ind = event.ind
+    ...     print(f'You picked data point(s) {ind}')
+    >>> np.random.seed(42)
+    >>> dummy_img_path = 'image.jpg'
+    >>> dummy_img = np.random.randint(0, 255, (20, 20, 3), dtype=np.uint8)
+    >>> cv2.imwrite(dummy_img_path, dummy_img)
+    True
+    >>> ax = task_func('image.jpg', onpick)
+    >>> os.remove(dummy_img_path)
+    """
+    try:
+        img = cv2.imread(file_path)
+        if img is None:
+            raise FileNotFoundError("Image file not found.")
+        
+        # Convert BGR to RGB for histogram plotting
+        rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        # Flatten the RGB channels for 1D arrays
+        r, g, b = rgb_img.T
+        
+        # Calculate the histogram for each color channel
+        hist_r = np.histogram(r.flatten(), bins=256, range=(0, 256))
+        hist_g = np.histogram(g.flatten(), bins=256, range=(0, 256))
+        hist_b = np.histogram(b.flatten(), bins=256, range=(0, 256))
+        
+        # Combine the histograms into a single 2D array
+        hist_3d = np.dstack((hist_r[0], hist_g[0], hist_b[0]))
+        
+        # Create a figure and axes for the 3D histogram
+        fig = plt.figure

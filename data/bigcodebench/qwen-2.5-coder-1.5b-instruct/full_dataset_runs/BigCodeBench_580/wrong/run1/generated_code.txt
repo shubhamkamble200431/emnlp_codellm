@@ -1,0 +1,65 @@
+import pandas as pd
+import random
+import statistics
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Constants
+RANGE = 10000  # The range within which random numbers are generated
+SIZE = 1000  # The number of random numbers to generate
+BIN_WIDTH = 100  # The width of bins for the histogram
+
+
+def task_func():
+    """
+    Generates a pandas DataFrame with two columns, "Random Numbers" and "Moving Average,"
+    filled with random integers and their moving average, respectively.
+    Additionally, this function plots a histogram of the "Random Numbers" column.
+
+    No Parameters.
+
+    Returns:
+        pd.DataFrame: A DataFrame with two columns:
+                      - "Random Numbers": Contains a list of randomly generated integers.
+                      - "Moving Average": Contains the moving average of the random integers,
+                                          calculated over a window that includes the current
+                                          and previous 5 integers.
+
+    Requirements:
+        - pandas
+        - random
+        - statistics
+        - matplotlib.pyplot
+        - numpy
+
+    Example:
+        >>> df = task_func()
+        >>> isinstance(df, pd.DataFrame)
+        True
+        >>> 'Random Numbers' in df.columns and 'Moving Average' in df.columns
+        True
+        >>> len(df)
+        1000
+        >>> all(df['Random Numbers'].between(0, RANGE))
+        True
+    """
+    data = {
+        'Random Numbers': [random.randint(0, RANGE) for _ in range(SIZE)],
+        'Moving Average': []
+    }
+
+    # Calculate moving averages
+    for i in range(SIZE):
+        if i < 5:
+            data['Moving Average'].append(np.mean(data['Random Numbers'][:i+1]))
+        else:
+            data['Moving Average'].append(
+                (data['Random Numbers'][i] + data['Random Numbers'][i-1] +
+                 data['Random Numbers'][i-2] + data['Random Numbers'][i-3] +
+                 data['Random Numbers'][i-4]) / 5)
+
+    df = pd.DataFrame(data)
+    df.plot(kind='hist', bins=50, title='Histogram of Random Numbers')
+    plt.show()
+
+    return df

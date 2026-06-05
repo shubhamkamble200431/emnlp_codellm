@@ -1,0 +1,68 @@
+import collections
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Combine a list of dictionaries with the same keys (fruit names) into a single dictionary,
+    calculate the total turnover for each fruit, and return a bar chart's axes with colors representing
+    different fruits. The colors are selected from: 'red', 'yellow', 'green', 'blue', 'purple'. The function
+    ensures that sales quantity must not be negative, throwing a ValueError if encountered.
+
+    Parameters:
+    data (list): A list of dictionaries. The keys are fruit names and the values are sales quantities.
+                 Sales quantity must not be negative.
+
+    Returns:
+    total_sales (dict): A dictionary containing the total sales for each fruit.
+    ax (matplotlib.container.BarContainer): A bar chart of total fruit sales, or None if data is empty
+
+    Requirements:
+    - collections
+    - matplotlib.pyplot
+
+    Example:
+    >>> sales, plot = task_func([{'apple': 10, 'banana': 15, 'cherry': 12},\
+                             {'apple': 12, 'banana': 20, 'cherry': 14},\
+                             {'apple': 15, 'banana': 18, 'cherry': 15},\
+                             {'apple': 11, 'banana': 17, 'cherry': 13}])
+    >>> sales
+    {'apple': 48, 'banana': 70, 'cherry': 54}
+    >>> type(plot)
+    <class 'matplotlib.container.BarContainer'>
+    """
+    total_sales = {}
+
+    # Ensure all sales quantities are non-negative
+    for item in data:
+        for fruit, qty in item.items():
+            if qty < 0:
+                raise ValueError("Sales quantity cannot be negative")
+
+            if fruit in total_sales:
+                total_sales[fruit] += qty
+            else:
+                total_sales[fruit] = qty
+
+    # Create a color map for the bars
+    colors = ['red', 'yellow', 'green', 'blue', 'purple']
+    cmap = plt.cm.get_cmap('tab10')
+
+    # Calculate the number of unique fruits and their corresponding indices
+    num_fruits = len(set(total_sales.keys()))
+    ind = np.arange(num_fruits)
+
+    # Sort the fruits by their total sales in descending order
+    sorted_fruits = sorted(zip(total_sales.values(), total_sales.keys()), reverse=True)
+
+    # Create the bar chart
+    ax = plt.bar(ind, [value for value, _ in sorted_fruits], label=sorted_fruits[0][1], color=cmap(0))
+    for i, (value, fruit) in enumerate(sorted_fruits):
+        ax[i].set_color(cmap((i + 1) % num_fruits))
+
+    plt.xlabel('Fruit')
+    plt.ylabel('Total Sales')
+    plt.title('Total Fruit Sales')
+    plt.legend()
+
+    return total_sales, ax

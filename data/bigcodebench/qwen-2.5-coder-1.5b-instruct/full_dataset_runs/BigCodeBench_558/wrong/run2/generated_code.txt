@@ -1,0 +1,48 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+
+def task_func(a, b, columns=['A', 'B']):
+    """
+    Standardize two lists of numbers using the StandardScaler from sklearn and visualize the standardized values using a bar plot.
+
+    Parameters:
+        a (list): A list of numbers.
+        b (list): Another list of numbers.
+        columns (list, optional): Column names for the resulting DataFrame. Defaults to ['A', 'B'].
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the standardized values.
+        matplotlib.axes.Axes: Axes object of the displayed bar plot.
+
+    Requirements:
+        - numpy
+        - pandas
+        - sklearn.preprocessing
+        - matplotlib.pyplot
+
+    Example:
+        >>> df, ax = task_func([1, 2, 3, 4, 5], [2, 4, 6, 8, 10])
+        >>> isinstance(df, pd.DataFrame) and isinstance(ax, matplotlib.axes.Axes)
+        True
+    """
+    # Create arrays from input lists
+    X = np.array([a, b]).T
+
+    # Initialize the StandardScaler
+    scaler = StandardScaler()
+
+    # Fit and transform the data
+    X_std = scaler.fit_transform(X)
+
+    # Create a DataFrame with the original and standardized data
+    df = pd.DataFrame(np.column_stack((X, X_std)), columns=columns + ['std_A', 'std_B'])
+
+    # Plot the standard deviations of the first two features
+    ax = df.plot(kind='bar', x=columns[0], y=columns[1], label=f'Standardized {columns[1]}', color='red')
+    ax.set_xlabel(columns[0])
+    ax.set_ylabel(f'Original {columns[1]} vs. Standardized {columns[1]}')
+
+    return df, ax

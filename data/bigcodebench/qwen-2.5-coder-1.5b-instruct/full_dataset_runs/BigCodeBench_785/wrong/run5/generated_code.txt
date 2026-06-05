@@ -1,0 +1,53 @@
+import subprocess
+import os
+import glob
+
+# Constants
+ARCHIVE_DIR = '/tmp/archive'
+
+def task_func(pattern):
+    """
+    Archive all files that match a particular pattern and then delete the original files.
+    
+    Parameters:
+    - pattern (str): The pattern to match files.
+    
+    Returns:
+    - archive_file (str): The archive file path.
+    
+    Requirements:
+    - subprocess
+    - os
+    - glob
+    
+    Example:
+    >>> task_func('*.txt')
+    
+    Note: This function will return the archive file path.
+    """
+    # Construct the full path to the archive directory if it doesn't exist
+    if not os.path.exists(ARCHIVE_DIR):
+        os.makedirs(ARCHIVE_DIR)
+
+    # Generate the full pattern
+    full_pattern = os.path.join(ARCHIVE_DIR, pattern)
+
+    # Find all matching files
+    files_to_archive = glob.glob(full_pattern)
+
+    # If no files found, return None
+    if not files_to_archive:
+        return None
+
+    # Create a temporary archive file name
+    temp_archive_name = os.path.join(ARCHIVE_DIR, f'archive_{len(files_to_archive)}.tar.gz')
+
+    # Use tar command to create the archive
+    subprocess.run(['tar', '-czvf', temp_archive_name] + files_to_archive, check=True)
+
+    # Delete the original files
+    for file_path in files_to_archive:
+        os.remove(file_path)
+
+    # Return the path of the archived file
+    return temp_archive_name

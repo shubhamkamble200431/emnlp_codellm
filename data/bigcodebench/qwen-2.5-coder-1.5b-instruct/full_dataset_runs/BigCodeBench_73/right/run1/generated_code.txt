@@ -1,0 +1,61 @@
+import pandas as pd
+import sqlite3
+import numpy as np
+import matplotlib.pyplot as plt
+import ast
+
+def task_func(db_file):
+    """
+    Load e-mail data from an SQLite database and convert it into a Pandas DataFrame. 
+    Calculate the sum, mean, and variance of the list associated with each e-mail and then record these values.
+
+    - The function expects the SQLite database to have a table named "EmailData" with columns 'email' and 'list'.
+    - The column 'list' contains a string representation of the list. It should be converted before usage.
+    - The function will return a DataFrame with additional columns 'sum', 'mean', and 'var' representing the calculated sum, mean, and variance respectively for each e-mail.
+
+    Parameters:
+    - db_file (str): The path to the SQLite database file.
+
+    Returns:
+    - tuple: A tuple containing:
+      - DataFrame: A pandas DataFrame with email data including the calculated sum, mean, and variance.
+      - Axes: A matplotlib Axes object representing the plotted bar chart of sum, mean, and variance.
+
+    Requirements:
+    - pandas
+    - sqlite3
+    - numpy
+    - matplotlib.pyplot
+    - ast
+
+    Example:
+    >>> df, ax = task_func('data/task_func/db_1.db')
+    >>> print(df)
+    """
+    # Load data from SQLite database
+    conn = sqlite3.connect(db_file)
+    query = "SELECT email, list FROM EmailData"
+    df = pd.read_sql_query(query, conn)
+
+    # Convert the 'list' column from string to list
+    df['list'] = df['list'].apply(ast.literal_eval)
+
+    # Calculate sums, means, and variances
+    df['sum'] = df['list'].apply(sum)
+    df['mean'] = df['list'].apply(np.mean)
+    df['var'] = df['list'].apply(np.var)
+
+    # Plotting the results
+    fig, ax = plt.subplots()
+    ax.bar(df.index, df['sum'], label='Sum')
+    ax.bar(df.index, df['mean'], bottom=df['sum'], label='Mean')
+    ax.bar(df.index, df['var'], bottom=(df['sum'] + df['mean']), label='Variance')
+    ax.legend()
+    plt.title('Sums, Means, and Variances by Email')
+    plt.xlabel('Email')
+    plt.ylabel('Values')
+
+    # Close the database connection
+    conn.close()
+
+    return df, ax

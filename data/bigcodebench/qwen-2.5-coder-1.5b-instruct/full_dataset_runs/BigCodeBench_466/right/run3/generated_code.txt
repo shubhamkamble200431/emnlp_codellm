@@ -1,0 +1,46 @@
+import json
+from enum import Enum
+
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+
+
+def task_func(my_obj):
+    """
+    Serializes an object into a JSON string with support for complex data types like Enum.
+    The function uses a custom JSONEncoder to handle Enum types by converting them to their names or values.
+
+    Parameters:
+    my_obj (object): The object to be serialized. Can be a dictionary, list, etc.
+
+    Returns:
+    str: The serialized JSON string of the object.
+
+    Requirements:
+    - json
+    - enum
+
+    Examples:
+    Serialize a dictionary containing Enum.
+    >>> result = task_func({'color': Color.RED})
+    >>> 'RED' in result
+    True
+
+    Serialize a simple dictionary.
+    >>> task_func({'name': 'Alice', 'age': 30})
+    '{"name": "Alice", "age": 30}'
+    """
+    class CustomEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, Color):
+                return obj.name
+            elif isinstance(obj, dict):
+                return {k: self.default(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [self.default(item) for item in obj]
+            else:
+                return super().default(obj)
+
+    return json.dumps(my_obj, cls=CustomEncoder)

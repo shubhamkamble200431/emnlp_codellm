@@ -1,0 +1,62 @@
+import os
+import ctypes
+from datetime import datetime
+import pytz
+
+def task_func(filepath):
+    """
+    Loads a DLL file from the specified filepath and returns its metadata, including creation time,
+    modification time, and file size. The times are displayed in UTC format. This function
+    demonstrates the use of ctypes for loading DLLs and os module for accessing file metadata.
+
+    
+    Parameters:
+    filepath (str): The path of the DLL file.
+
+    Returns:
+    str: The name of the loaded DLL file.
+    dict: A dictionary containing the metadata of the DLL file, including the keys 'Creation Time', 'Modification Time', and 'Size'.
+    
+    Requirements:
+    - ctypes
+    - os
+    - datetime.datetime
+    - pytz
+
+    Examples:
+    >>> isinstance(task_func('libc.so.6'), str) # Doctest will vary based on the system and DLL file availability.
+    True
+    >>> 'libc.so.6' in task_func('libc.so.6')
+    True
+    """
+    try:
+        # Load the DLL
+        dll = ctypes.CDLL(filepath)
+        
+        # Get the full path to the file
+        dll_name = os.path.basename(filepath)
+        
+        # Retrieve file metadata
+        create_time = ctypes.c_ulonglong()
+        modify_time = ctypes.c_ulonglong()
+        size = ctypes.c_ulonglong()
+        
+        # Obtain file properties using Windows API functions
+        ctypes.windll.kernel32.GetFileTime(ctypes.byref(create_time), ctypes.byref(modify_time), ctypes.byref(size), None)
+        
+        # Convert time structures to UTC
+        create_utc = datetime.fromtimestamp(create_time.value / 10000000.0, pytz.utc).strftime('%Y-%m-%d %H:%M:%S')
+        modify_utc = datetime.fromtimestamp(modify_time.value / 10000000.0, pytz.utc).strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Create the metadata dictionary
+        metadata = {
+            'Creation Time': create_utc,
+            'Modification Time': modify_utc,
+            'Size': size.value
+        }
+        
+        return dll_name, metadata
+    except OSError as e:
+        # Handle exceptions like file not found or permission issues
+        print(f"Error loading DLL: {e}")
+        return None, None

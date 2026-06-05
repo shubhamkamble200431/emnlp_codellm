@@ -1,0 +1,69 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+
+def task_func(mystrings, folder_path, seed=None):
+    """
+    Generates random data points to plot bar charts for each in a given list of plot names,
+    then saves them in a specified directory.
+
+    This function takes a list of plot names, for each generating 10 random data points in [0, 1)
+    to create a bar chart, then saves the bar charts as .png files in the specified directory,
+    creating the directory if it does not exist.
+
+    Parameters:
+    - mystrings (list of str): List of names for the plots.
+                               Each is used as the title for each plot, and each is used to derive
+                               each plot's filename by replacing spaces with underscores.
+    - folder_path (str):       Path of the folder where the plots will be saved.
+                               If it does not exist, the function will create it.
+    - seed (int, optional):    A seed for the random number generator to ensure reproducible results.
+                               Defaults to None.
+
+    Returns:
+    - list: Names of the files where the plots are saved. Each file corresponds to a title from `mystrings`.
+
+    Raises:
+    - FileNotFoundError: If the provided directory path does not exist and cannot be created.
+
+    Note:
+    - This function deduplicates mystrings while maintaining its original order.
+    - Random data points for bar charts are generated in the range [0, 1).
+    - Each bar chart contains 10 data points.
+
+    Requirements:
+    - numpy
+    - matplotlib
+    - os
+
+    Examples:
+    >>> task_func(['Plot 1', 'Plot 2'], './test_images/')
+    ['Plot_1.png', 'Plot_2.png']
+
+    >>> task_func(['First Plot', 'Second Plot'], './another_folder/')
+    ['First_Plot.png', 'Second_Plot.png']
+    """
+    rng = default_rng(seed) if seed else default_rng()
+
+    # Remove duplicates while preserving order using set + list conversion
+    unique_strings = sorted(set(mystrings))
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    # Generate and save bar charts for each unique string
+    plot_files = []
+    for title in unique_strings:
+        x = np.linspace(0, 9, 10)
+        y = rng.uniform(low=0, high=1, size=10)
+
+        plt.bar(x, y, color='blue')
+        plt.title(title.replace(' ', '_'))
+        plt.savefig(os.path.join(folder_path, f"{title}.png"))
+        plt.close()
+
+        plot_files.append(title.replace(' ', '_') + '.png')
+
+    return plot_files

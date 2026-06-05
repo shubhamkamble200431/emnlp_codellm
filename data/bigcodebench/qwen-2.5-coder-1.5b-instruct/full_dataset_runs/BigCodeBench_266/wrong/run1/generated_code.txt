@@ -1,0 +1,48 @@
+import os
+import os.path
+import csv
+import collections
+
+
+# Constants
+FILE_NAME = 'file_sizes.csv'
+
+def task_func(my_path):
+    """
+    Create a report on the file size in a directory and write it to a CSV file.
+
+    Parameters:
+    my_path (str): The directory path.
+
+    Returns:
+    str: The path of the CSV file.
+
+    Requirements:
+    - os
+    - os.path
+    - csv
+    - collections
+
+    Example:
+    >>> task_func('/usr/my_directory')
+    """
+    # Check if the directory exists
+    if not os.path.exists(my_path):
+        return "Directory does not exist"
+
+    # Create the CSV file with headers
+    csv_file = os.path.join(my_path, FILE_NAME)
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['File Name', 'Size'])
+
+        # Iterate over files and subdirectories
+        for root, dirs, files in os.walk(my_path):
+            for file_name in files:
+                file_path = os.path.join(root, file_name)
+                # Get file size in bytes
+                file_size = os.path.getsize(file_path)
+                # Write file name and size to the CSV file
+                writer.writerow([file_name, file_size])
+
+    return csv_file

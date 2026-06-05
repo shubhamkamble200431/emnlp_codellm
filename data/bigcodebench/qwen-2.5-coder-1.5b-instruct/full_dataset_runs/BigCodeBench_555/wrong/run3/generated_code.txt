@@ -1,0 +1,45 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+
+def task_func(a, b):
+    """
+    Calculate the Pearson correlation coefficient of two lists, generate a Pandas DataFrame from these lists, and then draw a scatter plot with a regression line.
+
+    Parameters:
+    a (list): A list of numbers.
+    b (list): Another list of numbers.
+
+    Requirements:
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib.pyplot
+
+    Returns:
+    - tuple: Contains two elements:
+        - float: The Pearson correlation coefficient.
+        - matplotlib.axes.Axes: The Axes object of the plotted scatter plot with a regression line.
+
+
+    Example:
+    >>> correlation, ax = task_func([1, 2, 3, 4, 5], [2, 4, 6, 8, 10])
+    >>> isinstance(correlation, float) and isinstance(ax, matplotlib.axes.Axes)
+    True
+    >>> round(correlation, 1)
+    1.0
+    """
+    # Step 1: Calculate the Pearson correlation coefficient
+    corr_coeff = stats.pearsonr(a, b)[0]
+
+    # Step 2: Generate a Pandas DataFrame from the input lists
+    df = pd.DataFrame({'a': a, 'b': b})
+
+    # Step 3: Draw a scatter plot with a regression line
+    ax = df.plot(kind='scatter', x='a', y='b')
+    regression_line = stats.linregress(df['a'], df['b'])
+    ax.plot(df['a'], regression_line.intercept + regression_line.slope * df['a'])
+
+    return corr_coeff, ax

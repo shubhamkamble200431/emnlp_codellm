@@ -1,0 +1,52 @@
+import re
+import pandas as pd
+
+
+def task_func(df: pd.DataFrame, column_name: str, pattern: str) -> pd.DataFrame:
+    """
+    Reverse the order of words in a specific column of a pandas DataFrame where the words
+    match a user-specified regular expression pattern, using a nested helper function.
+    Words are considered to be whitespace-separated strings. This function maintains the
+    original order of non-matching words.
+
+    Parameters:
+    - df (pd.DataFrame): The pandas DataFrame.
+    - column_name (str): The name of the column to be modified.
+    - pattern (str), the regular expression pattern to match words against.
+
+    Returns:
+    - pd.DataFrame: A new pandas DataFrame with the specified column's words reordered
+    if they match the pattern, maintaining the original order of words that do not match,
+    and returning a copy of the unaltered DataFrame if the pattern is empty.
+
+    Requirements:
+    - pandas
+    - re
+
+    Example:
+    >>> df = pd.DataFrame({'A': ['apple orange', 'red yellow green'], 'B': [1, 2]})
+    >>> pattern = r'\b(?:apple|yellow)\b'
+    >>> reversed_df = task_func(df, 'A', pattern)
+    >>> reversed_df
+                      A  B
+    0      apple orange  1
+    1  red yellow green  2
+    >>> df = pd.DataFrame({'A': ['yellow car red', 'green apple yellow'], 'B': [3, 4]})
+    >>> pattern = r'\b(?:car|apple|yellow)\b'
+    >>> reversed_df = task_func(df, 'A', pattern)
+    >>> reversed_df
+                        A  B
+    0      yellow car red  3
+    1  green apple yellow  4
+    """
+    def reorder_words(row):
+        # Split the row into words
+        words = row[column_name].split()
+        # Filter words that match the pattern
+        matching_words = [word for word in words if re.match(pattern, word)]
+        # Reorder the matching words while keeping the non-matching ones in their place
+        reordered_matching_words = matching_words[::-1]
+        # Replace the matching words in the row with the reordered version
+        return ' '.join(reordered_matching_words + [word for word in words if not re.match(pattern, word)])
+
+    # Apply the reorder_words function to each row of the DataFrame

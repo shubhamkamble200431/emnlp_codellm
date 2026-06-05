@@ -1,0 +1,65 @@
+from collections import Counter
+import os
+import csv
+
+# Constants
+FILE_DIR = './yourdictfiles/'
+
+def task_func(output_file, test_directory):
+    """
+    Count the number of words in multiple dictionary files (.txt) in a specific directory,
+    export the counts to a CSV file, and then return the total number of words.
+
+    Parameters:
+    filename (str): The name of the output CSV file.
+    test_directory (str): The directory containing the dictionary files (.txt).
+
+    Returns:
+    int: total number of words in .txt files
+
+    Note:
+    - Header for the csv output file is "Word", "Count"
+    - Return 0 if the input invalid or error raised
+
+    Requirements:
+    - collections.Counter
+    - os
+    - csv
+
+    Example:
+    >>> task_func('word_counts.csv')
+    10
+    """
+    try:
+        # Ensure the directory exists
+        os.makedirs(test_directory, exist_ok=True)
+
+        # List all .txt files in the specified directory
+        txt_files = [f for f in os.listdir(test_directory) if f.endswith('.txt')]
+
+        # Initialize a counter to store word counts
+        word_count = Counter()
+
+        # Iterate over each .txt file in the directory
+        for file_name in txt_files:
+            file_path = os.path.join(test_directory, file_name)
+
+            # Read words from the .txt file and update the counter
+            with open(file_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+                words = content.split()
+                word_count.update(words)
+
+        # Write word counts to a CSV file
+        with open(output_file, mode='w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Word', 'Count'])
+            for word, count in word_count.items():
+                writer.writerow([word, count])
+
+        # Return the total number of words
+        return sum(word_count.values())
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return 0

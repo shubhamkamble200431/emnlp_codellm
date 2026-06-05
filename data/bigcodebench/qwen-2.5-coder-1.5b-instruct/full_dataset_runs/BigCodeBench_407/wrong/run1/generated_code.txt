@@ -1,0 +1,50 @@
+import os
+import csv
+from openpyxl import load_workbook
+
+def task_func(file_name, excel_file_path, csv_file_path) -> str:
+    """
+    Converts an Excel file (.xls or .xlsx) to a CSV file by reading the contents of the Excel file
+    and writing them to a new CSV file with the same name but a different extension. Allows specifying
+    separate paths for the Excel file source and the CSV file destination.
+
+    Parameters:
+        file_name (str): The name of the Excel file to be converted.
+        excel_file_path (str): The directory path where the Excel file is located.
+        csv_file_path (str): The directory path where the CSV file should be saved.
+
+    Returns:
+        str: The name of the created CSV file.
+
+    Requirements:
+    - openpyxl.load_workbook
+    - os
+    - csv
+
+    Example:
+    >>> task_func('test.xlsx', '/path/to/excel/files', '/path/to/csv/files')
+    'test.csv'
+    >>> task_func('nonexistent.xlsx', '/path/to/excel/files', '/path/to/csv/files')
+    Traceback (most recent call last):
+       ...
+    FileNotFoundError: [Errno 2] No such file or directory: '/path/to/excel/files/nonexistent.xlsx'
+
+    Note:
+    - This function assumes the active sheet is the one to be converted.
+    """
+    if not os.path.isfile(os.path.join(excel_file_path, file_name)):
+        raise FileNotFoundError(f"File {file_name} does not exist at {excel_file_path}")
+
+    wb = load_workbook(os.path.join(excel_file_path, file_name))
+    ws = wb.active
+
+    csv_file_name = file_name.replace('.xlsx', '.csv') if file_name.endswith('.xlsx') else file_name + '.csv'
+    csv_file_path = os.path.join(csv_file_path, csv_file_name)
+
+    with open(csv_file_path, mode='w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(ws.title)  # Write the header row
+        for row in ws.iter_rows(min_row=1, values_only=True):
+            writer.writerow(row)
+
+    return csv_file_name

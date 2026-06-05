@@ -1,0 +1,67 @@
+import heapq
+import random
+
+def task_func(obj_list, attr, top_n=5, seed=None):
+    """
+Find the top N values of the specified attribute in a list of objects.
+Return the top N values as well a a randomly sampled value of all attributes.
+
+Parameters:
+obj_list (list): The list of objects.
+attr (str): The attribute to find the top N values.
+top_n (int, optional): The number of top values to retrieve. Defaults to 5.
+seed (float, optional): The seed used for randomly choosing an attribute.
+
+Returns:
+list[int]: The top N values as a list of integers. Empty list if there are no attributes.
+float: A randomly chosen value of all attributes, None if there are no attributes.
+
+Requirements:
+- heapq
+- random
+    
+Example:
+    >>> # Sample data class used in the example
+    >>> class Object:
+    ...     def __init__(self, value):
+    ...         self.value = value
+    ...
+    >>> random.seed(1)
+    >>> obj_list = [Object(random.randint(1, 100)) for _ in range(33)]
+    >>> top_values, random_value = task_func(obj_list, 'value', 5, seed=1)
+    >>> print(top_values)
+    [99, 98, 98, 98, 93]
+    >>> print(random_value)
+    58
+
+    >>> class Object:
+    ...     def __init__(self, value):
+    ...         self.test = value
+    ...
+    >>> random.seed(2)
+    >>> obj_list = [Object(random.randint(1, 12)) for _ in range(13)]
+    >>> top_values, random_value = task_func(obj_list, 'test', 2, 12)
+    >>> print(top_values)
+    [12, 11]
+    >>> print(random_value)
+    5
+"""
+if not obj_list or not hasattr(obj_list[0], attr):
+    return [], None
+
+if seed is not None:
+    random.seed(seed)
+
+# Collect all attribute values
+attribute_values = [getattr(obj, attr) for obj in obj_list]
+
+# Get the top N largest values and their corresponding objects
+top_n_values = nlargest(top_n, attribute_values, key=lambda x: x)
+
+# Select a random attribute value from the top N values
+if top_n_values:
+    random_value = random.choice(top_n_values)
+else:
+    random_value = None
+
+return top_n_values, random_value

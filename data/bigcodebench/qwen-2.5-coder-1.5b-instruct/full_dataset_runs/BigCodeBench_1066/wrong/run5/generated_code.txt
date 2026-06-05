@@ -1,0 +1,79 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+NUM_SAMPLES = 100
+NUM_OUTLIERS = 5
+
+
+def task_func(num_samples=NUM_SAMPLES, num_outliers=NUM_OUTLIERS):
+    """
+    Generate a dataset comprising both normal data and artificially introduced outliers,
+    and plot a histogram of the combined data. The function detects outliers in the dataset
+    using the Interquartile Range (IQR) method, but it only considers the normally distributed
+    portion of the data for outlier detection. The outliers detected and the artificially
+    introduced outliers might not always coincide.
+
+    Parameters:
+    - num_samples (int): Number of samples to be drawn from a normal distribution. The default 
+      value is 100. If set to zero or a negative number, no normal data will be generated, 
+      and the dataset will only contain artificially introduced outliers.
+    - num_outliers (int): Number of outliers to be artificially introduced into the dataset. 
+      These outliers are uniformly distributed between -10 and 10. The default value is 5. 
+      If set to zero, no outliers will be artificially introduced.
+
+
+    Returns:
+    - data (numpy array): The combined dataset, including both normally distributed data and 
+      the artificially introduced outliers.
+    - outliers_detected (numpy array): The outliers detected using the IQR method. This 
+      detection is based solely on the normally distributed portion of the data.
+    - ax (matplotlib.axes._axes.Axes): The Axes object for the histogram 
+      plot of the combined dataset.
+
+    Requirements:
+    - numpy
+    - matplotlib
+
+    Note:
+    - The artificially introduced outliers are not necessarily the same as the outliers
+    detected by the IQR method. The IQR method is applied only to the normally distributed
+    data, and thus some of the artificially introduced outliers may not be detected,
+    and some normal data points may be falsely identified as outliers.
+
+    Example:
+    >>> import numpy as np
+    >>> np.random.seed(0)
+    >>> data, outliers_detected, ax = task_func()
+    >>> print(outliers_detected)
+    [-9.61613603 -3.96850367  3.20347075]
+    """
+    if num_samples > 0:
+        # Generate normally distributed data
+        normal_data = np.random.normal(loc=0, scale=1, size=num_samples)
+
+    # Generate artificially introduced outliers
+    artificial_outliers = np.random.uniform(-10, 10, num_outliers)
+
+    # Combine normal and artificial data
+    data = np.concatenate((normal_data, artificial_outliers))
+
+    # Calculate interquartile range
+    q75, q25 = np.percentile(data, [75], axis=0)[0], np.percentile(data, [25], axis=0)[0]
+
+    # Detect outliers using IQR method
+    iqr_value = iqr(data)
+    lower_bound = q25 - 1.5 * iqr_value
+    upper_bound = q75 + 1.5 * iqr_value
+
+    outliers_detected = data[(data < lower_bound) | (data > upper_bound)]
+
+    # Plot histogram of combined data
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.hist(data, bins=30, alpha=0.5, label='Combined Data')
+    ax.axvline(lower_bound, color='r', linestyle='--', label='Lower Bound')
+    ax.axvline(upper_bound, color='r', linestyle='--', label='Upper Bound')
+    ax.legend()
+    ax.set_title('Histogram of Combined Data with Outliers')
+
+    return data, outliers_detected, ax

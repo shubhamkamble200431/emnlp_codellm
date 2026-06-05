@@ -1,0 +1,69 @@
+from random import choice
+import numpy as np
+import pandas as pd
+
+
+# Constants
+TEAMS = ['Team A', 'Team B', 'Team C', 'Team D', 'Team E']
+PENALTIES_COSTS = [100, 200, 300, 400, 500]
+
+
+def task_func(goals, penalties, teams=TEAMS, penalties_costs=PENALTIES_COSTS):
+    """
+    Generates a performance report DataFrame for teams, detailing goals and penalties. For each team, the function fetches
+    goal and penalty counts, calculates 'Penalties Cost' using a random multiplier from a predefined list, and computes
+    a 'Performance Score' as the non-negative difference between goals and penalties. Return a Dataframe with colomns 'Team',
+    'Goals', 'Penalties', 'Penalties Cost' and 'Performance Score'.
+
+    Parameters:
+    - goals (dict): Team names as keys, numbers of goals scored as values.
+    - penalties (dict): Team names as keys, numbers of penalties incurred as values.
+    - teams (list, optioanl): input teams. Default value is ['Team A', 'Team B', 'Team C', 'Team D', 'Team E']
+    - penalties_costs (list, optional): input penalties_costs. Default value is [100, 200, 300, 400, 500].
+
+    Returns:
+    - pd.DataFrame: DataFrame with Team, Goals, Penalties, Penalties Cost, Performance Score.
+
+    Requirements:
+    - pandas
+    - numpy
+    - random.choice
+
+    Example:
+    >>> goals = {'Team A': 3, 'Team B': 2}
+    >>> penalties = {'Team A': 1, 'Team B': 0}
+    >>> report = task_func(goals, penalties)
+    """
+    # Ensure inputs are dictionaries
+    if not isinstance(goals, dict) or not isinstance(penalties, dict):
+        raise ValueError("Inputs must be dictionaries.")
+
+    # Create a DataFrame to hold the results
+    result_df = pd.DataFrame(columns=['Team', 'Goals', 'Penalties', 'Penalties Cost', 'Performance Score'])
+
+    for team in teams:
+        try:
+            # Fetch goal and penalty counts
+            goals_count = goals[team]
+            penalties_count = penalties[team]
+
+            # Calculate penalties cost using a random multiplier
+            penalties_cost_multiplier = np.random.choice(penalties_costs)
+            penalties_cost = penalties_cost_multiplier * penalties_count
+
+            # Compute performance score
+            performance_score = abs(goals_count - penalties_count)
+
+            # Add row to the DataFrame
+            result_df = result_df.append({
+                'Team': team,
+                'Goals': goals_count,
+                'Penalties': penalties_count,
+                'Penalties Cost': penalties_cost,
+                'Performance Score': performance_score
+            }, ignore_index=True)
+
+        except KeyError:
+            print(f"Warning: Team {team} not found in provided data.")
+
+    return result_df

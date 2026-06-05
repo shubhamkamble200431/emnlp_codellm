@@ -1,0 +1,46 @@
+import collections
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+# Constants
+WORDS = ['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'I']
+
+def task_func(sentences_dict, word_keys):
+    """
+    Calculate the occurrence of certain words in a collection of sentences and return a bar chart.
+
+    Parameters:
+    sentences_dict (dict): The dictionary containing sentences.
+    word_keys (list): The list of words.
+
+    Returns:
+    - matplotlib.axes._axes.Axes: Axes object of the bar chart displaying the frequencies.
+
+    Requirements:
+    - collections
+    - matplotlib.pyplot
+    - pandas
+
+    Example:
+    >>> sentences_dict = {'Sentence1': 'the quick brown fox', 'Sentence2': 'jumps over the lazy dog', 'Sentence3': 'the dog is brown'}
+    >>> word_keys = ['the', 'dog']
+    >>> type(task_func(sentences_dict, word_keys))
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Flatten the sentences into a single string
+    combined_text = ' '.join(sentences_dict.values())
+
+    # Count occurrences of each word
+    word_counts = Counter(combined_text.split())
+
+    # Filter out non-word keys from the result
+    filtered_word_counts = {word: count for word, count in word_counts.items() if word in word_keys}
+
+    # Create a DataFrame to display the results
+    df = pd.DataFrame({'Word': filtered_word_counts.keys(), 'Frequency': filtered_word_counts.values()})
+
+    # Plot the bar chart
+    ax = df.plot(kind='bar')
+
+    return ax

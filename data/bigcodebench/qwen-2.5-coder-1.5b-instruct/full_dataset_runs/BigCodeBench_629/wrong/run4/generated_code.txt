@@ -1,0 +1,32 @@
+import os
+import time
+OUTPUT_DIR = './output'
+
+
+def task_func(dataset, filename, output_dir=OUTPUT_DIR):
+    """
+    Writes multiple Pandas DataFrames to a single CSV file, separating each DataFrame by a line of hyphens ("------").
+
+    Parameters:
+    - dataset (list of pd.DataFrame): A list containing the DataFrames to be written to the file.
+    - filename (str): The name of the file (excluding the path) where the DataFrames will be written.
+    - output_dir (str, optional): the ouput directory.
+
+    Returns:
+    None: The function writes the DataFrames to a CSV file but does not return any value.
+
+    Requirements:
+    - os
+    - time
+
+    Example:
+    >>> import pandas as pd
+    >>> df1 = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+    >>> df2 = pd.DataFrame({"D": [5, 6], "E": [7, 8]})
+    >>> task_func([df1, df2], 'sample.csv')
+    """
+os.makedirs(output_dir, exist_ok=True)
+
+with open(os.path.join(output_dir, filename), 'w') as f:
+    for i, df in enumerate(dataset):
+        f.write(df.to_csv(index=False).strip() + '\n' + '-' * 80 + '\n')

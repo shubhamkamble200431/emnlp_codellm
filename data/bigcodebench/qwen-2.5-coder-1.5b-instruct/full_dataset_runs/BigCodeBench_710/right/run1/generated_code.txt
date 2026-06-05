@@ -1,0 +1,31 @@
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
+def task_func(data_path):
+    """
+    Normalizes a dataset from a .csv file.
+    
+    Parameters:
+    - data_path (str): The path to the csv data file.
+
+    Returns:
+    - df (DataFrame): The normalized dataset.
+
+    Requirements:
+    - pandas
+    - sklearn
+    
+    Example:
+    >>> df = task_func('path_to_data_file.csv')
+    """
+    # Load the CSV data into a DataFrame
+    df = pd.read_csv(data_path)
+
+    # Create a scaler object
+    scaler = MinMaxScaler()
+
+    # Normalize each column in the DataFrame
+    normalized_df = scaler.fit_transform(df)
+
+    # Convert the array back to a DataFrame
+    return pd.DataFrame(normalized_df, columns=df.columns)

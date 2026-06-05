@@ -1,0 +1,56 @@
+import pandas as pd
+import seaborn as sns
+from collections import Counter
+from textblob import TextBlob
+from matplotlib import pyplot as plt
+
+
+def task_func(text, n, top_k):
+    """
+    Visualize the uppermost K n-grams in a given text string.
+
+    Parameters:
+    text (str): The text string.
+    n (int): The value of n for the n-grams.
+    top_k (int): The number of top n-grams to visualize.
+
+    Returns:
+    None
+
+    Requirements:
+    - re
+    - pandas
+    - seaborn
+    - textblob
+    - matplotlib
+
+    Example:
+    >>> type(task_func('This is a sample text for testing.', 2, 5))
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Convert the text to lowercase and tokenize it into words
+    words = text.lower().split()
+    
+    # Create a counter object to count occurrences of each word
+    word_counts = Counter(words)
+    
+    # Generate all n-grams from the word list
+    n_grams = zip(*[words[i:] for i in range(n)])
+    
+    # Count the frequency of each n-gram
+    n_gram_counts = Counter(n_grams)
+    
+    # Get the top k n-grams based on their frequency
+    top_n_grams = n_gram_counts.most_common(top_k)
+    
+    # Extract the top n-grams from the original text
+    top_n_grams_text = ' '.join([word for word, _ in top_n_grams])
+    
+    # Visualize the top n-grams using Seaborn's bar plot
+    sns.barplot(x=n_gram_counts.values(), y=n_gram_counts.keys())
+    plt.title(f'Top {top_k} {n}-Grams')
+    plt.xlabel('Frequency')
+    plt.ylabel('N-Gram')
+    plt.show()
+
+    return

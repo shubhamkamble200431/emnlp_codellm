@@ -1,0 +1,73 @@
+import requests
+import os
+import json
+import time
+
+# Redefining the function in the current context
+
+HEADERS = {
+    'accept': 'text/json',
+    'Content-Type': 'application/json'
+}
+
+def task_func(url, directory, metadata):
+    """
+    Upload all files from a specific directory to the specified server URL, along with the associated metadata. 
+    In addition, the speed limit function pauses for one second after each upload.
+
+    Parameters:
+    url (str): The server URL.
+    directory (str): The directory containing the files to be uploaded.
+    metadata (dict): The metadata to be associated with the files.
+
+    Returns:
+    list: A list of status codes for the upload responses.
+
+    Requirements:
+    - requests
+    - os
+    - json
+    - time
+
+    Raises:
+    - The function will raise FileNotFoundError if the directory does not exist.
+    - The function will raise TypeError if the url is invalid.
+
+    Example:
+    >>> task_func('https://www.example.com', './uploads', {'userId': 'abc'})
+    """
+    if not os.path.exists(directory):
+        raise FileNotFoundError("Directory does not exist.")
+
+    if not isinstance(url, str) or not url.startswith('http'):
+        raise TypeError("Invalid URL.")
+
+    try:
+        files = [os.path.join(directory, file) for file in os.listdir(directory)]
+        response_codes = []
+
+        for file in files:
+            # Read the content of the file and prepare it for upload
+            with open(file, 'rb') as f:
+                data = f.read()
+
+            # Prepare the metadata for the request
+            payload = {
+                'metadata': metadata,
+                'file': ('file_name', data)
+            }
+
+            # Send the POST request to the server
+            response = requests.post(url, headers=HEADERS, files=payload)
+
+            # Append the response status code to the list
+            response_codes.append(response.status_code)
+
+            # Pause for one second before uploading the next file
+            time.sleep(1)
+
+        return response_codes
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None

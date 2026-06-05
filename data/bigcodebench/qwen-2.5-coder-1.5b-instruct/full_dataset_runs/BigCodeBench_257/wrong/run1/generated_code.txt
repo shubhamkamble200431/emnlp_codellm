@@ -1,0 +1,45 @@
+import numpy as np
+import math
+
+def task_func(ax, num_turns):
+    """
+    Draws a spiral on the polar diagram 'ax' with the specified number of turns 'num_turns'.
+    The spiral starts at the center and expands outward with each turn.
+    The radial ticks on the plot are positioned at intervals corresponding to the number of turns multiplied by 45 degrees.
+
+    Parameters:
+    ax (matplotlib.axes._axes.Axes): The Axes object for plotting the spiral.
+    num_turns (int): The number of turns for the spiral.
+
+    Returns:
+    matplotlib.axes._axes.Axes: The modified Axes object with the spiral plot.
+
+    Requirements:
+    - numpy
+    - math
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> fig, ax = plt.subplots(subplot_kw={'polar': True})
+    >>> ax = task_func(ax, 3)
+    >>> ax.get_rlabel_position()
+    135.0
+    """
+    # Convert num_turns to radians
+    theta = num_turns * math.pi / 2
+
+    # Create an array of radii from 0 to 1
+    r = np.linspace(0, 1, 200)
+
+    # Calculate x and y coordinates using polar coordinates
+    x = r * np.cos(theta)
+    y = r * np.sin(theta)
+
+    # Plot the spiral
+    ax.plot(x, y)
+
+    # Set the radial tick positions
+    ax.set_xticks(np.arange(num_turns) * 45)
+    ax.set_yticks([])
+
+    return ax

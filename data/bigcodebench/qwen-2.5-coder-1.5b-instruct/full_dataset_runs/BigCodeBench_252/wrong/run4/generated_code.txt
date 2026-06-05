@@ -1,0 +1,57 @@
+import matplotlib.pyplot as plt
+from itertools import zip_longest
+
+
+# Constants
+COLORS = ['red', 'green', 'blue', 'yellow', 'purple']
+
+def task_func(data, labels):
+    """    
+    Plot a list of data with different colors. If there are more data series than the predefined colors, 
+    the function cycles through the colors. In case of even more series than colors + labels, 'black' is used.
+    
+    Parameters:
+    data (list): A list of lists, each representing a series of data.
+    labels (list): A list of labels for the data series.
+    
+    Returns:
+    matplotlib.axes.Axes: The Axes object of the plot.
+    
+    Requirements:
+    - matplotlib.pyplot
+    - itertools.zip_longest
+    - Predefined colors are ['red', 'green', 'blue', 'yellow', 'purple'].
+    
+    Example:
+    >>> data = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6], [3, 4, 5, 6, 7]]
+    >>> labels = ['Series 1', 'Series 2', 'Series 3']
+    >>> ax = task_func(data, labels)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Determine the maximum number of labels to cycle through
+    num_labels = len(labels) if len(labels) <= len(COLORS) else len(COLORS)
+
+    # Create a list of colors by cycling through predefined colors
+    color_list = COLORS[:num_labels]
+
+    # Ensure that the length of color_list matches the number of data series
+    while len(color_list) < len(data):
+        color_list.extend(COLORS[:num_labels])
+
+    # Zip the data and colors together
+    zipped_data = list(zip_longest(*data))
+
+    # Extract the non-None values to create the plot
+    valid_series = [series for series in zipped_data if series is not None]
+
+    # Create the plot
+    fig, ax = plt.subplots()
+    for i, (series, label) in enumerate(valid_series):
+        ax.plot(series, color=color_list[i % len(color_list)])
+        ax.set_label(label)
+
+    # Set the legend
+    ax.legend()
+
+    return ax

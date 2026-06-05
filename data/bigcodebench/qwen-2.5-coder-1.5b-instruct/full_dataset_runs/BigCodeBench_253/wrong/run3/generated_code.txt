@@ -1,0 +1,49 @@
+import numpy as np
+import random
+
+# Constants
+COLORS = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+
+def task_func(ax):
+    """
+    Generate a random sine wave function and draw it on a provided matplotlib polar subplot 'ax'. 
+    The function randomly selects a color from a predefined list and sets a random position for radial labels.
+
+    Parameters:
+    ax (matplotlib.axes._axes.Axes): The ax to plot on.
+
+    Returns:
+    str: The color code (as a string) of the plotted function.
+
+    Requirements:
+    - numpy
+    - random
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> random.seed(0)
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(111, polar=True)
+    >>> color = task_func(ax)
+    >>> color in COLORS
+    True
+    >>> plt.close()
+    """
+    # Generate a random sine wave function
+    frequency = 1 + random.randint(-5, 5)
+    amplitude = random.uniform(1, 3)
+    phase_shift = random.uniform(0, 2 * np.pi)
+
+    x = np.linspace(0, 2 * np.pi, 400)
+    y = amplitude * np.sin(frequency * x + phase_shift)
+
+    # Plot the sine wave function
+    ax.plot(x, y, c=random.choice(COLORS))
+
+    # Set a random position for radial labels
+    theta = random.uniform(0, 2 * np.pi)
+    radius = random.uniform(1, 2)
+    label = f'{color}'
+    ax.text(radius, theta, label, ha='center', va='bottom')
+
+    return color

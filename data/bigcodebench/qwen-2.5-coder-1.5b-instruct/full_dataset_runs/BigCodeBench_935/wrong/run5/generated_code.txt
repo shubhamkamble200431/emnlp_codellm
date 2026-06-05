@@ -1,0 +1,40 @@
+import pandas as pd
+import string
+
+def task_func(word):
+    """
+    Creates a Pandas DataFrame from a single word, where each row contains a letter from the word 
+    and its 1-based position in the alphabet.
+
+    Requirements:
+    - pandas
+    - string
+    
+    Parameters:
+    - word (str): The word to create the DataFrame from. The word should be in lowercase and consist of alphabetic characters only.
+    
+    Returns:
+    - pandas.DataFrame: A DataFrame with two columns: 'Letter' and 'Position', 
+      where 'Position' is the letter's position in the English alphabet.
+    
+    Examples:
+    >>> task_func('abc')
+      Letter  Position
+    0      a         1
+    1      b         2
+    2      c         3
+
+    >>> task_func('zoo')
+      Letter  Position
+    0      z        26
+    1      o        15
+    2      o        15
+    
+    Raises:
+    - ValueError: If the input word is not in lowercase or contains non-alphabetic characters.
+    """
+    if not word.islower() or any(not char.isalpha() for char in word):
+        raise ValueError("Input word must be in lowercase and contain only alphabetic characters.")
+
+    df = pd.DataFrame({'Letter': list(word), 'Position': range(1, len(word) + 1)})
+    return df

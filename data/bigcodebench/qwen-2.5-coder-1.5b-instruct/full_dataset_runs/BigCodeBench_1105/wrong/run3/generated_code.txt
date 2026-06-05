@@ -1,0 +1,52 @@
+import subprocess
+import os
+import time
+import glob
+
+def task_func(r_script_path: str, output_path: str, duration: int) -> (bool, str):
+    """
+    This function executes an R script and verifies if the output file is generated within a given duration.
+    
+    Parameters:
+    - r_script_path (str): The absolute path to the R script to be executed.
+    - output_path (str): The absolute path where the output CSV file is expected to be generated.
+    - duration (int): The time, in seconds, within which the output file should be generated.
+    
+    Returns:
+    - tuple containing:
+      - bool: True if the output file is generated within the specified duration, False otherwise.
+      - str: A message indicating whether the file was generated successfully or not. If the generation is successful, the message will be 'File generated successfully within the specified duration.'; otherwise, it will be 'File not generated within the specified duration.'
+    
+    Requirements:
+    - subprocess
+    - os
+    - time
+    - glob
+    
+    Example:
+    >>> task_func('/path_to_script/MyrScript.r', '/path_to_output/', 10)
+    (True, 'File generated successfully within the specified duration.')
+    >>> task_func('/path_to_script/InvalidScript.r', '/path_to_output/', 5)
+    (False, 'File not generated within the specified duration.')
+    """
+    try:
+        # Start the R script process with redirection of stdout and stderr to a log file
+        start_time = time.time()
+        process = subprocess.Popen(['Rscript', r_script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        
+        while True:
+            # Check if the output file exists
+            if os.path.exists(output_path):
+                # Calculate the elapsed time since the start
+                elapsed_time = time.time() - start_time
+                # If the elapsed time is less than the duration, return True and the success message
+                if elapsed_time < duration:
+                    return True, f'File generated successfully within the specified duration.'
+                else:
+                    return False, 'File not generated within the specified duration.'
+            
+            # Wait for some time before checking again
+            time.sleep(1)
+    except Exception as e:
+        # Return False and the error message if any exception occurs
+        return False, f'Error executing R script: {e}'

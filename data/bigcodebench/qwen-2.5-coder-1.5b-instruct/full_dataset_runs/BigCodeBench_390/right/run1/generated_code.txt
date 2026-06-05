@@ -1,0 +1,53 @@
+import pandas as pd
+import requests
+from io import StringIO
+
+def task_func(csv_url_dict, sort_by_column="title"):
+    """
+    Fetches data from a given dictionary that includes a CSV URL and returns a pandas DataFrame sorted based on two specified columns.
+    
+    Parameters:
+    - csv_url_dict (dict): The dictionary with the key "URL" to fetch the CSV data from.
+    - sort_by_column (str): The column name based on which the data needs to be sorted. Default is "title".
+    
+    Returns:
+    DataFrame: The pandas DataFrame sorted based on the specified column.
+    
+    Raises:
+    - This function will raise a ValueError if the dictionary is empty or the key "URL" does not exist in the dictionary.
+
+    Requirements:
+    - pandas
+    - requests
+    - io.StringIO
+    
+    Example:
+    >>> task_func({"URL": "http://example.com/data.csv"}, "title")
+       id   title  price
+    0   1   Apple    0.3
+    1   2  Banana    0.5
+    2   3  Cherry    0.2
+
+    >>> task_func({"URL": "http://example.com/test.csv"}, "price")
+       id   title  price
+    2   3  Cherry    0.2
+    0   1   Apple    0.3
+    1   2  Banana    0.5
+    """
+    if not csv_url_dict or "URL" not in csv_url_dict:
+        raise ValueError("The dictionary must include at least one 'URL' key.")
+    
+    # Read CSV content from the URL
+    response = requests.get(csv_url_dict["URL"])
+    csv_content = response.content.decode('utf-8')
+    
+    # Create a StringIO object to read the CSV data
+    file_obj = StringIO(csv_content)
+    
+    # Load the CSV into a DataFrame
+    df = pd.read_csv(file_obj)
+    
+    # Sort the DataFrame by the specified column
+    sorted_df = df.sort_values(by=sort_by_column)
+    
+    return sorted_df

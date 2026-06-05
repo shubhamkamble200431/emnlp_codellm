@@ -1,0 +1,47 @@
+import pandas as pd
+import seaborn as sns
+
+
+def task_func(data, column="c"):
+    """
+    Removes a column from a given data dictionary and creates a heatmap
+    of the correlation matrix of the remaining data. Non-numeric columns are
+    excluded from the heatmap. If the data is empty or has no numeric columns,
+    the function returns None.
+
+    Parameters:
+    - data: The input data dictionary.
+    - column (str): Name of column to remove. Defaults to "c".
+
+    Returns:
+    - matplotlib.axes._axes.Axes or None: The Axes object of the heatmap
+      or None if the heatmap is not generated.
+
+    Requirements:
+    - pandas
+    - seaborn
+
+    Example:
+    >>> task_func({'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]})
+    <Axes: >
+    >>> task_func(pd.DataFrame({'a': ["foo", "bar"]}))
+    """
+    # Convert data to DataFrame if it's not already one
+    df = pd.DataFrame(data)
+
+    # Check if the data is empty or contains non-numeric columns
+    if len(df) == 0 or df.select_dtypes(include=[object]).shape[1] > 0:
+        return None
+
+    # Drop the specified column
+    df = df.drop(column, axis=1)
+
+    # Calculate the correlation matrix
+    corr_matrix = df.corr()
+
+    # Create a heatmap
+    plt.figure(figsize=(10, 10))
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+
+    # Return the axes object of the heatmap
+    return plt.gca() if plt.fignum_exists(plt.gcf()) else None

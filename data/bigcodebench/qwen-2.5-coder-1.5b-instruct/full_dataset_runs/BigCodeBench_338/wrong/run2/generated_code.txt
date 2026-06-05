@@ -1,0 +1,58 @@
+import random
+import string
+from matplotlib import pyplot as plt
+
+
+def task_func(elements, seed=100):
+    """
+    Format each string in the given list "elements" into a pattern "% {0}%", 
+    where {0} is a randomly generated alphanumeric string of length 5. Additionally,
+    return the plot axes of an histogram of the occurrence of each character across 
+    all the strings and a dictionary containing the count of each character in all 
+    the formatted strings.
+    
+    Parameters:
+    elements (List[str]): A list of string elements to be formatted.
+    seed (int, Optional): The seed for the random number generator. Defaults to 100.
+    
+    Returns:
+    List[str]: A list of elements formatted with random patterns.
+    plt.Axes: The axes object of the histogram plot.
+    dict: A dictionary containing the count of each character in the formatted strings.
+    
+    Requirements:
+    - random
+    - string
+    - matplotlib.pyplot
+    
+    Example:
+    >>> patterns, ax, counts = task_func(['abc', 'def'])
+    >>> patterns
+    ['% jCVRT%', '% AXHeC%']
+    >>> counts
+    {'%': 4, ' ': 2, 'j': 1, 'C': 2, 'V': 1, 'R': 1, 'T': 1, 'A': 1, 'X': 1, 'H': 1, 'e': 1}
+    """
+    # Initialize random seed
+    random.seed(seed)
+
+    # Generate a random alphanumeric string of length 5 for each element
+    formatted_elements = ["% {}%" for _ in elements]
+
+    # Create a histogram plot
+    char_count = {}
+    for elem in formatted_elements:
+        for char in elem[2:-2]:  # Skip '%' characters at the start and end
+            if char in char_count:
+                char_count[char] += 1
+            else:
+                char_count[char] = 1
+
+    # Plotting the histogram
+    fig, ax = plt.subplots()
+    ax.bar(char_count.keys(), char_count.values(), color='b')
+    ax.set_xlabel('Characters')
+    ax.set_ylabel('Count')
+    ax.title('Histogram of Character Occurrences')
+    plt.show()
+
+    return formatted_elements, ax, char_count

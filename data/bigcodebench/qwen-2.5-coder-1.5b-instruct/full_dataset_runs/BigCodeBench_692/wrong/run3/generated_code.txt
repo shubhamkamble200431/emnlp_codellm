@@ -1,0 +1,28 @@
+import math
+import pandas as pd
+
+def task_func(tuples_list):
+    """
+    Given a list of tuples turn them into a Pandas DataFrame with math.sin applied to each number.
+
+    Parameters:
+    - tuples_list (list): The list of tuples.
+    
+    Returns:
+    - df (DataFrame): A pandas DataFrame. Each row of df corresponds to a tuple from tuples_list, with the values being the sine of the original values in the tuple.
+
+    Requirements:
+    - math
+    - pandas
+
+    Example:
+    >>> df = task_func([(1, 2, 3, 4), (5, 6, 7, 8), (9, 10, 11, 12)])
+    >>> print(df)
+              0         1         2         3
+    0  0.841471  0.909297  0.141120 -0.756802
+    1 -0.958924 -0.279415  0.656987  0.989358
+    2  0.412118 -0.544021 -0.999990 -0.536573
+    """
+    # Create a pandas DataFrame by applying math.sin to each element of each tuple in the input list
+    df = pd.DataFrame([math.sin(x) for x in sum(tuples_list, [])])
+    return df

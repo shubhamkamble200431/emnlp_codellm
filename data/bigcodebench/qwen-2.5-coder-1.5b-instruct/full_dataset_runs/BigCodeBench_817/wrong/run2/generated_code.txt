@@ -1,0 +1,86 @@
+from collections import Counter
+import logging
+
+def task_func(letter_list, element, log_path):
+    """
+    Count the frequency of a particular letter in a given list of letters with logging.
+
+    Logs are written to a file named 'task_func.log' with encoding 'utf-8' and logging level DEBUG.
+    The log file is created by the function or overwritten if already exists.
+    For each function call the following is logged with the respective logging level:
+        - info: f"Function called with list: {letter_list} and element: {element}"
+        - error: if the element is not in the letter list
+        - info: f"Frequency of '{element}' is {element_frequency}"
+    
+    After the last info has been logged, the logging is shutdown, such that all
+    files are released.
+
+    Parameters:
+    letter_list (list of str): The list of letters.
+    element (str): The specific letter for which the frequency needs to be counted.
+    log_path (str): the path to the folder in which to save the log file
+
+    Returns:
+    int: The frequency of the letter.
+
+    Raises:
+    ValueError: If element is not in letter_list.
+
+    Requirements:
+    - collections
+    - logging
+
+    Example:
+    >>> task_func(['a', 'b', 'a', 'c', 'a'], 'a', log_path='./')
+    3
+    >>> with open('task_func.log') as log:
+    ...     print(log.read())
+    INFO:Function called with list: ['a', 'b', 'a', 'c', 'a'] and element: a
+    INFO:Frequency of 'a' is 3
+    <BLANKLINE>
+
+    >>> task_func(['x', 'y', 'z'], 'y', log_path='./')
+    1
+    >>> with open('task_func.log') as log:
+    ...     print(log.read())
+    INFO:Function called with list: ['x', 'y', 'z'] and element: y
+    INFO:Frequency of 'y' is 1
+    <BLANKLINE>
+
+    >>> try:
+    ...     task_func(['x', 'y', 'z'], 'a', log_path='./')
+    ... except:
+    ...     with open('task_func.log') as log:
+    ...        print(log.read())
+    INFO:Function called with list: ['x', 'y', 'z'] and element: a
+    ERROR:The element is not in the letter list.
+    <BLANKLINE>
+
+    """
+    # Create a logger and set its properties
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler(filename=log_path + 'task_func.log', encoding='utf-8')
+    formatter = logging.Formatter('%(levelname)s:%(message)s')
+    handler.setFormatter(formatter)
+
+    # Add the handler to the logger
+    logger.addHandler(handler)
+
+    # Log the start of the function call
+    logger.info(f"Function called with list: {letter_list} and element: {element}")
+
+    # Check if the element is in the list
+    if element not in letter_list:
+        raise ValueError("The element is not in the letter list.")
+
+    # Count the frequency of the element
+    element_frequency = Counter(letter_list)[element]
+
+    # Log the frequency of the element
+    logger.info(f"Frequency of '{element}' is {element_frequency}")
+
+    # Shutdown the logging
+    logging.shutdown()
+
+    return element_frequency

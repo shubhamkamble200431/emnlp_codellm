@@ -1,0 +1,44 @@
+import os
+import re
+
+def task_func(pattern: str, replacement: str, directory: str) -> bool:
+    """
+    Renames all files in a directory that match a particular pattern with a given replacement string.
+    
+    Parameters:
+        - pattern (str): The pattern to search for in the filenames.
+        - replacement (str): The string to replace the pattern with.
+        - directory (str): The directory in which to search for files.
+        
+    Returns:
+    - Returns a boolean value. True if the operation was successful, otherwise False.
+    
+    Requirements:
+    - re
+    - os
+
+    Examples:
+    >>> task_func('draft', 'final', '/home/user/documents')
+    True
+    >>> task_func('tmp', 'temp', '/home/user/downloads')
+    False
+    """
+    try:
+        # Iterate over all files and directories in the specified directory
+        for filename in os.listdir(directory):
+            # Construct the full file path
+            file_path = os.path.join(directory, filename)
+            # Check if the item is a regular file (not a directory or symlink)
+            if os.path.isfile(file_path):
+                # Use regex to find matches of the pattern
+                if re.search(pattern, filename):
+                    # Replace the matched pattern with the replacement string
+                    new_filename = re.sub(pattern, replacement, filename)
+                    # Construct the new file path with the updated name
+                    new_file_path = os.path.join(directory, new_filename)
+                    # Rename the file
+                    os.rename(file_path, new_file_path)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+    return True

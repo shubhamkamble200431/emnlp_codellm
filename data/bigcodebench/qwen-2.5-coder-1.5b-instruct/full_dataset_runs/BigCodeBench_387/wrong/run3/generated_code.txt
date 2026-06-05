@@ -1,0 +1,34 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# Constants
+CITIES = ['New York', 'London', 'Beijing', 'Tokyo', 'Sydney', 'Paris', 'Berlin', 'Moscow', 'Madrid', 'Rome']
+
+def task_func(city_dict, max_range=1000000, seed=0):
+    """
+    Given a constant list of cities (CITIES) and a dictionary 'city_dict' of people's names and their favorite cities, 
+    this function generates a dictionary of city populations for the cities in the list and plots the population 
+    data using a bar chart. The population values are randomly generated integers between 1 and 'max_range' if 
+    the city is in the list of cities, otherwise the population value is -1. The random number generator is seeded
+    with the value 'seed' before generating the population values.
+
+    Parameters:
+    city_dict (dict): The dictionary with keys as people's names and values as city names. 
+    max_range (int, Optional): The maximum population value for the randomly generated population. Defaults to 1000000.
+    Must be greater than 1.
+    seed (int, Optional): The seed for the random number generator. Defaults to 0.
+
+    Returns:
+    dict: A dictionary with city names as keys and randomly generated populations as values.
+    matplotlib.axes.Axes: The Axes object of the plot for further manipulation or testing.
+
+    Requirements:
+    - numpy for random number generation
+    - matplotlib for plotting
+
+    Example:
+    >>> city_dict = {'John': 'New York', 'Alice': 'London', 'Bob': 'Beijing', 'Charlie': 'Tokyo', 'David': 'Sydney'}
+    >>> population_dict, plot_axes = task_func(city_dict)
+    """
+from typing import Dict, Any

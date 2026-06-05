@@ -1,0 +1,54 @@
+import pandas as pd
+import os
+import numpy as np
+import ast
+
+def task_func(directory):
+    """
+    Traverse a directory for CSV files a get the file with the longest filename. From that CSV file, load e-mail data, convert it into a Pandas DataFrame, calculate the sum, mean and median of the list associated with each e-mail, and then draw a histogram of the median.
+    - The column names of each CSV files are 'email' and 'list'.
+    - The column 'list' contains a string representation of a list. It should be converted before usage.
+    - If there is not csv file in the directory, return an empty dataframe with the columns expected.
+    - If there is not csv file in the directory, return None instead of an empty plot.
+
+    Parameters:
+    - directory (str): The path to the directory.
+
+    Returns:
+    - pandas.DataFrame : DataFrame containing the data from the CSV file with the longest filename augmented with the columns 'sum', 'mean' and 'median'.
+    - matplotlib.axes._axes.Axes : Histogram of the median. None if there is no data to plot.
+
+    Requirements:
+    - pandas
+    - os
+    - numpy
+    - ast
+
+    Example:
+    >>> task_func('data_directory')
+    """
+    # Get all CSV files in the directory
+    csv_files = [f for f in Path(directory).glob('*.csv')]
+
+    # If no CSV files found, return None
+    if not csv_files:
+        return None
+
+    # Get the longest filename CSV file
+    longest_filename_csv_file = max(csv_files, key=len)
+
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(longest_filename_csv_file)
+
+    # Convert the 'list' column to a list type
+    df['list'] = df['list'].apply(ast.literal_eval)
+
+    # Calculate the sum, mean, and median of the 'list' column for each email
+    df[['sum', 'mean', 'median']] = df.groupby('email').agg({'list': ['sum', 'mean', lambda x: np.median(x)]})
+
+    # Draw a histogram of the median
+    ax = df.groupby('email')['median'].hist(bins=30, edgecolor='black')
+    ax.set_xlabel('Median List Sum')
+    ax.set_ylabel('Email Count')
+
+    return df, ax

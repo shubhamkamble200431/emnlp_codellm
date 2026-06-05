@@ -1,0 +1,41 @@
+import urllib.request
+import zipfile
+import os
+import urllib.error
+
+
+def task_func(
+    url: str,
+    save_path: str = "downloaded_file.zip",
+    extract_path: str = "extracted_files",
+) -> str:
+    """
+    Downloads, extracts, and deletes a ZIP file from a specified URL.
+
+    The function includes comprehensive error handling to manage issues such as invalid URLs, unreachable servers, corrupted ZIP files, and file I/O errors. In the event of a failure, it provides a descriptive error message.
+
+    Parameters:
+    - url (str): The URL of the ZIP file to be downloaded.
+    - save_path (str, optional): The local file path where the ZIP file will be saved temporarily. Defaults to 'downloaded_file.zip'.
+    - extract_path (str, optional): The directory where the ZIP file's contents will be extracted. Defaults to 'extracted_files'.
+
+    Returns:
+    - str: The path to the directory where the ZIP file's contents have been extracted. Returns an error message in case of failure.
+
+    Raises:
+    - urllib.error.URLError: If the URL is invalid or the server cannot be reached. 
+    In this case, the function returns a string in the format "URL Error: [error reason]".
+
+    Requirements:
+    - urllib
+    - zipfile
+    - os
+    - urllib
+
+    Example:
+    >>> extracted_path = task_func('http://www.example.com/data.zip')
+    >>> print(extracted_path)
+    'extracted_files'
+
+
+    """

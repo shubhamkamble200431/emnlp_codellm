@@ -1,0 +1,62 @@
+import os
+import random
+import pandas as pd
+
+
+def task_func(data_dir,
+          csv_files=['file1.csv', 'file2.csv', 'file3.csv'],
+          seed=None):
+    """
+    Randomly select one of the provided csv_files and select a certain number 
+    of records from the file at random.
+    The selected records are returned in a DataFrame. 
+    The name of the selected csv_file is also returned.
+
+    If the csv_file is empty return an empty DataFrame.
+
+    Parameters:
+    data_dir (str): The directory where the CSV files are located.
+    csv_files (list of str): The list of CSV files to choose from. Default is ['file1.csv', 'file2.csv', 'file3.csv'].
+    seed (int, optional): Seed for random number generation and for sampling from the csv.
+    
+    Returns:
+    tuple: A tuple containing two elements:
+        - str: The name of the randomly selected file.
+        - DataFrame: A pandas DataFrame with the selected rows.
+
+    Requirements:
+    - os
+    - random
+    - pandas
+
+    Example:
+    >>> file_name, df = task_func('test_data')
+    >>> print(file_name)
+    'file2.csv'
+    >>> print(df)
+           Animal     Weight
+     0        Cat          1
+    21      Mouse         12
+    15   Elephant       1000
+     2      Tiger        500
+    """
+              csv_files=['file1.csv', 'file2.csv', 'file3.csv'],
+              seed=None):
+    if seed is not None:
+        random.seed(seed)
+
+    import pandas as pd
+    df_list = []
+    for file_path in csv_files:
+        file_path = os.path.join(data_dir, file_path)
+        if os.path.exists(file_path):
+            df_list.append(pd.read_csv(file_path))
+        else:
+            continue
+
+    if not df_list:
+        return '', pd.DataFrame()
+
+    selected_df = random.choice(df_list).sample(n=1, random_state=random.randint(0, 1000))
+
+    return os.path.basename(selected_df.index.name), selected_df

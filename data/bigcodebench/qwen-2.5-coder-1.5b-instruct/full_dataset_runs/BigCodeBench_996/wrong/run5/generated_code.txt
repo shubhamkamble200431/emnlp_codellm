@@ -1,0 +1,67 @@
+import requests
+import json
+from bs4 import BeautifulSoup
+
+
+def task_func(url: str, file_name: str = "Output.txt") -> str:
+    """
+    Scrape the 'title' from a specified web page, save it in JSON format to a given file, 
+    and append to the file if it exists.`
+
+    Parameters:
+    - url (str): The URL of the web page from which the title is to be scraped.
+    - file_name (str, optional): The name of the file to save the scraped title. 
+    If the file already exists, the new data is appended. Defaults to 'Output.txt'.
+
+    Returns:
+    - str: The file path where the scraped title is saved.
+
+    Requirements:
+    - requests
+    - json
+    - bs4
+
+    Notes:
+    - If the web page does not have a title, 'None' is saved as the title value in the JSON data.
+    - Data is appended to the specified file in JSON format, with each title on a new line.
+
+    Example:
+    >>> task_func("http://example.com")
+    'Output.txt'
+    >>> task_func("http://another-example.com", "AnotherOutput.txt")
+    'AnotherOutput.txt'
+    """
+    # Send a GET request to the URL
+    response = requests.get(url)
+
+    # Check if the request was successful
+    if response.status_code != 200:
+        raise Exception(f"Failed to retrieve content from {url}. Status code: {response.status_code}")
+
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Extract the title element
+    title_element = soup.find('title')
+
+    # Extract the text from the title element
+    title_text = title_element.get_text() if title_element else None
+
+    # Create a dictionary with the title
+    data = {"title": title_text}
+
+    # Read existing data from the file (if it exists)
+    try:
+        with open(file_name, 'r') as file:
+            existing_data = json.load(file)
+    except FileNotFoundError:
+        existing_data = []
+
+    # Append the new data to the existing data
+    existing_data.append(data)
+
+    # Write the updated data back to the file
+    with open(file_name, 'w') as file:
+        json.dump(existing_data, file, indent=4)
+
+    return file_name

@@ -1,0 +1,38 @@
+import re
+import string
+from nltk.stem import PorterStemmer
+from collections import Counter
+
+STEMMER = PorterStemmer()
+
+def task_func(content):
+    """
+    Stem every word in a sentence, except the last, and count the frequency of each stem.
+
+    Parameters:
+    content (str): The sentence to stem and count.
+
+    Returns:
+    dict: A dictionary with stemmed words as keys and their frequency as values.
+
+    Requirements:
+    - re
+    - string
+    - nltk.stem
+    - collections.Counter
+
+    Example:
+    >>> task_func('running runner run')
+    {'run': 1, 'runner': 1}
+    """
+    # Normalize and remove non-alphabetic characters
+    normalized_content = re.sub(r'[^a-zA-Z\s]', '', content)
+    
+    # Tokenize the sentence into words
+    tokens = normalized_content.split()
+    
+    # Stem all words except the last one and count the frequency
+    stems = [STEMMER.stem(token) if i < len(tokens)-1 else token for i, token in enumerate(tokens)]
+    stem_counts = Counter(stems)
+    
+    return stem_counts

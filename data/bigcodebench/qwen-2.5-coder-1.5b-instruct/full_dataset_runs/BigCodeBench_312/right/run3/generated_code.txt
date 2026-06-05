@@ -1,0 +1,37 @@
+import random
+import matplotlib.pyplot as plt
+
+# Constants
+DISTRIBUTION_SIZE = 1000
+
+def task_func(bins=30):
+    """
+    Generate a Gaussian distribution and plot its histogram.
+
+    Parameters:
+    - bins (int, optional): Number of bins for the histogram. Default is 30.
+
+    Returns:
+    - tuple: A tuple containing the distribution list and the Axes patch object of the histogram plot.
+
+    Requirements:
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> random.seed(0)
+    >>> distribution, ax = task_func()
+    >>> len(ax.patches) == 30
+    True
+    >>> len(distribution)
+    1000
+    >>> plt.close()
+    """
+    # Generate a Gaussian distribution
+    data = [random.gauss(0, 1) for _ in range(DISTRIBUTION_SIZE)]
+
+    # Plot the histogram
+    fig, ax = plt.subplots()
+    ax.hist(data, bins=bins)
+
+    return data, ax

@@ -1,0 +1,62 @@
+import inspect
+import pandas as pd
+
+def task_func(f_list, file_path):
+    """
+    Exports the specifications of functions in 'f_list' to a CSV file at 'file_path'.
+
+    The CSV file columns are as follows:
+    - 'Function Name': The name of the function.
+    - 'Number of Arguments': The number of arguments the function takes.
+    - 'Defaults': Default values for the function's arguments, if any.
+    - 'Annotations': Type annotations of the function's arguments and return value, if any.
+    - 'Is Lambda': Boolean value indicating whether the function is a lambda function.
+
+    Each row in the CSV file corresponds to a function in 'f_list'.
+
+    Parameters:
+    f_list (list): A list of function objects to inspect. Each element should be a callable object.
+    file_path (str): The path (including filename) where the CSV file will be saved. Should be a writable path.
+
+    Returns:
+    None
+
+    Requirements:
+    - inspect
+    - pandas
+
+    Raises:
+    - ValueError: If 'f_list' is not a list of functions, 'f_list' is empty, or 'file_path' is not a valid path.
+    - IOError: If there's an error in writing to the specified file path.
+
+    Example:
+    >>> def f(x): return 2 * x
+    >>> def g(x, y=2): return x * y
+    >>> task_func([f, g], './function_info.csv')
+    >>> os.remove('./function_info.csv')
+    """
+    # Check inputs
+    if not isinstance(f_list, list) or not all(callable(f) for f in f_list):
+        raise ValueError("'f_list' must be a non-empty list of callable objects.")
+    if not inspect.isidentifier(file_path) or not os.path.isdir(os.path.dirname(file_path)):
+        raise ValueError("'file_path' must be a valid writable path.")
+
+    # Prepare data for CSV
+    data = []
+    for func in f_list:
+        spec = inspect.getfullargspec(func)
+        args = spec.args
+        defaults = spec.defaults
+        annotations = spec.annotations
+        is_lambda = isinstance(func, types.LambdaType)
+
+        data.append({
+            'Function Name': func.__name__,
+            'Number of Arguments': len(args),
+            'Defaults': defaults,
+            'Annotations': annotations,
+            'Is Lambda': is_lambda
+        })
+
+    # Create DataFrame
+    df =

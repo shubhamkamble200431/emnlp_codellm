@@ -1,0 +1,59 @@
+import numpy as np
+import bisect
+import statistics
+import matplotlib.pyplot as plt
+
+
+def task_func(data, value):
+    """
+    Analyzes a list of numerical data, identifies values greater than the average,
+    and counts how many values are greater than a specified value. Additionally, plots the
+    histogram of the sorted numbers.
+
+    Parameters:
+        data (list): A list of numerical data.
+        value (float): A value to compare against the data.
+
+    Returns:
+        numpy.ndarray: An array of values from the data that are greater than the average.
+        int: The number of values in the data that are greater than the given value.
+
+    Requirements:
+    - numpy
+    - bisect
+    - statistics
+    - matplotlib.pyplot
+
+    Note:
+    - If the data list is empty, the function returns an empty numpy.ndarray and a count of 0. This ensures
+      the function's output remains consistent and predictable even with no input data.
+
+    Examples:
+    >>> greater_avg, count = task_func([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5)
+    >>> greater_avg.tolist()
+    [6, 7, 8, 9, 10]
+    >>> count
+    5
+    """
+    if not data:
+        return np.array([]), 0
+
+    avg_data = np.mean(data)
+
+    # Filter values greater than the average
+    filtered_data = np.where(data > avg_data)[0]
+
+    # Count values greater than the given value
+    count_greater_than_value = len(filtered_data)
+
+    # Sort the filtered data
+    sorted_filtered_data = np.sort(filtered_data)
+
+    # Plot the histogram
+    plt.hist(sorted_filtered_data, bins=10, color='blue')
+    plt.title('Histogram of Data Greater Than Average')
+    plt.xlabel('Value')
+    plt.ylabel('Count')
+    plt.show()
+
+    return sorted_filtered_data, count_greater_than_value

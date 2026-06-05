@@ -1,0 +1,54 @@
+import pandas as pd
+import seaborn as sns
+
+
+def task_func(data, column="c"):
+    """
+    Removes a column from a given data dictionary and creates a heatmap
+    of the correlation matrix of the remaining data. Non-numeric columns are
+    excluded from the heatmap. If the data is empty or has no numeric columns,
+    the function returns None.
+
+    Parameters:
+    - data: The input data dictionary.
+    - column (str): Name of column to remove. Defaults to "c".
+
+    Returns:
+    - matplotlib.axes._axes.Axes or None: The Axes object of the heatmap
+      or None if the heatmap is not generated.
+
+    Requirements:
+    - pandas
+    - seaborn
+
+    Example:
+    >>> task_func({'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]})
+    <Axes: >
+    >>> task_func(pd.DataFrame({'a': ["foo", "bar"]}))
+    """
+    if not isinstance(data, dict) or len(data) == 0:
+        return None
+
+    # Filter out non-numeric columns
+    numeric_data = {k: v for k, v in data.items() if pd.api.types.is_numeric_dtype(v)}
+
+    if len(numeric_data) == 0:
+        return None
+
+    # Remove the specified column
+    if column in numeric_data:
+        del numeric_data[column]
+
+    # Calculate the correlation matrix
+    corr_matrix = pd.DataFrame(index=numeric_data.keys(), columns=numeric_data.keys())
+
+    for i in range(len(numeric_data)):
+        for j in range(i + 1):
+            corr_matrix.iloc[i, j] = abs(corr_matrix.iloc[j, i])
+
+    # Generate the heatmap
+    fig, ax = plt.subplots(figsize=(10, 10))
+    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', center=0)
+    ax.set_title(f'Correlation Matrix of {list(numeric_data.keys())}')
+
+    return ax

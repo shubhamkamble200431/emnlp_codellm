@@ -1,0 +1,49 @@
+import pandas as pd
+from random import randint
+
+
+def task_func(name: str, age: int, code: str, salary: float, bio: str) -> pd.DataFrame:
+    """
+    Generate a Pandas DataFrame of employees with their details based on the input provided.
+
+    Parameters:
+    - name (str): Name of the employee. This is case-sensitive. Must be one of the predefined
+                  names: 'John', 'Alice', 'Bob', 'Charlie', 'David', otherwise the function raises
+                  ValueError.
+    - age (int): Age of the employee.
+    - code (str): Code of the employee.
+    - salary (float): Salary of the employee.
+    - bio (str): Biography of the employee.
+
+    Returns:
+    data_df (pd.DataFrame): dataframe with columns: 'Name', 'Age', 'Code', 'Salary', 'Bio', 'Job Title'.
+               The 'Job Title' is randomly assigned from the predefined job titles:
+               'Engineer', 'Manager', 'Analyst', 'Developer', 'Tester'.
+
+    Requirements:
+    - pandas
+    - random.randint
+
+    Example:
+    >>> random.seed(0)
+    >>> df = task_func("John", 30, "A10B", 5000.0, "This is a bio with spaces")
+    >>> print(df)
+       Name  Age  Code  Salary                        Bio  Job Title
+    0  John   30  A10B  5000.0  This is a bio with spaces  Developer
+    """
+    predefined_names = ['John', 'Alice', 'Bob', 'Charlie', 'David']
+    if name not in predefined_names:
+        raise ValueError('Invalid name')
+
+    predefined_job_titles = ['Engineer', 'Manager', 'Analyst', 'Developer', 'Tester']
+    job_title = predefined_job_titles[randint(0, len(predefined_job_titles) - 1)]
+
+    data = {
+        'Name': [name],
+        'Age': [age],
+        'Code': [code],
+        'Salary': [salary],
+        'Bio': [bio],
+        'Job Title': [job_title]
+    }
+    return pd.DataFrame(data)

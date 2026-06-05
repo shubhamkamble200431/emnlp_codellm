@@ -1,0 +1,30 @@
+import re
+import json
+from collections import Counter
+
+
+def task_func(json_str, top_n=10):
+    """
+    Extract all URLs from a string-serialized JSON dict using a specific URL pattern and return a dict
+    with the URLs as keys and the number of times they appear as values.
+
+    Parameters:
+    json_str (str): The JSON string.
+    top_n (int, Optional): The number of URLs to return. Defaults to 10. 
+
+    Returns:
+    dict: A dict with URLs as keys and the number of times they appear as values.
+
+    Requirements:
+    - re
+    - json
+    - collections.Counter
+
+    Example:
+    >>> task_func('{"name": "John", "website": "https://www.example.com"}')
+    {'https://www.example.com': 1}
+    """
+    url_pattern = r'(?P<url>https?://\S+)'
+    urls = re.findall(url_pattern, json_str)
+    url_counts = Counter(urls)
+    return dict(sorted(url_counts.items(), key=lambda x: x[1], reverse=True)[:top_n])

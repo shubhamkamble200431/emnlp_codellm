@@ -1,0 +1,57 @@
+import math
+import statistics
+import numpy as np
+
+
+def task_func(input_list):
+    """
+    Sorts the input list in ascending order based on the degree value of its elements, and then 
+    calculates the mean, median, and mode of both the sorted list and the same for the magnitude of 
+    the fast fourier transform of the degree values upto the nearest integer.
+
+    Parameters:
+    input_list (list): A list of numbers to be sorted and analyzed.
+
+    Returns:
+    tuple: A tuple containing the rounded mean, median and mode of the sorted list along with those 
+    for the magnitude of the fast fourier transform of the degree values.
+
+    Requirements:
+    - math
+    - statistics
+    - numpy
+
+    Example:
+    >>> input_list = [30, 45, 60, 90, 180]
+    >>> stats = task_func(input_list)
+    >>> print(stats)
+    (81, 60, 30, 10712, 8460, 8460)
+    """
+    # Sort the input list by the degree value
+    sorted_list = sorted(input_list, key=lambda x: math.radians(x))
+
+    # Calculate the mean of the sorted list
+    mean_sorted = round(np.mean(sorted_list), 1)
+
+    # Calculate the median of the sorted list
+    median_sorted = round(statistics.median(sorted_list), 1)
+
+    # Calculate the mode of the sorted list
+    mode_sorted = max(set(sorted_list), key=sorted_list.count)
+
+    # Convert degrees to radians
+    angles_radians = np.radians(sorted_list)
+
+    # Compute the Fast Fourier Transform (FFT) of the angles
+    fft_result = np.fft.fft(angles_radians)
+
+    # Find the magnitude of the FFT result
+    magnitude_fft = np.abs(fft_result)
+
+    # Find the index of the peak magnitude
+    peak_index = np.argmax(magnitude_fft)
+
+    # Calculate the mean, median, and mode of the FFT magnitude around the peak
+    mean_fft_peaked = round(np.mean(magnitude_fft[peak_index-1:peak_index+2]), 1)
+    median_fft_peaked = round(statistics.median(magnitude_fft[peak_index-1:peak_index+2]), 1)
+    mode_fft_peaked = max(set(magnitude_fft[peak_index-1:peak_index+2

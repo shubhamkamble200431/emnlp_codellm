@@ -1,0 +1,38 @@
+import random
+from collections import Counter
+
+def task_func(values, weights, n_samples):
+    """
+    Sample random numbers based on a given weighted distribution and return a histogram of the samples.
+
+    Parameters:
+    - values (list): List of values to be sampled from.
+    - weights (list): List of weights corresponding to the values.
+    - n_samples (int): Number of samples to be drawn.
+
+    Returns:
+    - histogram (dict): A histogram as a dictionary with the values as keys and counts as values.
+
+    Requirements:
+    - collections.Counter
+    - random
+
+    Example:
+    >>> random.seed(42)
+    >>> task_func([1, 2, 3], [3, 2, 1], 1000)
+    {2: 342, 1: 480, 3: 178}
+    """
+    if len(values) != len(weights):
+        raise ValueError("The lengths of values and weights must be equal.")
+
+    # Normalize weights by summing them up
+    total_weight = sum(weights)
+    normalized_weights = [w / total_weight for w in weights]
+
+    # Use random.choices to sample with probabilities based on the normalized weights
+    sampled_values = random.choices(values, weights=normalized_weights, k=n_samples)
+
+    # Create a histogram of the sampled values
+    histogram = Counter(sampled_values)
+
+    return histogram

@@ -1,0 +1,63 @@
+import re
+import nltk
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Make sure to download NLTK stopwords
+nltk.download('stopwords')
+
+# Define a regex pattern for matching all non-alphanumeric characters
+ALPHANUMERIC = re.compile('[\W_]+')
+
+# Load NLTK's list of English stop words
+STOPWORDS = nltk.corpus.stopwords.words('english')
+
+
+def task_func(texts):
+    """
+    Creates a document-term matrix (DTM) from a list of text documents using CountVectorizer from Scikit-learn.
+    Texts are preprocessed by removing non-alphanumeric characters (excluding spaces),
+    converting to lowercase, and excluding English stop words defined in NLTK.
+
+    Parameters:
+    - texts (list of str): The list of text documents to convert into a DTM.
+
+    Returns:
+    - pd.DataFrame: A DataFrame where rows represent documents and columns represent unique terms;
+                    cell values indicate the frequency of a term in a document.
+
+    Requirements:
+    - re
+    - nltk
+    - pandas
+    - sklearn.feature_extraction.text
+
+    Example:
+    >>> texts = ["Hello, world!", "Machine learning is great.", "Python is my favorite programming language."]
+    >>> dtm = task_func(texts)
+    """
+    # Define a regex pattern for matching all non-alphanumeric characters (excluding spaces)
+    ALPHANUMERIC = re.compile('[\W_]+')
+
+    # Load NLTK's list of English stop words
+    STOPWORDS = nltk.corpus.stopwords.words('english')
+
+    # Preprocess the text data
+    preprocessed_texts = []
+    for text in texts:
+        # Remove non-alphanumeric characters except spaces, convert to lowercase
+        cleaned_text = ALPHANUMERIC.sub('', text).lower()
+        # Exclude stop words
+        processed_text = ' '.join([word for word in cleaned_text.split() if word not in STOPWORDS])
+        preprocessed_texts.append(processed_text)
+
+    # Create a CountVectorizer object with ngram_range=(1, 2) to capture both unigrams and bigrams
+    vectorizer = CountVectorizer(ngram_range=(1, 2))
+
+    # Fit and transform the preprocessed texts to create the DTM
+    dtm = vectorizer.fit_transform(preprocessed_texts)
+
+    # Convert the DTM to a Pandas DataFrame
+    df = pd.DataFrame(dtm.toarray(), columns=vectorizer.get_feature_names_out())
+
+    return df

@@ -1,0 +1,47 @@
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+
+
+def task_func(
+    feature_array,
+    target_array,
+    feature_names=["f1", "f2", "f3", "f4", "f5"],
+    target_name="target",
+    seed=None,
+):
+    """
+    Shuffle the columns of a given numpy array and train a Random Forest Classifier on the shuffled data.
+
+    Parameters:
+    - feature_array (numpy.ndarray): 2D array containing the feature data with shape (n_samples, n_features).
+    - target_array (numpy.ndarray): 1D array containing the target data with shape (n_samples,).
+    - feature_names (list of str, optional): Names of the features corresponding to the columns in `feature_array`.
+      Defaults to ['f1', 'f2', 'f3', 'f4', 'f5'].
+    - target_name (str, optional): Name of the target column. Defaults to 'target'.
+    - seed (int, optional): Seed for the random number generator to make shuffling reproducible. Defaults to None.
+
+    Returns:
+    sklearn.ensemble.RandomForestClassifier: A trained Random Forest Classifier on the shuffled feature data.
+
+    Requirements:
+    - numpy
+    - pandas
+    - sklearn
+
+    Examples:
+    >>> feature_array = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+    >>> target_array = np.array([0, 1])
+    >>> clf = task_func(feature_array, target_array)
+    >>> type(clf)
+    <class 'sklearn.ensemble._forest.RandomForestClassifier'>
+    """
+random_state = seed if seed is not None else None
+shuffle_indices = np.random.permutation(len(feature_array))
+shuffled_feature_array = feature_array[shuffle_indices]
+shuffled_target_array = target_array[shuffle_indices]
+
+clf = RandomForestClassifier(n_estimators=100, random_state=random_state)
+clf.fit(shuffled_feature_array, shuffled_target_array)
+
+return clf

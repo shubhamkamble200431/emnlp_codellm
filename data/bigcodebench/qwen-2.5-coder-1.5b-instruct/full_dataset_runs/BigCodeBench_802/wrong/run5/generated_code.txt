@@ -1,0 +1,33 @@
+import numpy as np
+import itertools
+
+def task_func(dimension, seed=42):
+    """
+    Create a 2D numeric array (matrix) of a given dimension with random integers between 1 and 100, 
+    and a flat list of all elements in the matrix.
+
+    Parameters:
+    - dimension (int): The dimension of the square matrix to be created. It must be a positive integer.
+
+    Returns:
+    tuple: A tuple containing:
+        - A 2D numpy array of the given dimension with random integers between 1 and 100.
+        - A flat list of all elements in the matrix.
+
+    Requirements:
+    - numpy
+    - itertools
+
+    Example:
+    >>> matrix, flat_list = task_func(3)
+    >>> print(matrix)
+    [[52 93 15]
+     [72 61 21]
+     [83 87 75]]
+    >>> print(flat_list)
+    [52, 93, 15, 72, 61, 21, 83, 87, 75]
+    """
+    np.random.seed(seed)
+    matrix = np.random.randint(1, 101, (dimension, dimension))
+    flat_list = matrix.flatten()
+    return matrix, flat_list

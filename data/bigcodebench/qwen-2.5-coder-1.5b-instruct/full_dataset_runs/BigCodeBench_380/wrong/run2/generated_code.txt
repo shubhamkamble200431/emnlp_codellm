@@ -1,0 +1,39 @@
+import re
+import os
+import shutil
+
+
+def task_func(directory):
+    """
+    Arrange files in a directory by their extensions. Create a new directory for each extension and move the 
+    files to the corresponding directories.
+
+    Parameters:
+    directory (str): The path to the directory.
+
+    Returns:
+    None
+
+    Requirements:
+    - re
+    - os
+    - shutil
+
+    Example:
+    >>> import tempfile
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> with open(temp_dir + '/file1.txt', 'w') as f:
+    ...     _ = f.write('This is a text file.')
+    >>> task_func(temp_dir)
+    >>> os.listdir(temp_dir)
+    ['txt']
+    """
+os.makedirs(os.path.join(directory, '.'))
+
+for root, dirs, files in os.walk(directory):
+    for file in files:
+        _, ext = os.path.splitext(file)
+        if ext:
+            ext_path = os.path.join(root, '.', ext[1:])
+            os.makedirs(ext_path, exist_ok=True)
+            shutil.move(os.path.join(root, file), os.path.join(ext_path, file))

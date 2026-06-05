@@ -1,0 +1,31 @@
+import heapq
+import collections
+
+def task_func(x, n):
+    """
+    Find the n most common letters in a dictionary, x, where the key letters and the values are their frequencies.
+
+    Parameters:
+    - x (dict): The dictionary of letter frequencies.
+    - n (int): The number of most frequent letters to return.
+
+    Returns:
+    - list: The n most frequent letters.
+
+    Requirements:
+    - heapq
+    - collections
+
+    Example:
+    >>> task_func({'a': 1, 'b': 2, 'c': 3}, 2)
+    ['c', 'b']
+    """
+    heap = []
+    for letter, freq in x.items():
+        if len(heap) < n:
+            heapq.heappush(heap, (-freq, letter))
+        elif freq > -heap[0][0]:
+            heapq.heappop(heap)
+            heapq.heappush(heap, (-freq, letter))
+
+    return [letter for _, letter in sorted(heap, reverse=True)]

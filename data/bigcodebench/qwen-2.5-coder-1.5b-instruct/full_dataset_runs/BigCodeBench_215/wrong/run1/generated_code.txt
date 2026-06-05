@@ -1,0 +1,64 @@
+import requests
+import json
+import pandas as pd
+import seaborn as sns
+
+# Constants
+HEADERS = {
+    'accept': 'application/json'
+}
+
+def task_func(url, parameters):
+    """
+    Retrieve data from a specific API endpoint with the provided parameters, 
+    convert the data into a pandas dataframe, and draw a heatmap to show 
+    the correlation between numerical characteristics. The heatmap is 
+    displayed and also returned for further use or testing.
+
+    Parameters:
+    url (str): The API endpoint URL.
+    parameters (dict): The parameters to be sent with the GET request.
+
+    Returns:
+    tuple: A tuple containing:
+        - DataFrame: The pandas DataFrame containing the data.
+        - Axes: The matplotlib Axes object of the heatmap.
+
+    Raises:
+    - This function will raise a general Expection if the url is invalid, empty data, invalid data, and url cannot be accessed.
+
+    Requirements:
+    - requests
+    - json
+    - pandas
+    - seaborn
+
+    Example:
+    >>> df, ax = task_func('https://api.example.com/data', {'param1': 'value1'})
+    >>> df.iloc[0]['data']
+    1
+    """
+try:
+    response = requests.get(url, headers=HEADERS, params=parameters)
+    response.raise_for_status()  # Raise an HTTPError for bad responses
+    raw_data = response.json()
+    
+    # Convert the JSON data into a pandas DataFrame
+    df = pd.DataFrame(raw_data)
+    
+    # Assuming there's at least one numeric column in the DataFrame
+    if not any(df.dtypes.apply(lambda x: pd.api.types.is_numeric_dtype(x))):
+        raise ValueError("The DataFrame does not contain any numeric columns.")
+    
+    # Calculate the correlation matrix
+    corr_matrix = df.corr()
+    
+    # Draw a heatmap using seaborn
+    axes = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+    
+    return df, axes
+    
+except requests.exceptions.RequestException as e:
+    raise Exception(f"Error accessing the URL: {e}")
+except (json.JSONDecodeError, TypeError) as e:
+    raise Exception(f"Invalid JSON response: {e}")

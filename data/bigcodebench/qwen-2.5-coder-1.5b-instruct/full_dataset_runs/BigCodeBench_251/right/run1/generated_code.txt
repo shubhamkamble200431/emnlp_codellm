@@ -1,0 +1,43 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def task_func(data):
+    """
+    Draw a pie chart that shows the job distribution in the given data and return the plot object.
+
+    Parameters:
+    data (DataFrame): A pandas DataFrame where each row represents an individual's data, 
+                      with columns 'Name' (str), 'Date' (str in format 'dd/mm/yyyy'), and 'Job' (str).
+
+    Returns:
+    matplotlib.figure.Figure: The Figure object containing the pie chart.
+
+    Raises:
+    - The function will raise ValueError if the input data is not a DataFrame.
+
+    Requirements:
+    - matplotlib.pyplot
+    - pandas
+
+    Example:
+    >>> data = pd.DataFrame({'Name': ['John', 'Jane', 'Joe'],
+    ...                      'Date': ['01/03/2012', '02/05/2013', '03/08/2014'],
+    ...                      'Job': ['Engineer', 'Doctor', 'Lawyer']})
+    >>> fig = task_func(data)
+    >>> type(fig)
+    <class 'matplotlib.figure.Figure'>
+    >>> len(fig.axes[0].patches) #check slices from pie chart
+    3
+    >>> plt.close()
+    """
+    if not isinstance(data, pd.DataFrame):
+        raise ValueError("Input data must be a pandas DataFrame")
+
+    # Group by job and count occurrences
+    job_counts = data['Job'].value_counts()
+
+    # Create a pie chart
+    fig, ax = plt.subplots()
+    ax.pie(job_counts.values, labels=job_counts.index, autopct='%1.1f%%')
+
+    return fig

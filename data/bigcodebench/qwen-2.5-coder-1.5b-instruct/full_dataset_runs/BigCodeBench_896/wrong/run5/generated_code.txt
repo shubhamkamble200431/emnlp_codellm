@@ -1,0 +1,48 @@
+from collections import Counter
+import random
+import itertools
+
+def task_func(length, count, seed=0):
+    """
+    Generate a number of random strings with a specified length from a fixed set of letters ('a', 'b', 'c', 'd', 'e'),
+    and analyze the frequency of each letter in the generated strings.
+    
+    Parameters:
+    - length (int): The length of each string to be generated. Should be a non-negative integer.
+    - count (int): The number of random strings to generate. Should be a non-negative integer.
+    - seed (int, optional): A seed for the random number generator to ensure reproducibility.
+    
+    Requirements:
+    - collections.Counter
+    - random
+    - itertools
+    
+    Returns:
+    - Counter: A collections.Counter object containing the frequency of each letter in the generated strings.
+    
+    Example:
+    >>> task_func(5, 2, seed=1)
+    Counter({'a': 3, 'd': 3, 'c': 2, 'e': 1, 'b': 1})
+    >>> task_func(0, 100, seed=2)
+    Counter()
+    """
+    if length < 0 or count < 0:
+        raise ValueError("Length and count must be non-negative integers")
+    
+    random.seed(seed)
+    fixed_letters = ['a', 'b', 'c', 'd', 'e']
+    result_counter = Counter()
+    
+    for _ in range(count):
+        # Randomly choose the first character
+        chosen_letter = random.choice(fixed_letters)
+        result_counter[chosen_letter] += 1
+        
+        # Generate the rest of the string
+        current_string = chosen_letter
+        for _ in range(1, length):
+            current_string += random.choice(fixed_letters)
+        
+        result_counter.update(current_string)
+    
+    return result_counter

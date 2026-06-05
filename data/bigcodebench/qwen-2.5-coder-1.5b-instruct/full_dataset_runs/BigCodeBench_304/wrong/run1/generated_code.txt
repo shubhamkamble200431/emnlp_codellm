@@ -1,0 +1,51 @@
+import pandas as pd
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+def task_func(df):
+    '''
+    Processes a DataFrame containing dates and lists of numbers. It converts the lists into separate columns,
+    performs Principal Component Analysis (PCA), and returns the explained variance ratio of the principal components
+    along with a bar chart visualizing this ratio. Returns 0,0 if the input DataFrame is empty.
+
+    Parameters:
+    df (DataFrame): A pandas DataFrame with columns 'Date' and 'Value'. 'Date' is a date column, and 'Value' contains 
+                    lists of numbers.
+
+    Returns:
+    tuple: (explained_variance_ratio, ax)
+           explained_variance_ratio (ndarray): The explained variance ratio of the principal components.
+           ax (Axes): The matplotlib Axes object for the variance ratio bar chart.
+
+    Note:
+    - The function use "Explained Variance Ratio of Principal Components" for the plot title.
+    - The function use "Principal Component" and "Explained Variance Ratio" as the xlabel and ylabel respectively.
+    
+    Requirements:
+    - pandas
+    - sklearn.decomposition
+    - matplotlib.pyplot
+
+    Example:
+    >>> df = pd.DataFrame([['2021-01-01', [8, 10, 12]], ['2021-01-02', [7, 9, 11]]], columns=['Date', 'Value'])
+    >>> explained_variance_ratio, ax = task_func(df)
+    >>> print(len(explained_variance_ratio))
+    2
+    '''
+    # Convert the lists in 'Value' to separate columns and remove NaN values
+    df = pd.concat([df.set_index('Date')['Value'].apply(pd.Series).T.reset_index(drop=True)], axis=1)
+    df.dropna(inplace=True)
+
+    # Perform PCA
+    pca = PCA()
+    X = df.iloc[:, :-1]
+    explained_variance_ratio = pca.fit_transform(X).cumsum() / len(X)
+
+    # Plotting the explained variance ratio
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(range(1, len(explained_variance_ratio) + 1), explained_variance_ratio, color='skyblue')
+    ax.set_title('Explained Variance Ratio of Principal Components')
+    ax.set_xlabel('Principal Component')
+    ax.set_ylabel('Explained Variance Ratio')
+
+    return explained_variance_ratio,

@@ -1,0 +1,56 @@
+import re
+import smtplib
+
+# Constants
+TEXT = "Josie Smith [3996 COLLEGE AVENUE, SOMETOWN, MD 21003]Mugsy Dog Smith [2560 OAK ST, GLENMEADE, WI 14098]"
+RECEPIENT_ADDRESS = "names@gmail.com"
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+EMAIL_ADDRESS = "your.email@gmail.com"
+EMAIL_PASSWORD = "your.password"
+
+def task_func(text=TEXT, smtp_server=SMTP_SERVER, smtp_port=SMTP_PORT, email_address=EMAIL_ADDRESS, email_password=EMAIL_PASSWORD, recepient_address=RECEPIENT_ADDRESS, smtp=None):
+    """
+    Extract all names from a string that is not enclosed by square brackets and send the names in an email.
+
+    Parameters:
+    text (str): The text from which to extract names.
+    smtp_server (str): The SMTP server to use for sending the email.
+    smtp_port (int): The port to use for the SMTP server.
+    email_address (str): The email address from which to send the email.
+    email_password (str): The password for the email address.
+    recepient_address (str): The recepient email adress.
+    
+    Returns:
+    list: A list of extracted names.
+    
+    Note:
+    - The message in the email is formatted in "Subject: Extracted Names\n\n" with the extracted name "\nJosie Smith\nMugsy Dog Smith".
+
+    Requirements:
+    - re
+    - smtplib
+
+    Example:
+    >>> from unittest.mock import MagicMock
+    >>> mock_smtp_instance = MagicMock()
+    >>> mock_smtp = MagicMock(return_value=mock_smtp_instance)
+    >>> task_func(text="Josie Smith [3996 COLLEGE AVENUE, SOMETOWN, MD 21003]Mugsy Dog Smith [2560 OAK ST, GLENMEADE, WI 14098]", smtp=mock_smtp)
+    ['Josie Smith', 'Mugsy Dog Smith']
+    """
+    # Extract names using regular expression
+    names = re.findall(r'\b[A-Za-z\s]+(?:\s*\[[^\]]+\])?', text)
+
+    # Format the message
+    message = f'Subject: Extracted Names\n\n{text}'
+
+    # Send the email
+    if not smtp:
+        smtp = smtplib.SMTP(smtp_server, smtp_port)
+        smtp.starttls()
+        smtp.login(email_address, email_password)
+
+    with smtp:
+        smtp.sendmail(email_address, recepient_address, message)
+
+    return names

@@ -1,0 +1,37 @@
+from itertools import chain
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+
+
+def task_func(L):
+    '''
+    Convert a list of lists 'L' into a single list of integers, standardize the integers, and plot the standardized values.
+
+    Parameters:
+    L (list of lists): A list of lists where each sublist contains integers.
+    
+    Returns:
+    matplotlib.axes._axes.Axes: A plot displaying the standardized values.
+
+    Requirements:
+    - numpy
+    - itertools
+    - sklearn.preprocessing
+    - matplotlib.pyplot
+
+    Examples:
+    >>> ax = task_func([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    '''
+    # Flatten the list of lists to get a single list of integers
+    flat_list = list(chain.from_iterable(L))
+
+    # Convert the flattened list to a numpy array and scale it
+    scaler = StandardScaler()
+    scaled_data = scaler.fit_transform(np.array(flat_list).reshape(-1, 1))
+
+    # Plot the standardized data
+    ax = plt.plot(scaled_data.flatten())
+    plt.show()
+
+    return ax

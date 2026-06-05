@@ -1,0 +1,71 @@
+import math
+import statistics
+import numpy as np
+
+
+def task_func(input_list):
+    """
+    Sorts the input list in ascending order based on the degree value of its elements, and then 
+    calculates the mean, median, and mode of both the sorted list and the same for the magnitude of 
+    the fast fourier transform of the degree values upto the nearest integer.
+
+    Parameters:
+    input_list (list): A list of numbers to be sorted and analyzed.
+
+    Returns:
+    tuple: A tuple containing the rounded mean, median and mode of the sorted list along with those 
+    for the magnitude of the fast fourier transform of the degree values.
+
+    Requirements:
+    - math
+    - statistics
+    - numpy
+
+    Example:
+    >>> input_list = [30, 45, 60, 90, 180]
+    >>> stats = task_func(input_list)
+    >>> print(stats)
+    (81, 60, 30, 10712, 8460, 8460)
+    """
+    # Sort the list based on the degree value
+    sorted_list = sorted(input_list, key=lambda x: abs(x))
+
+    # Calculate the mean of the sorted list
+    mean_sorted = round(sum(sorted_list) / len(sorted_list), 1)
+
+    # Calculate the median of the sorted list
+    n = len(sorted_list)
+    if n % 2 == 1:
+        median_sorted = round(sorted_list[n // 2], 1)
+    else:
+        median_sorted = round((sorted_list[n // 2 - 1] + sorted_list[n // 2]) / 2, 1)
+
+    # Calculate the mode of the sorted list
+    counter = Counter(sorted_list)
+    mode_sorted = max(counter.items(), key=lambda item: item[1])[0][0]
+
+    # Calculate the FFT of the degree values
+    fft_degree_values = np.fft.fft(sorted_list)
+
+    # Get the magnitude of the FFT
+    fft_magnitude = np.abs(fft_degree_values)
+
+    # Find the peak frequency using the FFT magnitude
+    peak_index = np.argmax(fft_magnitude)
+    peak_freq = peak_index
+
+    # Calculate the mean of the FFT magnitude
+    mean_fft_magnitude = round(np.mean(fft_magnitude), 1)
+
+    # Calculate the median of the FFT magnitude
+    n_fft = len(fft_magnitude)
+    if n_fft % 2 == 1:
+        median_fft_magnitude = round(fft_magnitude[peak_index], 1)
+    else:
+        median_fft_magnitude = round((fft_magnitude[peak_index - 1] + fft_magnitude[peak_index]) / 2, 1)
+
+    # Calculate the mode of the FFT magnitude
+    counter_fft = Counter(fft_magnitude)
+    mode_fft_magnitude = max(counter_fft.items(), key=lambda item: item[1])[0][0]
+
+    return mean_sorted, median_sorted, mode_sorted, mean_fft_magnitude, median_fft_magnitude, mode_fft_magnitude

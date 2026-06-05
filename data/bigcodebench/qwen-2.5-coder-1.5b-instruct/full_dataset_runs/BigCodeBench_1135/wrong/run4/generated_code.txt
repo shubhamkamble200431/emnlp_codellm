@@ -1,0 +1,53 @@
+import collections
+import json
+import requests
+
+def task_func(user, API_URL = 'https://api.github.com/users/'):
+    """
+    Retrieves the names of the repositories of a specified GitHub user, sorted in ascending order by their creation date.
+
+    The function queries the GitHub API for all repositories of a given user, parses the response to extract the names and creation dates, and returns the repository names sorted by the date they were created.
+
+    Parameters:
+    - user (str): The GitHub username whose repositories are to be retrieved.
+    - API_URL (str): The base URL of the GitHub API. Default is 'https://api.github.com/users/'.
+
+    Returns:
+    - list of str: A list of repository names, sorted by their creation dates from oldest to newest.
+
+
+    Requirements:
+    - collections
+    - json
+    - requests
+
+    Example:
+    >>> task_func('octocat')
+    ['Spoon-Knife', 'Hello-World', 'octocat.github.io']  # Example output, actual results may vary.
+    """
+    # Define the headers for the API request
+    headers = {
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    # Construct the URL with the provided username
+    url = f"{API_URL}{user}/repos"
+
+    # Send the GET request to the GitHub API
+    response = requests.get(url, headers=headers)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = json.loads(response.text)
+
+        # Extract repository names and create date from each repository
+        repos = [(repo['name'], repo['created_at']) for repo in data]
+
+        # Sort the repositories by creation date
+        sorted_repos = sorted(repos, key=lambda x: x[1])
+
+        # Return the repository names
+        return [repo[0] for repo in sorted_repos]
+    else:
+        raise Exception(f"Failed to retrieve repositories for {user}. Status code: {response.status_code}")

@@ -1,0 +1,46 @@
+import numpy as np
+from scipy.optimize import curve_fit
+
+
+def task_func(x, y, labels):
+    """
+    Fit an exponential curve to given data points and plot the curves with labels.
+    It fits an exponential curve of the form: f(x) = a * exp(-b * x) + c
+    to the provided x and y data points for each set of data and plots the fitted curves
+    with the corresponding labels on a single matplotlib figure.
+
+    Parameters:
+    - x (list of np.ndarray): List of numpy arrays, each representing the x-values of the data points for a dataset.
+    - y (list of np.ndarray): List of numpy arrays, each representing the y-values of the data points for a dataset.
+    - labels (list of str): List of strings, each representing the label for a dataset.
+
+    Returns:
+    - matplotlib.figure.Figure: The figure object that contains the plotted curves.
+
+    Requirements:
+    - numpy
+    - scipy.optimize
+
+    Example:
+    >>> x_data = [np.array([1,2,3]), np.array([4,5,6]), np.array([7,8,9])]
+    >>> y_data = [np.array([4,5,6]), np.array([7,8,9]), np.array([10,11,12])]
+    >>> labels = ['H2O', 'O2', 'CO2']
+    """
+    def exponential_curve(x, a, b, c):
+        return a * np.exp(-b * x) + c
+
+    fig, axes = plt.subplots(len(labels), 1, figsize=(10, len(labels) * 4))
+
+    for i in range(len(labels)):
+        popt, pcov = curve_fit(exponential_curve, x[i], y[i])
+        x_line = np.linspace(np.min(x[i]), np.max(x[i]), 400)
+        y_line = exponential_curve(x_line, *popt)
+
+        axes[i].plot(x_line, y_line, color='red')
+        axes[i].scatter(x[i], y[i], color='blue')
+        axes[i].set_title(f'{labels[i]} Curve')
+        axes[i].set_xlabel('X-axis')
+        axes[i].set_ylabel('Y-axis')
+
+    plt.tight_layout()
+    return fig

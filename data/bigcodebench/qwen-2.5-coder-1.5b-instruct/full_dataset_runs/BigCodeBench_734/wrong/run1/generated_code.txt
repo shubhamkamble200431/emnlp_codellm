@@ -1,0 +1,36 @@
+import nltk
+
+# Download necessary NLTK data (if not already present)
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+from collections import Counter
+
+def task_func(content):
+    """
+    Count the Part-of-Speech (POS) tags in a sentence without the last word.
+
+    Parameters:
+    - content (str): The sentence to count POS tags from.
+
+    Returns:
+    - dict: A dictionary with POS tags as keys and their count as values.
+
+    Requirements:
+    - nltk
+    - collections.Counter
+
+    Example:
+    >>> task_func('this is an example content')
+    {'DT': 2, 'VBZ': 1, 'NN': 1}
+    """
+    # Tokenize the input text into words
+    tokens = nltk.word_tokenize(content)
+
+    # Tag each token with its part-of-speech
+    pos_tags = nltk.pos_tag(tokens)
+
+    # Create a counter of unique POS tags
+    pos_count = Counter(tag[0] for tag in pos_tags[:-1])
+
+    return dict(pos_count)

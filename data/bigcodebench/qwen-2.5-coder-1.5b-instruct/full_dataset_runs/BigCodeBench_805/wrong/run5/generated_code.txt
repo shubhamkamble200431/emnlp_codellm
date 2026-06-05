@@ -1,0 +1,57 @@
+import pandas as pd
+import random
+
+
+def task_func(dictionary, item, seed):
+    """
+    Converts a dictionary to a pandas DataFrame and find the locations of a particular item in the resulting DataFrame.
+    Counts the number of occurences and adds a random integer x, where 0 <=x < 10, to it.
+
+    Parameters:
+    dict (dictionary): The dictionary to search.
+    item (str): The item to find.
+    seed(int): seed for random number generation.
+
+    Returns:
+    list: A list of tuples. Each tuple contains the row-index and column-name where the item is found.
+    int: The number of occurences with the added random number.
+    DataFrame: The converted dictionary.
+
+    Requirements:
+    - pandas
+    - random
+
+    Example:
+    >>> dict = {'A': ['apple', 'banana'], 'B': ['orange', 'apple']}
+    >>> task_func(dict, 'apple', seed=12)
+    ([(0, 'A'), (1, 'B')], 9,         A       B
+    0   apple  orange
+    1  banana   apple)
+    
+    >>> dict = {'A': ['a', 'b', 'e'], 'B': ['c', 'd', 'd'], '2': ['asdf', 'ddd', 'aaaa'], '12': ['e', 'e', 'd']}
+    >>> task_func(dict, 'e', seed=2)
+    ([(2, 'A'), (0, '12'), (1, '12')], 3,    A  B     2 12
+    0  a  c  asdf  e
+    1  b  d   ddd  e
+    2  e  d  aaaa  d)
+    """
+    # Convert dictionary to DataFrame
+    df = pd.DataFrame(dictionary).T
+
+    # Shuffle dataframe rows based on provided seed
+    random.seed(seed)
+    df.sample(frac=1, inplace=True)
+
+    # Initialize result lists and count
+    locs = []
+    count = 0
+
+    # Iterate over each row and column
+    for i, col in enumerate(df.columns):
+        if item in df[col]:
+            locs.append((i, col))
+            count += 1
+            # Add a random integer between 0 and 9
+            df.loc[i, col] += random.randint(0, 9)
+
+    return locs, count, df

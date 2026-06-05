@@ -1,0 +1,43 @@
+import re
+from pathlib import Path
+import tarfile
+
+# Constants
+PATTERN = r"(?<!Distillr)\\\\AcroTray\.exe"
+DIRECTORY = r"C:\\SomeDir\\"
+
+def task_func(directory=DIRECTORY, file_pattern=PATTERN):
+    """
+    Look for files that match the pattern of the regular expression '(? <! Distillr)\\\\ AcroTray\\.exe' in the directory 'C:\\ SomeDir\\'. If found, archive these files in a tar file.
+
+    Parameters:
+    - directory: The directory to search for files matching a specified pattern. The function will iterate over all files within this directory, including subdirectories.
+    - file_pattern: A regular expression pattern used to match filenames. Files whose names match this pattern will be added to an archive (tar file).
+
+    Returns:
+    - str: Path to the created tar file.
+
+    Requirements:
+    - re
+    - pathlib
+    - tarfile
+
+    Example:
+    >>> f_680('/path/to/source', '/path/to/target')
+    """
+    # Initialize the list to store matched files
+    matched_files = []
+
+    # Iterate over all files in the directory and its subdirectories
+    for root, dirs, files in os.walk(directory):
+        for file_name in files:
+            if re.match(file_pattern, file_name):
+                matched_files.append(os.path.join(root, file_name))
+
+    # Create a tar file with all matched files
+    tar_path = os.path.join(directory, "matched_files.tar.gz")
+    with tarfile.open(tar_path, "w:gz") as tar:
+        for file in matched_files:
+            tar.add(file)
+
+    return tar_path

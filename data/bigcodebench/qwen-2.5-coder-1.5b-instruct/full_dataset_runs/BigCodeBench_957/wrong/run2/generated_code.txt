@@ -1,0 +1,41 @@
+import string
+import re
+
+
+def task_func(text: str) -> tuple:
+    """
+    Counts the number of words, characters, and unique characters in a given text.
+
+    Parameters:
+    - text (str): The input text to be analyzed.
+
+    Returns:
+    - tuple: A tuple containing three integers: the number of words,
+                                                the number of characters,
+                                                the number of unique characters.
+
+    Requirements:
+    - string
+    - re
+
+    Note:
+    - This function considers whitespace-separated substrings as words.
+    - When counting characters, this function excludes whitespace and special
+      characters (i.e. string.punctuation).
+
+    Example:
+    >>> task_func('Hello, world!')
+    (2, 10, 7)
+    >>> task_func('Python is  awesome!  ')
+    (3, 15, 12)
+    """
+    # Counting words
+    word_count = len(re.findall(r'\b\w+\b', text))
+
+    # Counting characters excluding whitespace and special characters
+    char_count = sum(1 for char in text if char.isalnum())
+
+    # Counting unique characters
+    unique_char_count = len(set(char for char in text if char.isalnum()))
+
+    return word_count, char_count, unique_char_count

@@ -1,0 +1,69 @@
+import xml.etree.ElementTree as ET
+import csv
+
+
+def task_func(xml_content, output_csv_path):
+    """
+    Parses XML content from a string and converts it into a CSV format.
+
+    Parameters:
+    - xml_content (str): A string containing the XML content to be parsed. It should
+                       be well-formed XML.
+    - output_csv_path (str): The file path where the resulting CSV file will be saved.
+                           This path must be valid and accessible for writing.
+
+    Returns:
+    - None: The function does not return any value. Instead, it writes the output to
+          a CSV file at the specified path.
+
+    Raises:
+    - ET.ParseError: This exception is raised if the input XML content is malformed or
+                   cannot be successfully parsed. The exception message includes
+                   details about the parsing error.
+    - IOError: Raised if there is an issue with writing to the specified CSV file path.
+             This can happen due to reasons like invalid file path, full disk space,
+             lack of write permissions, etc. The exception message provides details
+             about the IO error.
+
+
+    Requirements:
+    - xml
+    - csv
+
+    Example:
+    >>> task_func('<root><element>data</element></root>', 'path/to/output.csv')
+    >>> with open('path/to/output.csv', 'r') as f:
+    ...     print(f.read())
+    element,data
+
+    Note:
+    - Ensure that the XML content passed to the function is well-formed.
+    - The output CSV path should be a valid file path where the user has write
+      permissions, to prevent IOError.
+    """
+    try:
+        # Parse the XML content
+        root = ET.fromstring(xml_content)
+
+        # Create a list to store the data
+        data = []
+
+        # Iterate over each child element in the root
+        for child in root:
+            # Extract the tag and text of the child element
+            tag = child.tag
+            text = child.text
+            # Append the tag and text to the data list
+            data.append([tag, text])
+
+        # Write the data to a CSV file
+        with open(output_csv_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Tag', 'Text'])  # Write header row
+            writer.writerows(data)         # Write data rows
+    except ET.ParseError as e:
+        # Handle XML parsing errors
+        raise ET.ParseError(f"Failed to parse XML: {e}")
+    except IOError as e:
+        # Handle file I/O errors
+        raise IOError(f"Failed to write to CSV file: {e}")

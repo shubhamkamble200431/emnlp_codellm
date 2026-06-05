@@ -1,0 +1,53 @@
+import os
+import shutil
+import glob
+import hashlib
+
+def task_func(ROOT_DIR, DEST_DIR, SPECIFIC_HASH):
+    """
+    Moves all files from a specified root directory (ROOT_DIR) to a target directory (DEST_DIR) if they match a specific hash value (SPECIFIC_HASH).
+    The function calculates the MD5 hash of each file in ROOT_DIR and moves it if the hash matches SPECIFIC_HASH.
+
+    Parameters:
+        ROOT_DIR (str): The path to the root directory from which files will be moved.
+        DEST_DIR (str): The path to the destination directory where files will be moved to.
+        SPECIFIC_HASH (str): The specific MD5 hash value files must match to be moved.
+
+    Returns:
+        int: The number of files moved to the target directory.
+
+    Note:
+        The function assumes the existence of the root directory. The existence of DEST_DIR is ensured by the function.
+
+    Requirements:
+    - os
+    - shutil
+    - glob
+    - hashlib
+
+    Examples:
+    >>> # Assuming the correct paths are given for ROOT_DIR, DEST_DIR,
+    >>> # and at least one file in ROOT_DIR matches SPECIFIC_HASH:
+    >>> type(task_func('/path/to/root', '/path/to/dest', 'd41d8cd98f00b204e9800998ecf8427e')) is int
+    True
+    >>> task_func('/path/to/root', '/path/to/dest', 'd41d8cd98f00b204e9800998ecf8427e') >= 0
+    True
+    """
+    num_files_moved = 0
+    md5_cache = {}
+
+    for file_path in glob.glob(os.path.join(ROOT_DIR, '*')):
+        with open(file_path, 'rb') as file:
+            file_hash = hashlib.md5(file.read()).hexdigest()
+
+        if file_hash in md5_cache and md5_cache[file_hash] != SPECIFIC_HASH:
+            continue
+
+        try:
+            shutil.move(file_path, DEST_DIR)
+            num_files_moved += 1
+            md5_cache[file_hash] = SPECIFIC_HASH
+        except Exception as e:
+            print(f"Failed to move {file_path}: {e}")
+
+    return num_files_moved

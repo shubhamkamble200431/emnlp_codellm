@@ -1,0 +1,43 @@
+import pandas as pd
+import random
+
+def task_func(df):
+    """
+    Generate a DataFrame that contains savegames for a number of games between different teams.
+    Each row of the input DataFrame represents a match, and contains two teams and their respective scores.
+    The function adds a 'winner' column to the DataFrame, which is the team with the highest score in each match.
+    If the scores are equal, the winner is should be randomly decided.
+    
+    Parameters:
+    - df (pandas.DataFrame): The input DataFrame with columns 'team1', 'team2', 'score1', 'score2'.
+
+    Requirements:
+    - pandas
+    - random
+    
+    Returns:
+    - df (pandas.DataFrame): The DataFrame with the added 'winner' column.
+    
+    Example:
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({'team1': np.random.choice(['Team A', 'Team B', 'Team C', 'Team D', 'Team E'], 20),
+    ...                    'team2': np.random.choice(['Team A', 'Team B', 'Team C', 'Team D', 'Team E'], 20),
+    ...                    'score1': np.random.randint(0, 10, 20),
+    ...                    'score2': np.random.randint(0, 10, 20)})
+    >>> df = task_func(df)
+    >>> assert 'winner' in df.columns
+    >>> assert df['winner'].dtype == object
+    >>> assert all(winner in ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'] for winner in df['winner'])
+    """
+    # Create a copy of the dataframe to avoid modifying the original
+    result_df = df.copy()
+    
+    # Calculate the difference in scores and determine the winner
+    result_df['score_diff'] = result_df['score1'] - result_df['score2']
+    result_df['winner'] = np.where(result_df['score_diff'] > 0, result_df['team1'], np.where(result_df['score_diff'] < 0, result_df['team2'], result_df['team1'] if random.random() > 0.5 else result_df['team2']))
+    
+    # Drop the temporary column used for calculation
+    result_df.drop(columns=['score_diff'], inplace=True)
+    
+    return result_df

@@ -1,0 +1,44 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def task_func(df):
+    """
+    Draws a pie chart of the status distribution from a pandas DataFrame with a 'Status' column and returns the plot object.
+    
+    The 'Status' column in the DataFrame is expected to contain categorical data with possible values like 
+    'Pending', 'In Progress', 'Completed', 'Cancelled'.
+    
+    Parameters:
+    df (DataFrame): A pandas DataFrame with 'Status' column containing categorical data.
+    
+    Returns:
+    matplotlib.axes.Axes: The Axes object with the pie chart.
+    
+    Raises:
+    ValueError: If 'df' is not a pandas DataFrame or does not contain the 'Status' column.
+
+    Requirements:
+    - pandas
+    - random
+    - matplotlib.pyplot
+    
+    Example:
+    >>> df = pd.DataFrame({'Status': ['Pending', 'Completed', 'In Progress', 'Cancelled', 'Completed', 'Pending']})
+    >>> ax = task_func(df)
+    >>> ax.get_title() # Should return 'Status Distribution'
+    'Status Distribution'
+    """
+    if not isinstance(df, pd.DataFrame) or 'Status' not in df.columns:
+        raise ValueError("Input must be a pandas DataFrame with a 'Status' column.")
+
+    # Count occurrences of each status
+    status_counts = df['Status'].value_counts().sort_index()
+
+    # Create a pie chart
+    ax = status_counts.plot(kind='pie', autopct='%1.1f%%', startangle=90, labels=status_counts.index, colors=['lightblue', 'gold', 'limegreen', 'tomato'])
+
+    ax.set_title('Status Distribution')
+    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+    return ax

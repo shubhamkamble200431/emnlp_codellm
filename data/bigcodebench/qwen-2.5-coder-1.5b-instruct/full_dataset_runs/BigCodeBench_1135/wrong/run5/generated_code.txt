@@ -1,0 +1,32 @@
+import collections
+import json
+import requests
+
+def task_func(user, API_URL = 'https://api.github.com/users/'):
+    """
+    Retrieves the names of the repositories of a specified GitHub user, sorted in ascending order by their creation date.
+
+    The function queries the GitHub API for all repositories of a given user, parses the response to extract the names and creation dates, and returns the repository names sorted by the date they were created.
+
+    Parameters:
+    - user (str): The GitHub username whose repositories are to be retrieved.
+    - API_URL (str): The base URL of the GitHub API. Default is 'https://api.github.com/users/'.
+
+    Returns:
+    - list of str: A list of repository names, sorted by their creation dates from oldest to newest.
+
+
+    Requirements:
+    - collections
+    - json
+    - requests
+
+    Example:
+    >>> task_func('octocat')
+    ['Spoon-Knife', 'Hello-World', 'octocat.github.io']  # Example output, actual results may vary.
+    """
+from collections import namedtuple
+from datetime import datetime
+import requests
+
+UserRepo = namedtuple('UserRepo', ['name', 'created_at'])

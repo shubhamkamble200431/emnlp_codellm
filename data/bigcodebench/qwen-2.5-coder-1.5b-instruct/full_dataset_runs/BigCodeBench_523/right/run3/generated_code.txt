@@ -1,0 +1,44 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def task_func(data):
+    """
+    Combine a list of dictionaries with the same keys into a single dictionary, turn it into a
+    Pandas DataFrame and create a line plot of the data.
+
+    Parameters:
+    data (list): A list of dictionaries. The keys are labels and the values are data points.
+
+    Returns:
+    matplotlib.axes._axes.Axes or None: Axes object of the plot showing 'Data over Time',
+                                                   with 'Time' on the x-axis and 'Data Points' on the y-axis.
+                                                   If data is empty, return None.
+
+    Requirements:
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax = task_func([{'A': 10, 'B': 15, 'C': 12},\
+                    {'A': 12, 'B': 20, 'C': 14},\
+                    {'A': 15, 'B': 18, 'C': 15},\
+                    {'A': 11, 'B': 17, 'C': 13}])
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_title()
+    'Data over Time'
+    >>> len(ax.lines)
+    3
+    """
+    if not data:
+        return None
+
+    # Convert list of dictionaries to a DataFrame
+    df = pd.DataFrame(data, columns=data[0].keys())
+
+    # Create a line plot
+    ax = df.plot(kind='line', title='Data over Time')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Data Points')
+
+    return ax

@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+
+def task_func(fruit_data):
+    """
+    Calculate and return the total and average counts for each type of fruit.
+
+    This function takes a list of tuples, each containing a fruit name and its count, 
+    then calculates the total count and the average count for each type of fruit. 
+    The results are returned as a pandas DataFrame with each row representing a different fruit.
+
+    If fruit_data is an empty list, an empty dataFrame is returned.
+
+    Parameters:
+    fruit_data (list of tuples): Each tuple contains a string representing the fruit name and an integer for the count.
+
+    Returns:
+    DataFrame: A pandas DataFrame with two columns: 'Total Count' and 'Average Count'. 
+               Each row's index is the fruit name.
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> fruit_list = [('apple', 5), ('banana', 3), ('apple', 6), ('banana', 4), ('cherry', 5), ('banana', 2), ('apple', 4), ('cherry', 5)]
+    >>> report = task_func(fruit_list)
+    >>> report.sort_index(inplace=True)
+    >>> print(report)
+            Total Count  Average Count
+    apple            15            5.0
+    banana            9            3.0
+    cherry           10            5.0
+
+    >>> fruit = [('apple', 1), ('orange', 25), ('apple', 111)]
+    >>> df = task_func(fruit)
+    >>> df.sort_index(inplace=True)
+    >>> print(df)
+            Total Count  Average Count
+    apple           112           56.0
+    orange           25           25.0
+    """
+    if not fruit_data:
+        return pd.DataFrame()
+
+    # Convert list of tuples to a dictionary where keys are fruit names and values are lists of counts
+    fruit_counts = {fruit: [] for fruit in set([fruit[0] for fruit in fruit_data])}
+
+    # Iterate through the list of tuples and populate the dictionary
+    for fruit, count in fruit_data:
+        fruit_counts[fruit].append(count)
+
+    # Create a DataFrame from the dictionary
+    result_df = pd.DataFrame.from_dict(fruit_counts, orient='index', columns=['Count'])
+    result_df['Total Count'] = result_df['Count'].sum()
+    result_df['Average Count'] = result_df['Count'] / result_df['Total Count']
+    result_df.reset_index(drop=True, inplace=True)
+
+    return result_df

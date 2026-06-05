@@ -1,0 +1,56 @@
+import subprocess
+import os
+import threading
+
+def task_func(script_path: str, timeout: int = 60) -> str:
+    """
+    Execute a specified python code with a given timeout. If the script execution exceeds the timeout, it is terminated.
+
+    Parameters:
+    - script_path (str): The path to the Python code to be executed.
+    - timeout (int): The maximum allowed time (in seconds) for the script execution. Default is 60 seconds.
+
+    Returns:
+    - str: A message indicating if the code was terminated due to timeout or executed successfully. The message is either "Script executed successfully." or "Terminating process due to timeout."
+
+    Requirements:
+    - subprocess
+    - os
+    - threading
+
+    Examples:
+    >>> task_func('/pathto/MyrScript.py')
+    'Script executed successfully.'
+    
+    >>> task_func('/pathto/LongRunningScript.py', 30)
+    'Terminating process due to timeout.'
+
+    Note:
+    - If the script was terminated due to timeout it will return "Script executed successfully.", otherwise "Terminating process due to timeout."
+
+    Raise:
+    - The code will raise FileNotFoundError if the file is not exist.
+    """
+    try:
+        # Use subprocess.Popen to start the Python script in the background
+        process = subprocess.Popen(['python', script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setsid)
+
+        def terminate_process():
+            os.killpg(process.pid, signal.SIGTERM)
+
+        # Start a new thread to kill the process after the specified timeout
+        timer_thread = threading.Timer(timeout, terminate_process)
+        timer_thread.start()
+
+        # Wait for the process to finish
+        stdout, stderr = process.communicate()
+        exit_code = process.returncode
+
+        timer_thread.cancel()  # Cancel the timer as we're done waiting for the process to finish
+
+        if exit_code == 0:
+            return "Script executed successfully."
+        else:
+            return "Terminating process due to timeout."
+    except FileNotFoundError:
+        return "The file does not exist."

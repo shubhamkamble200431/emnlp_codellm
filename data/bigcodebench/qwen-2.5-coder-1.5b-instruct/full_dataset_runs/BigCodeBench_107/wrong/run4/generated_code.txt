@@ -1,0 +1,38 @@
+import pandas as pd
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+def task_func(df, n_clusters=3, random_state=0):
+    """
+    Convert the 'date' column of a DataFrame to ordinal, perform KMeans clustering on 'date' and 'value' columns, and plot the clusters.
+
+    Parameters:
+        df (pandas.DataFrame): The DataFrame with columns 'group', 'date', and 'value'.
+        n_clusters (int): The number of clusters for KMeans. Defaults to 3.
+        random_state (int): Random state for KMeans to ensure reproducibility. Defaults to 0.
+
+
+    Returns:
+        matplotlib.axes.Axes: The Axes object containing the scatter plot of the clusters.
+
+    Required names:
+        x: 'Date (ordinal)'
+        ylabel: 'Value'
+        title: 'KMeans Clustering of Value vs Date'
+    
+    Raises:
+        ValueError: If the DataFrame is empty or lacks required columns.
+
+    Requirements:
+        - pandas
+        - sklearn.cluster
+        - matplotlib.pyplot
+
+    Example:
+        >>> df = pd.DataFrame({
+        ...     "group": ["A", "A", "A", "B", "B"],
+        ...     "date": pd.to_datetime(["2022-01-02", "2022-01-13", "2022-02-01", "2022-02-23", "2022-03-05"]),
+        ...     "value": [10, 20, 16, 31, 56],
+        ... })
+        >>> ax = task_func(df)
+    """

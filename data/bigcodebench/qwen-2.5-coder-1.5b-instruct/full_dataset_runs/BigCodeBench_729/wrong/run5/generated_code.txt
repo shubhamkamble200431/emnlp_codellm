@@ -1,0 +1,40 @@
+import pickle
+import os
+import random
+import string
+
+def task_func(strings, filename=None):
+    
+    """
+    Save the list of random strings "Strings" in a pickle file and then read it back for validation.
+    If a filename is not provided, a unique filename is generated.
+
+    Parameters:
+    - strings (list): The list of random strings to be saved.
+    - filename (str, optional): The filename for saving the pickle file. Defaults to a unique generated name.
+
+    Returns:
+    - loaded_strings (list): The loaded list of strings from the pickle file.
+
+    Requirements:
+    - pickle
+    - os
+    - random
+    - string
+
+    Example:
+    >>> strings = [''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) for _ in range(10)]
+    >>> loaded_strings = task_func(strings)
+    >>> assert strings == loaded_strings
+    """
+if filename is None:
+    import uuid
+    filename = f'strings_{uuid.uuid4().hex}.pkl'
+
+with open(filename, 'wb') as file:
+    pickle.dump(strings, file)
+
+with open(filename, 'rb') as file:
+    loaded_strings = pickle.load(file)
+
+return loaded_strings

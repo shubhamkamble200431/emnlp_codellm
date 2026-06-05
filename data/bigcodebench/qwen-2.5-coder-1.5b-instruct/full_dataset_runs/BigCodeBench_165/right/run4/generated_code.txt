@@ -1,0 +1,43 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from random import randint
+
+
+def task_func(num_rows=5, rand_range=(0, 100)):
+    """
+    Create a DataFrame containing random integer values within a specified range for categories 'A' through 'E',
+    and visualize this data with a stacked bar chart.
+
+    Parameters:
+    num_rows (int): Specifies the number of rows in the DataFrame.
+    rand_range (tuple): Defines the lower and upper bounds for the random number generation, inclusive.
+
+    Returns:
+    matplotlib.figure.Figure: The matplotlib Figure object containing the plotted data.
+
+    Requirements:
+    - pandas
+    - matplotlib
+    - random
+
+    Example:
+    >>> fig = task_func(num_rows=3, rand_range=(10, 50))
+    >>> type(fig)
+    <class 'matplotlib.figure.Figure'>
+    """
+    # Generate random integer values
+    data = {
+        f'A_{randint(rand_range[0], rand_range[1])}': [randint(rand_range[0], rand_range[1])] * num_rows,
+        f'B_{randint(rand_range[0], rand_range[1])}': [randint(rand_range[0], rand_range[1])] * num_rows,
+        f'C_{randint(rand_range[0], rand_range[1])}': [randint(rand_range[0], rand_range[1])] * num_rows,
+        f'D_{randint(rand_range[0], rand_range[1])}': [randint(rand_range[0], rand_range[1])] * num_rows,
+        f'E_{randint(rand_range[0], rand_range[1])}': [randint(rand_range[0], rand_range[1])] * num_rows
+    }
+
+    # Create DataFrame
+    df = pd.DataFrame(data)
+
+    # Plot the data with a stacked bar chart
+    df.plot(kind='bar', stacked=True)
+
+    return plt.gcf()

@@ -1,0 +1,57 @@
+import numpy as np
+import pandas as pd
+
+def task_func(rows, columns=["A", "B", "C", "D", "E"], seed=0) -> pd.DataFrame:
+    """
+    Create a Pandas DataFrame with a specified number of rows filled with random
+    values in [0, 1) and shuffled columns.
+    
+    Note:
+    - The columns should be unique and sorted in the ascending order.
+
+    Parameters:
+    rows (int): The number of rows for the DataFrame. Must not be negative.
+    columns (list of str): Column names for the DataFrame.
+                           Defaults to ['A', 'B', 'C', 'D', 'E'].
+                           If it contains repeated columns, the function deduplicates
+                           it in a case and spacing sensitive way. If it is empty,
+                           the function returns an empty DataFrame.
+    seed (int): The random seed for reproducibility.
+    
+    Returns:
+    pd.DataFrame: A pandas DataFrame with shuffled columns.
+
+    Requirements:
+    - numpy
+    - pandas
+
+    Example:
+    >>> df = task_func(10)
+    >>> df.head(2)
+              D         E         A         C         B
+    0  0.548814  0.715189  0.602763  0.544883  0.423655
+    1  0.645894  0.437587  0.891773  0.963663  0.383442
+    """
+    if not isinstance(rows, int) or rows < 0:
+        raise ValueError("rows must be a non-negative integer")
+
+    # Deduplicate and sort the columns
+    if not columns:
+        return pd.DataFrame(columns=[])
+    else:
+        columns = list(set(columns))  # Remove duplicates, case insensitive and space-sensitive
+        columns.sort()  # Sort alphabetically
+
+    # Set the random seed for reproducibility
+    np.random.seed(seed)
+
+    # Generate random values
+    data = np.random.rand(rows, len(columns))
+
+    # Create the DataFrame
+    df = pd.DataFrame(data, columns=columns)
+
+    # Shuffle the DataFrame
+    df = df.sample(frac=1, random_state=seed)
+
+    return df

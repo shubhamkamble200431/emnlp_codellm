@@ -1,0 +1,46 @@
+import numpy as np
+from scipy.fft import fft
+from matplotlib import pyplot as plt
+
+
+def task_func(original):
+    """
+    Create a numeric array from the "original" list, calculate Fast Fourier Transform (FFT) and record the 
+    original and FFT data. Additionally, plot the histogram of the magnitude of the FFT data and return the
+    axes object of the plot. For an empty list, return an empty array for the FFT data and None for the 
+    axes object.
+
+    Parameters:
+    original (list): The original list with (str, int) tuples to be unzipped into a numpy array.
+
+    Returns:
+    np.array: A numpy array for the original data.
+    np.array: FFT data.
+    plt.Axes: The axes object of the plot.
+    
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - scipy.fft
+
+    Example:
+    >>> original = [('a', 1), ('b', 2), ('c', 3), ('d', 4)]
+    >>> arr, fft_data, ax  = task_func(original)
+    >>> print(arr)
+    [1 2 3 4]
+    >>> print(fft_data)
+    [10.-0.j -2.+2.j -2.-0.j -2.-2.j]
+    """
+    if not original:
+        return np.array([]), None
+
+    arr = np.array([value for name, value in original])
+    fft_data = fft(arr)
+
+    fig, ax = plt.subplots()
+    ax.hist(np.abs(fft_data), bins=50)
+    ax.set_title('Histogram of FFT Data')
+    ax.set_xlabel('Magnitude')
+    ax.set_ylabel('Frequency')
+
+    return arr, fft_data, ax

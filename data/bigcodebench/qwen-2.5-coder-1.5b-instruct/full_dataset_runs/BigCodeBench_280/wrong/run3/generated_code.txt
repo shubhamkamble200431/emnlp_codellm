@@ -1,0 +1,59 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.fft import fft
+
+
+def task_func(signal, precision=2, seed=777):
+    """
+    Calculate the one-dimensional discrete N-point Fourier Transform (DFT) for a real or complex sequence (signal) 
+    using the Fast Fourier Transform (FFT) algorithm. Plot the original signal and the transformed signal, rounding 
+    the transformed signal values to the specified accuracy. The title of the plots will be 'Original Signal' and 'Transformed Signal'.
+
+    Parameters:
+    - signal (array): An array representing the signal.
+    - precision (int, optional): The number of decimal places to which to round the transformed signal values. 
+                                 Defaults to 2.
+    - seed (int, optional): The seed for the random number generator. Defaults to 777.
+
+    Returns:
+    - ndarray: A numpy array of transformed signal values (rounded to the specified precision).
+    - tuple: A tuple containing the Axes objects for the original signal and transformed signal plots.
+
+    Requirements:
+    - numpy
+    - matplotlib
+    - scipy
+
+    Example:
+    >>> signal = np.array([0., 1., 0., -1.])
+    >>> transformed_signal, (ax1, ax2) = task_func(signal)
+    >>> print(transformed_signal)
+    [0.-0.j 0.-2.j 0.-0.j 0.+2.j]
+    """
+    # Ensure signal is a numpy array
+    if not isinstance(signal, np.ndarray):
+        raise ValueError("Signal must be a numpy array")
+
+    # Calculate the DFT
+    n = len(signal)
+    fhat = fft(signal)
+
+    # Round the transformed signal values to the specified accuracy
+    fhat_rounded = np.round(fhat.real[:n//2] + 1j*fhat.imag[:n//2], precision)
+
+    # Plotting
+    fig, axes = plt.subplots(2, 1, figsize=(10, 6))
+
+    # Original signal plot
+    ax1.plot(signal)
+    ax1.set_title('Original Signal')
+    ax1.grid(True)
+
+    # Transformed signal plot
+    ax2.plot(fhat_rounded.real, label='Real Part')
+    ax2.plot(fhat_rounded.imag, label='Imaginary Part', linestyle='--')
+    ax2.set_title('Transformed Signal')
+    ax2.legend()
+    ax2.grid(True)
+
+    return fhat_rounded, (axes[0], axes[1])

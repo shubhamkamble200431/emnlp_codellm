@@ -1,0 +1,62 @@
+import os
+from pathlib import Path
+import glob
+import shutil
+
+
+def task_func(source_directory: str, target_directory: str):
+    """
+    Moves files with specific extensions from a source directory to a target directory,
+    handling naming conflicts by renaming duplicates.
+
+    Parameters:
+    - source_directory (str): The absolute or relative path of the source directory.
+    - target_directory (str): The absolute or relative path of the target directory.
+                              This function will create it if it does not exist.
+
+    Returns:
+    - int: The number of files successfully moved.
+
+    Raises:
+    - FileNotFoundError: If source_directory does not exist.
+
+    Requirements:
+    - os
+    - pathlib
+    - glob
+    - shutil
+
+    Notes:
+    - This function scans the source directory recursively to find files.
+    - Files are filtered by the extensions: ".txt", ".docx", ".xlsx", ".csv".
+    - Renaming of files due to naming conflicts follows the pattern '<original_name>-n.<extension>'.
+
+    Examples:
+    >>> task_func('./source_folder', './target_folder')
+    3
+    >>> task_func('./empty_folder', './target_folder')
+    0
+    """
+    # Create target directory if it doesn't exist
+    if not os.path.exists(target_directory):
+        os.makedirs(target_directory)
+
+    moved_count = 0
+    for root, dirs, files in os.walk(source_directory):
+        for file in files:
+            if file.endswith(('.txt', '.docx', '.xlsx', '.csv')):
+                src_path = Path(root) / file
+                dest_path = Path(target_directory) / file
+
+                # Check if the destination file already exists
+                conflict_counter = 1
+                while os.path.exists(dest_path):
+                    new_file_name = f"{Path(file).stem}-{conflict_counter}{Path(file).suffix}"
+                    dest_path = Path(target_directory) / new_file_name
+                    conflict_counter += 1
+
+                # Move the file
+                shutil.move(src_path, dest_path)
+                moved_count += 1
+
+    return moved_count

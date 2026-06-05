@@ -1,0 +1,39 @@
+import json
+from datetime import datetime
+
+def task_func(json_data):
+    """
+    Determine if the given datetime is a weekend.
+
+    Parameters:
+    - json_data (str): JSON string containing the datetime in UTC format.
+
+    Returns:
+    bool: True if the date is a weekend (Saturday or Sunday), False otherwise.
+
+    Note:
+    - The datetime to be extracted is located in the 'utc_datetime' key in the JSON data.
+
+    Requirements:
+    - json
+    - datetime
+
+    Example:
+    >>> json_data = '{"utc_datetime": "2024-04-19T12:00:00"}'
+    >>> task_func(json_data)
+    False
+    """
+    # Parse the JSON data into a dictionary
+    data_dict = json.loads(json_data)
+    
+    # Extract the UTC datetime from the dictionary
+    utc_datetime_str = data_dict['utc_datetime']
+    
+    # Convert the string to a datetime object
+    utc_datetime = datetime.strptime(utc_datetime_str, '%Y-%m-%dT%H:%M:%S')
+    
+    # Get the weekday of the datetime object (0=Monday, 6=Sunday)
+    weekday = utc_datetime.weekday()
+    
+    # Check if the weekday is a weekend (0 or 6)
+    return weekday == 0 or weekday == 6

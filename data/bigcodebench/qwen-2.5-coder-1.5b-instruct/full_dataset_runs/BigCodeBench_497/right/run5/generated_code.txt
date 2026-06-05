@@ -1,0 +1,40 @@
+from datetime import datetime, timedelta
+import pytz
+import calendar
+
+
+def task_func(days_in_past=7):
+    """
+    Get the weekday of the date 'days_in_past' days ago from today.
+
+    This function computes the date that is 'days_in_past' number of days ago from the current
+    system time's date in UTC. It then determines the weekday of this target date using calendar
+    and returns its name as a string.
+
+    Parameters:
+    days_in_past (int): The number of days to go back from the current date to find the weekday.
+                        Defaults to 7 (one week ago). Must be a non-negative integer.
+
+    Returns:
+    weekday (str)     : The name of the weekday (e.g., 'Monday', 'Tuesday') for the computed date.
+
+    Raises:
+    ValueError: If 'days_in_past' is negative.
+    
+    Requirements:
+    - datetime.datetime
+    - datetime.timedelta
+    - pytz
+    - calendar
+
+    Example:
+    >>> task_func()
+    'Monday'
+    >>> task_func(3)
+    'Friday'
+    """
+    if days_in_past < 0:
+        raise ValueError("The value of 'days_in_past' must be a non-negative integer.")
+
+    target_date = datetime.now(pytz.utc) - timedelta(days=days_in_past)
+    return calendar.day_name[target_date.weekday()]

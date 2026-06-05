@@ -1,0 +1,33 @@
+import os
+import re
+import shutil
+
+
+def task_func(source_directory: str, target_directory: str, pattern: str = r"\d{4}") -> int:
+    """
+    Moves files matching a specific regex pattern from a source directory to a target directory.
+
+    Parameters:
+    - source_directory (str): Path of the source directory from which files will be moved.
+    - target_directory (str): Path of the target directory to which files will be moved.
+    - pattern (str): Regex pattern to match filenames.
+                     Defaults to r'\\d{4}' to match filenames containing four contiguous digits.
+
+    Returns:
+    - int: The number of files successfully moved.
+
+    Requirements:
+    - os
+    - re
+    - shutil
+
+    Note:
+    - If source_directory does not exist or is not a directory, this function returns 0.
+    - If target_directory does not exist, this function will create it.
+
+    Examples:
+    >>> os.listdir('/path/to/source')
+    ['1000.txt', '1001.txt', '1002.txt', 'not_a_match.txt']
+    >>> task_func('/path/to/source', '/path/to/target')
+    3
+    """

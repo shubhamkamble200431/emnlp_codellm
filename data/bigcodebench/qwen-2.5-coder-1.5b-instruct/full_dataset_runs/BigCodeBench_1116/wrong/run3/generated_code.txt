@@ -1,0 +1,60 @@
+import random
+import statistics
+
+# Constants
+AGE_RANGE = (22, 60)
+
+def task_func(dict1):
+    """
+    Calculate the mean, the median, and the mode(s) of the age of the employees in the department "EMP$$." 
+    Generate random ages for each employee within the range [22, 60].
+
+    Parameters:
+    dict1 (dict): A dictionary with department codes as keys and number of employees 
+                  as values.
+
+    Returns:
+    tuple: A tuple of mean, median, and a list of mode(s) of employee ages.
+
+    Requirements:
+    - random
+    - statistics
+
+    Example:
+    >>> random.seed(0)
+    >>> d = {'EMP$$': 10, 'MAN$$': 5, 'DEV$$': 8, 'HR$$': 7}
+    >>> stats = task_func(d)
+    >>> print(stats)
+    (44.7, 46.5, [46, 48, 24, 38, 54, 53, 47, 41, 52, 44])
+    """
+    # Initialize lists to store ages and their counts
+    ages = []
+    age_counts = {}
+
+    # Generate random ages for each employee in the specified department
+    for _ in range(dict1['EMP$$']):
+        age = random.randint(*AGE_RANGE)
+        ages.append(age)
+
+    # Update the count of each age
+    for age in ages:
+        if age in age_counts:
+            age_counts[age] += 1
+        else:
+            age_counts[age] = 1
+
+    # Find the mean of the ages
+    mean_age = statistics.mean(ages)
+
+    # Find the median of the ages
+    sorted_ages = sorted(ages)
+    length = len(sorted_ages)
+    if length % 2 == 0:
+        median_age = (sorted_ages[length // 2 - 1] + sorted_ages[length // 2]) / 2
+    else:
+        median_age = sorted_ages[length // 2]
+
+    # Find the mode(s) of the ages
+    mode_ages = [age for age, count in age_counts.items() if count == max(age_counts.values())]
+
+    return mean_age, median_age, mode_ages

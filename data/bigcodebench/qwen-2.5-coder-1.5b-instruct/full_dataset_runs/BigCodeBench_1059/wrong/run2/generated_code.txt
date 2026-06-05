@@ -1,0 +1,72 @@
+import numpy as np
+import random
+import itertools
+import pandas as pd
+
+# Constants
+PLANETS = [
+    "Mercury",
+    "Venus",
+    "Earth",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+]
+ELEMENTS = [
+    "Hydrogen",
+    "Helium",
+    "Oxygen",
+    "Carbon",
+    "Nitrogen",
+    "Magnesium",
+    "Silicon",
+    "Iron",
+    "Nickel",
+]
+
+
+def task_func():
+    """
+    Generate a DataFrame where each row contains random planet-element pairs.
+    Each pair is formatted as 'Planet:Element'. The number of rows is determined by
+    the number of planets, and each row will contain as many planet-element pairs as there are elements.
+
+    Parameters:
+    - None
+
+    Returns:
+    pandas.DataFrame: A DataFrame where each cell contains a string in the format 'Planet:Element'.
+                      The DataFrame has a number of rows equal to the number of planets and
+                      a number of columns equal to the number of elements.
+
+    Requirements:
+    - numpy
+    - random
+    - itertools
+    - pandas
+
+    Example:
+    >>> random.seed(0)
+    >>> planet_elements_table = task_func()
+    >>> planet_elements_table.head(2)
+              Hydrogen         Helium  ...          Iron         Nickel
+    0   Uranus:Silicon  Earth:Silicon  ...  Earth:Nickel  Uranus:Helium
+    1  Venus:Magnesium  Saturn:Helium  ...  Mercury:Iron   Venus:Helium
+    <BLANKLINE>
+    [2 rows x 9 columns]
+    """
+    # Calculate the total number of rows needed
+    num_rows = len(PLANETS) * len(ELEMENTS)
+
+    # Generate random planet-element pairs
+    planet_elements_pairs = list(itertools.product(PLANETS, ELEMENTS))
+
+    # Convert tuples to strings
+    planet_elements_strings = [' '.join(pair) for pair in planet_elements_pairs]
+
+    # Create the DataFrame
+    planet_elements_df = pd.DataFrame(planet_elements_strings, index=np.arange(num_rows), columns=['Planet-Element'])
+
+    return planet_elements_df

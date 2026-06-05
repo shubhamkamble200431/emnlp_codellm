@@ -1,0 +1,33 @@
+import re
+import string
+from random import choice
+
+def task_func(n, pattern):
+    """
+    Generates a random string of a specified length that conforms to a given regular expression pattern.
+    The function repeatedly generates random strings, using both uppercase and lowercase ASCII letters,
+    of the specified length until one matches the pattern.
+
+    Parameters:
+    n (int): The length of the string to be generated.
+    pattern (str): A regular expression pattern the generated string must match, including start and end anchors.
+
+    Returns:
+    str: A randomly generated string that matches the specified pattern.
+
+    Requirements:
+    - re
+    - string
+    - random.choice
+
+    Examples:
+    >>> len(task_func(5, '[a-z]*')) == 5
+    True
+
+    >>> bool(re.match('^[A-Z]+$', task_func(3, '^[A-Z]+$')))
+    True
+    """
+    while True:
+        s = ''.join(choice(string.ascii_letters) for _ in range(n))
+        if re.match(pattern, s):
+            return s

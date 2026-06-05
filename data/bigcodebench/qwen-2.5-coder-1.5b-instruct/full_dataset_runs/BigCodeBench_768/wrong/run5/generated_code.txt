@@ -1,0 +1,65 @@
+import re
+import os
+import glob
+
+
+def task_func(dir_path):
+    """
+    Search for occurrences of the word "error" in all text files within a 
+    specified directory and its subdirectories.
+    
+    Parameters:
+    dir_path (str): The path of the directory.
+    
+    Returns:
+    dict: A dictionary with relative file paths as keys and the count of 
+            occurrences of the word "error" as values.
+    
+    Raises:
+    - ValueError: If directory in dir_path does not exist.
+
+    Requirements:
+    - re: For regex pattern matching.
+    - os: For retrieving relative file paths.
+    - glob: For fetching all text file paths in the directory.
+    
+    The function specifically searches for the word "error" in text files
+    (with the extension ".txt").
+    This function is NOT case sensitive, e.g. also "ERROr" will be counted.
+    
+    Example:
+    >>> task_func("/path/to/directory")
+    {'file1.txt': 2, 'subdir/file2.txt': 1}
+    """
+    if not os.path.exists(dir_path):
+        raise ValueError(f"Directory '{dir_path}' does not exist.")
+
+    # Define a regex pattern to match the word "error"
+    pattern = re.compile(r'\b(error)\b', re.IGNORECASE)
+
+    # Initialize a dictionary to store counts
+    error_counts = {}
+
+    # List all text files in the directory and its subdirectories
+    for root, dirs, files in os.walk(dir_path):
+        for file in files:
+            # Check if the file has a .txt extension
+            if file.endswith(".txt"):
+                file_path = os.path.join(root, file)
+
+                # Read the content of the file
+                with open(file_path, 'r') as f:
+                    content = f.read()
+
+                    # Find all matches of the pattern in the file content
+                    matches = pattern.findall(content)
+
+                    # Update the count for each matched word
+                    if matches:
+                        for match in matches:
+                            if match in error_counts:
+                                error_counts[match] += 1
+                            else:
+                                error_counts[match] = 1
+
+    return error_counts

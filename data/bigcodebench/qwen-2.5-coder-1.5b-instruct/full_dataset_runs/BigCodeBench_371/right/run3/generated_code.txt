@@ -1,0 +1,32 @@
+from sklearn.preprocessing import MinMaxScaler
+import pandas as pd
+
+def task_func(l):
+    """
+    Scale the input field to the range [0, 1] and display it as a DataFrame.
+
+    Parameters:
+    l (numpy array): The input array.
+
+    Returns:
+    DataFrame: A pandas DataFrame of the scaled array.
+
+    Requirements:
+    - numpy
+    - sklearn.preprocessing
+    - pandas
+
+    Note:
+    - The return DataFrame use 'Scaled Values' as the column name.
+
+    Example:
+    >>> import numpy as np
+    >>> l = np.array([10, 20, 30, 40, 50])
+    >>> df = task_func(l)
+    >>> print(int(df.iloc[0]['Scaled Values']))
+    0
+    """
+    scaler = MinMaxScaler()
+    scaled_l = scaler.fit_transform(l.reshape(-1, 1))
+    result_df = pd.DataFrame(scaled_l, columns=['Scaled Values'])
+    return result_df

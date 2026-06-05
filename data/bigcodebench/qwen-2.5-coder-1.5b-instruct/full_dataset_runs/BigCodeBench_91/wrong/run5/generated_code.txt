@@ -1,0 +1,43 @@
+from scipy.stats import linregress
+import matplotlib.pyplot as plt
+
+def task_func(data, column1, column2):
+    """
+    Perform a linear regression on two columns of a dataset and record the result.
+    Additionally, generates a plot representing the original data and the fitted line.
+
+    Parameters:
+    data (DataFrame): The dataset.
+    column1 (str): The name of the first column.
+    column2 (str): The name of the second column.
+
+    Returns:
+    tuple: The slope, intercept, r-value, p-value, and standard error of the regression.
+    Axes: The matplotlib Axes object containing the plot.
+
+    Raises:
+    ValueError: If the specified columns do not exist in the DataFrame.
+
+    Requirements:
+    - scipy.stats
+    - matplotlib.pyplot
+
+    Example:
+    >>> data = pd.DataFrame([[14, 25], [1, 22], [7, 8]], columns=['Column1', 'Column2'])
+    >>> result, ax = task_func(data, 'Column1', 'Column2')
+    """
+    if column1 not in data.columns or column2 not in data.columns:
+        raise ValueError("The specified columns do not exist in the DataFrame.")
+
+    x = data[column1]
+    y = data[column2]
+    slope, intercept, r_value, p_value, std_err = linregress(x, y)
+
+    fig, ax = plt.subplots()
+    ax.scatter(x, y, color='blue', label=f'{column1} vs {column2}')
+    ax.plot(x, slope * x + intercept, color='red', linestyle='--', label=f'Fitted Line')
+    ax.set_xlabel(column1)
+    ax.set_ylabel(column2)
+    ax.legend()
+
+    return slope, intercept, r_value, p_value, std_err, ax

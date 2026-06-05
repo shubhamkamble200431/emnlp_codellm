@@ -1,0 +1,35 @@
+from collections import Counter
+import hashlib
+
+def task_func(word: str) -> dict:
+    """
+    Count the occurrence of each adjacent pair of letters from left to right in a word and encode the result as an MD5 hash.
+
+    Parameters:
+    - word (str): The word in which to count the adjacent letter pairs.
+
+    Returns:
+    - dict: A dictionary where keys are adjacent letter pairs and values are their counts.
+
+    Requirements:
+    - collections.Counter
+
+    Examples:
+    >>> task_func('abracadabra')
+    'bc9af285d87b312e61ab3661e66b741b'
+    >>> task_func('hello')
+    'dd5dec1a853625e2dc48f3d42665c337'
+    """
+    # Initialize an empty Counter object
+    counter = Counter()
+
+    # Iterate over each character in the word with its index
+    for i in range(len(word) - 1):
+        # Get the current and next characters
+        char1, char2 = word[i], word[i + 1]
+
+        # Increment the count of the adjacent pair
+        counter[char1 + char2] += 1
+
+    # Encode the Counter object into an MD5 hash
+    return hashlib.md5(str(counter).encode()).hexdigest()

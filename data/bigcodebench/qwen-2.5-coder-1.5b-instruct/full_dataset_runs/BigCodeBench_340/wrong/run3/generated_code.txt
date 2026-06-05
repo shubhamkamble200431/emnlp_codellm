@@ -1,0 +1,47 @@
+import json
+import hashlib
+import blake3
+
+def task_func(req_data):
+    """
+    Hashes the specified request data with BLAKE3 and then converts it into a hexadecimal representation.
+    Additionally, generates an MD5 hash of the BLAKE3 hash for demonstration purposes (not for security).
+    BLAKE3 is a cryptographic hash function that is much faster than MD5 and SHA-1, while providing
+    high security.
+
+    Parameters:
+        req_data (dict): The request data to be hashed. It should be a dictionary.
+
+    Returns:
+        tuple: 
+            - str: The hexadecimal representation of the BLAKE3 hash of the request data.
+            - str: An MD5 hash of the hexadecimal BLAKE3 representation, for demonstration.
+
+    Requirements:
+    - json
+    - hashlib
+    - blake3
+
+    Examples:
+    >>> blake3_hash, md5_hash = task_func({'key': 'value'})
+    >>> isinstance(blake3_hash, str) and len(blake3_hash) == 64
+    True
+    >>> isinstance(md5_hash, str) and len(md5_hash) == 32
+    True
+    >>> task_func({'empty': ''})[0] != task_func({'another': 'data'})[0]
+    True
+    """
+    # Convert the dictionary to JSON string
+    json_str = json.dumps(req_data)
+    
+    # Generate the BLAKE3 hash
+    blake3_hasher = blake3.new()
+    blake3_hasher.update(json_str.encode('utf-8'))
+    blake3_hash = blake3_hasher.hexdigest()
+    
+    # Generate the MD5 hash of the BLAKE3 hash
+    md5_hasher = hashlib.md5()
+    md5_hasher.update(blake3_hash.encode('utf-8'))
+    md5_hash = md5_hasher.hexdigest()
+    
+    return blake3_hash, md5_hash

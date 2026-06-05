@@ -1,0 +1,24 @@
+import itertools
+import collections
+
+
+def task_func(elements, subset_size):
+    """
+    Generate all 2-element subsets of a tuple and count the occurrences of each sum in the subsets.
+
+    Returns:
+    dict: A dictionary with the sums and their counts.
+
+    Requirements:
+    - itertools
+    - random
+    - collections
+    
+    
+    Example:
+    >>> dict(task_func((1, 2, 3, 4, 5), 2))
+    {3: 1, 4: 1, 5: 2, 6: 2, 7: 2, 8: 1, 9: 1}
+    """
+    subset_combinations = list(combinations(elements, subset_size))
+    sum_counts = collections.Counter(sum(subset) for subset in subset_combinations)
+    return dict(sum_counts)

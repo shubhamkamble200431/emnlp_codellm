@@ -1,0 +1,53 @@
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
+
+def task_func(list_of_pairs):
+    """
+    Create a Pandas DataFrame from a list of pairs and normalize the data using MinMaxScaler.
+    
+    Parameters:
+    list_of_pairs (list): A list of tuples, where the first element is the category and 
+                          the second element is the value.
+    
+    Returns:
+    DataFrame:  A pandas DataFrame containing the columns 'Category' and 'Value'.
+                Category contains the the first elements of each tuple.
+                Value contains the normalized values of each tuple.
+
+    Raises:
+        Exception: If the input array is empty.
+        ValueError: If Values are not numeric.
+    
+    Requirements:
+    - pandas
+    - sklearn.preprocessing.MinMaxScaler
+    
+    Example:
+    >>> list_of_pairs = [('Fruits', 5), ('Vegetables', 9), ('Dairy', -1), ('Bakery', -2), ('Meat', 4)]
+    >>> df = task_func(list_of_pairs)
+    >>> print(df)
+         Category     Value
+    0      Fruits  0.636364
+    1  Vegetables  1.000000
+    2       Dairy  0.090909
+    3      Bakery  0.000000
+    4        Meat  0.545455
+    >>> list_of_pairs = [('car', 3.2), ('bike', 0), ('train', -1), ('plane', -6.2), ('ship', 1234)]
+    >>> df = task_func(list_of_pairs)
+    >>> print(df)
+      Category     Value
+    0      car  0.007579
+    1     bike  0.004999
+    2    train  0.004193
+    3    plane  0.000000
+    4     ship  1.000000
+    """
+    if not list_of_pairs:
+        raise Exception("Input array cannot be empty.")
+
+    for pair in list_of_pairs:
+        if not isinstance(pair[1], (int, float)):
+            raise ValueError("Values must be numeric.")
+
+    categories = [pair[0] for pair in list

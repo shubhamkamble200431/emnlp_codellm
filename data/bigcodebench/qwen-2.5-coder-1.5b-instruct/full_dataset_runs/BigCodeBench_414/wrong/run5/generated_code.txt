@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+
+
+def task_func(data, column="c"):
+    """
+    Remove a column from a data dictionary if it exists, and then plot the remaining data
+    if it contains numeric data.
+
+    Parameters:
+    - data (dict): The input data dictionary.
+    - column (str): Name of column to remove. Defaults to "c".
+
+    Returns:
+    - df (pd.DataFrame): The modified DataFrame after removing the specified column.
+    - ax (matplotlib.axes._axes.Axes or None): The plot of the modified DataFrame if there's
+      numeric data to plot, otherwise None.
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> data = {'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]}
+    >>> modified_df, ax = task_func(data)
+    >>> ax
+    <Axes: >
+    >>> modified_df
+       a  b
+    0  1  4
+    1  2  5
+    2  3  6
+    """
+    if column in data:
+        del data[column]
+
+    if all(isinstance(i, (int, float)) for i in data.values()):
+        df = pd.DataFrame(data)
+        ax = df.plot(kind='line')
+        return df, ax
+    else:
+        df = pd.DataFrame(data)
+        return df, None

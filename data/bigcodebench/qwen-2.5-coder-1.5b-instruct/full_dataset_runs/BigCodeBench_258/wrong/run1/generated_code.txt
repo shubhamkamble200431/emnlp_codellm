@@ -1,0 +1,63 @@
+import json
+import random
+
+
+# Constants
+DATA = [
+    {'name': 'John', 'age': 30, 'city': 'New York'},
+    {'name': 'Peter', 'age': 35, 'city': 'London'},
+    {'name': 'Susan', 'age': 25, 'city': 'Sydney'},
+    {'name': 'Alice', 'age': 28, 'city': 'Paris'},
+    {'name': 'Bob', 'age': 40, 'city': 'Tokyo'},
+    {'name': 'Charlie', 'age': 22, 'city': 'Beijing'},
+    {'name': 'David', 'age': 33, 'city': 'Mumbai'},
+    {'name': 'Eve', 'age': 27, 'city': 'Berlin'},
+    {'name': 'Frank', 'age': 32, 'city': 'Moscow'},
+    {'name': 'Grace', 'age': 29, 'city': 'Rome'}
+]
+
+def task_func(utc_datetime, seed=0):
+    """
+    Select a random person from a dataset of people and their attributes (name, age, city) provided as a global 
+    variable DATA. Add a UTC timestamp to the person's data which is passed as an argument utc_datetime 'timestamp'. Finally, 
+    encode that person's data as a JSON string.
+    
+    Parameters:
+    utc_datetime (datetime): The datetime in UTC.
+    seed (int, optional): The seed for the random number generator. Defaults to 0.
+    
+    Returns:
+    str: The person's data encoded as a JSON string.
+    
+    Requirements:
+    - json
+    - datetime
+    - random
+    
+    Example:
+    >>> from datetime import datetime
+    >>> utc_time = datetime(2023, 6, 15, 12, 0, 0, tzinfo=pytz.UTC)
+    >>> person_json_str = task_func(utc_time)
+    >>> json_data = json.loads(person_json_str)
+    >>> print(json_data["name"])
+    David
+    >>> print(json_data["age"])
+    33
+    """
+    # Seed the random number generator
+    random.seed(seed)
+
+    # Generate a random index within the bounds of the data list
+    random_index = random.randint(0, len(DATA) - 1)
+
+    # Select the random person
+    person = DATA[random_index]
+
+    # Convert the UTC datetime to a local datetime object
+    local_datetime = utc_datetime.astimezone(timezone.utc)
+
+    # Add the local datetime to the person's data
+    person['local_datetime'] = local_datetime.isoformat()
+
+    # Encode the person's data as a JSON string
+    return json.dumps(person)

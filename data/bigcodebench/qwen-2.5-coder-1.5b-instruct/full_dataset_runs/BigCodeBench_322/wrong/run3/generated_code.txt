@@ -1,0 +1,50 @@
+import subprocess
+import os
+import shutil
+import sys
+
+# Constants
+DIRECTORY = 'c:\Program Files\VMware\VMware Server'
+BACKUP_DIRECTORY = 'c:\Program Files\VMware\VMware Server\Backup'
+
+def task_func(filename):
+    """
+    Backs up a specified file from a predefined directory to a backup directory and executes it as a subprocess.
+    
+    Parameters:
+    filename (str): The name of the file to be backed up and executed.
+
+    Returns:
+    int: The exit code of the subprocess, or -1 if the backup process fails.
+
+    Requirements:
+    - subprocess
+    - shutil
+
+    Example:
+    >>> task_func('vmware-cmd.bat') # Assuming successful execution
+    0
+    >>> task_func('nonexistent.bat') # If backup fails or file doesn't exist
+    -1
+    """
+try:
+    # Construct the full path to the source file
+    source_path = os.path.join(DIRECTORY, filename)
+    
+    # Check if the file exists
+    if not os.path.exists(source_path):
+        return -1
+    
+    # Construct the full path to the destination backup directory
+    destination_path = os.path.join(BACKUP_DIRECTORY, f'{filename}.bak')
+    
+    # Move the file to the backup directory
+    shutil.move(source_path, destination_path)
+    
+    # Execute the backup file using subprocess
+    result = subprocess.run([destination_path], check=True, capture_output=True, text=True)
+    
+    return result.returncode
+except Exception as e:
+    print(f"An error occurred: {e}")
+    return -1

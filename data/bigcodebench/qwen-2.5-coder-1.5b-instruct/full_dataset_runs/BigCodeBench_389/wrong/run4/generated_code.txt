@@ -1,0 +1,45 @@
+import re
+import os
+import shutil
+
+
+def task_func(directory):
+    """
+    Find the files with filenames that contain "like" or "what" in a directory, create a new subdirectory called "Interesting Files" 
+    and move those files to the new subdirectory.
+
+    Parameters:
+    directory (str): The directory path.
+
+    Returns:
+    List of files moved
+
+    Requirements:
+    - re
+    - os
+    - shutil
+
+    Example:
+    >>> import tempfile
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> files = ['file_with_like.txt', 'another_file_with_what.doc', 'file_without_keywords.jpg', 'hidden_what_in_name.whatever']
+    >>> for file in files:
+    ...     with open(os.path.join(temp_dir, file), 'w') as f:
+    ...         _ = f.write("Dummy content for testing.")
+    >>> task_func(temp_dir)
+    ['another_file_with_what.doc', 'hidden_what_in_name.whatever', 'file_with_like.txt']
+    """
+    interesting_files = [f for f in os.listdir(directory) if re.search(r'like|what', f)]
+
+    # Create "Interesting Files" directory if it doesn't exist
+    output_directory = os.path.join(directory, 'Interesting Files')
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    # Move files to "Interesting Files" directory
+    for file in interesting_files:
+        src_path = os.path.join(directory, file)
+        dst_path = os.path.join(output_directory, file)
+        shutil.move(src_path, dst_path)
+
+    return interesting_files

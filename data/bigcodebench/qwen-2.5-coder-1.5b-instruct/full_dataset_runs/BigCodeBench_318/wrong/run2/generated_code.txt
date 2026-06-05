@@ -1,0 +1,36 @@
+import random
+import math
+import matplotlib.pyplot as plt
+
+def task_func(points_count=1000, radius=1):
+    """
+    Generate a specified (i.e., points_counts) number of random points within a circle of a given radius and plot them using a scatter plot.
+
+    Parameters:
+    - points_count (int): The number of random points to generate. Default is 1000.
+    - radius (float): The radius of the circle within which points are generated. Default is 1.
+
+    Returns:
+    - Axes: The matplotlib Axes object representing the scatter plot.
+
+    Note:
+    - All settings of the scatter plot are the default version.
+    - The aspect ratio of the plot is set to 'equal' to maintain proportions.
+
+    Requirements:
+    - random
+    - math
+    - matplotlib.pyplot
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> random.seed(0)
+    >>> ax = task_func(500, 0.5)
+    >>> len(ax.collections[0].get_offsets())
+    500
+    >>> plt.close()
+    """
+    offsets = [(uniform(-radius, radius), uniform(-radius, radius)) for _ in range(points_count)]
+    ax = plt.scatter(*zip(*offsets))
+    ax.set_aspect('equal')
+    return ax

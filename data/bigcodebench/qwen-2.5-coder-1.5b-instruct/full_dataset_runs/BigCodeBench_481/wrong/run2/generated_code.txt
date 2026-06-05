@@ -1,0 +1,50 @@
+import pandas as pd
+import random
+import re
+
+
+def task_func(data_list, seed=42):
+    """
+    Randomizes the order of comma-separated substrings within each string in a list,
+    normalizing spaces to ensure a single space follows each comma using regex, then
+    returns a DataFrame comparing original and randomized strings.
+
+    Parameters:
+    data_list (list of str): List of strings with substrings to be randomized.
+    seed (int, optional): Seed for random number generator for reproducibility. Defaults to None.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with columns 'Original String' and 'Randomized String'.
+
+    Requirements:
+    - pandas
+    - random
+    - re
+
+    Example:
+    >>> df = task_func(['lamp, bag, mirror', 'table, chair, bag'], seed=42)
+    >>> df['Original String'][0]
+    'lamp, bag, mirror'
+    >>> df['Randomized String'][0]
+    'mirror, lamp, bag'
+    """
+    # Set the seed for reproducibility
+    if seed is not None:
+        random.seed(seed)
+
+    def randomize_substrings(s):
+        # Replace commas followed by spaces with single spaces
+        s = re.sub(r'\s*,\s*', ' ', s)
+        # Split the string into parts separated by commas, randomize their order, and join them back together
+        return ','.join(random.sample(s.split(','), len(s.split(','))))
+
+    # Apply the randomization to each string in the list
+    randomized_data = [randomize_substrings(s) for s in data_list]
+
+    # Create a DataFrame from the original and randomized data
+    df = pd.DataFrame({
+        'Original String': data_list,
+        'Randomized String': randomized_data
+    })
+
+    return df

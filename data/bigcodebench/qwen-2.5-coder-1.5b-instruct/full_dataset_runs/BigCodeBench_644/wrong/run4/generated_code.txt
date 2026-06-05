@@ -1,0 +1,36 @@
+import hashlib
+import base64
+
+
+def task_func(filename, data, password):
+    """
+    Encrypt a string with a password, then write the encrypted string to a file. 
+    If the file or directory does not exist, create it.
+
+    Parameters:
+    filename (str): The name of the file to write to.
+    data (str): The string to encrypt and write to the file.
+    password (str): The password to use for encryption.
+
+    Returns:
+    str: The encrypted string.
+
+    Requirements:
+    - hashlib
+    - base64
+
+    Example:
+    >>> task_func('test.txt', 'Hello, World!', 'password')
+    'Fu0k9LUEJCY+ookLrA=='
+    """
+    # Generate a hash object from the password using SHA-256
+    salt = password.encode()
+    key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+
+    # Hash the data with the generated key
+    encrypted_data = key + data.encode()
+
+    # Encode the hashed data in Base64 format
+    encrypted_data_base64 = base64.b64encode(encrypted_data).decode('utf-8')
+
+    return encrypted_data_base64

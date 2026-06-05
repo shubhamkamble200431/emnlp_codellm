@@ -1,0 +1,70 @@
+import re
+import urllib.parse
+import ssl
+import socket
+
+def task_func(myString):
+    """
+    Extracts all URLs from a string and retrieves the domain and the expiration date of the SSL certificate 
+    for each HTTPS URL. Only HTTPS URLs are processed; HTTP URLs are ignored. The function handles SSL errors 
+    by ignoring any HTTPS URLs where the SSL certificate cannot be retrieved due to such errors, and these domains 
+    are not included in the returned dictionary.
+
+    Parameters:
+    myString (str): The string from which to extract URLs.
+    
+    Returns:
+    dict: A dictionary with domains as keys and SSL certificate expiry dates in UTC format as values. 
+          The dictionary includes only those HTTPS URLs for which the SSL certificate was successfully retrieved.
+          Domains with SSL errors are excluded.
+
+    Requirements:
+    - re
+    - urllib.parse
+    - ssl
+    - socket
+    
+    Example:
+    >>> task_func("Check these links: https://www.google.com, https://www.python.org")
+    {'www.google.com': '2023-06-15 12:00:00', 'www.python.org': '2023-07-20 12:00:00'}
+    """
+    import re
+    import urllib.parse
+    import ssl
+    import socket
+
+    urls = re.findall(r'https?://([^/]+)', myString)
+    cert_info = {}
+
+    for url in urls:
+        try:
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((url, 443))
+            s.send(b"HEAD / HTTP/1.1\r\nHost: " + url.encode())
+            response = s.recv(1024)
+            cert = ssl.get_server_certificate(s.socket)
+            s.close()
+
+            _, _, subject = ssl.match_hostname(cert, url)
+            for i in range(len(subject)):
+                if subject[i].startswith('subjectAltName'):
+                    for j in range(i + 1, len(subject)):
+                        if subject[j].startswith('DNS:'):
+                            domain = subject[j][8:]
+                            break
+                    else:
+                        continue
+                    expires = cert.find(b'notAfter') + 9
+                    start_date = cert.find(b'validFrom') + 10
+                    end_date = cert.find(b'\n', expires)
+                    expiration_date = datetime.strptime(cert[start_date:end_date], '%b %d %Y %H:%M:%S')
+                    cert_info[domain] = expiration_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+                    break
+        except Exception as e:
+            print(f"Error retrieving SSL certificate for {url}: {e}")
+            pass
+
+    return cert_info

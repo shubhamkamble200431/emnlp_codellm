@@ -1,0 +1,50 @@
+import re
+import matplotlib.pyplot as plt
+from nltk.probability import FreqDist
+
+
+def task_func(example_str, top_n=30):
+    """
+    Extract all texts that are not enclosed in square brackets from the given string and plot 
+    a frequency distribution of the words. Also return the top_n most common words in the frequency distribution
+    as a dictionary.
+
+    Parameters:
+    - example_str (str): The input string.
+    - top_n (int, Optional): The number of most common words to display in the frequency distribution plot. Default is 30.
+
+    Returns:
+    - Axes: A matplotlib Axes object representing the frequency distribution plot.
+    - dict: A dictionary containing the top_n most common words and their frequencies.
+
+    Requirements:
+    - re
+    - nltk.probability.FreqDist
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax, top_n_words = task_func("Josie Smith [3996 COLLEGE AVENUE, SOMETOWN, MD 21003] Mugsy Dog Smith [2560 OAK ST, GLENMEADE, WI 14098]")
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Extract text not enclosed in square brackets
+    texts = re.findall(r'\[[^\]]*\]', example_str)
+    
+    # Flatten the list of lists into a single list
+    flattened_texts = [text.replace('[', '').replace(']', '') for text in texts]
+    
+    # Count word frequencies
+    freq_dist = FreqDist(flattened_texts)
+    
+    # Get the top n words
+    top_n_words = freq_dist.most_common(top_n)
+    
+    # Plot frequency distribution
+    fig, ax = plt.subplots()
+    ax.bar(range(len(top_n_words)), [freq[1] for freq in top_n_words], align='center')
+    ax.set_xticks(range(len(top_n_words)))
+    ax.set_xticklabels([freq[0] for freq in top_n_words])
+    ax.set_ylabel('Frequency')
+    ax.set_title(f'Top {top_n} Most Common Words')
+
+    return ax, top_n_words

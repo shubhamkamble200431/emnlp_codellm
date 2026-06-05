@@ -1,0 +1,61 @@
+from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+
+def task_func(img_path, angle):
+    """
+    Open an image, rotate it around a certain angle, and then display both the original and the rotated images side by side. 
+    Additionally, return both images as numpy arrays.
+
+    Parameters:
+    img_path (str): The path of the image file.
+    angle (float): The angle to rotate the image (in degrees).
+
+    Returns:
+    tuple: A tuple containing two numpy arrays, the first representing the original image and 
+           the second representing the rotated image. Expands the rotated image to make it large enough to hold the entire rotated image.
+
+    Raises:
+    FileNotFoundError: If the image file does not exist at the specified path.
+
+    Requirements:
+    - PIL
+    - matplotlib
+    - numpy
+    - os
+
+    Example:
+    >>> img_path = 'sample.png'
+    >>> create_dummy_image(image_path=img_path)
+    >>> original_img_array, rotated_img_array = task_func(img_path, 45)
+    >>> os.remove(img_path)
+    """
+    try:
+        # Open the image
+        img = Image.open(img_path)
+
+        # Convert the image to numpy array
+        img_array = np.array(img)
+
+        # Rotate the image
+        rotated_img_array = cv2.rotate(img_array, angle)
+
+        # Create a figure with subplots
+        fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+
+        # Display original image
+        axs[0].imshow(img)
+        axs[0].set_title('Original')
+
+        # Display rotated image
+        axs[1].imshow(rotated_img_array)
+        axs[1].set_title(f'Rotated ({angle}°)')
+
+        # Show the plot
+        plt.show()
+
+        return img_array, rotated_img_array
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Image file {img_path} does not exist.")

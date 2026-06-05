@@ -1,0 +1,60 @@
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+
+
+def task_func(df):
+    """
+    Plots the correlation matrix from numeric columns in a DataFrame and returns a DataFrame
+    where the numeric columns are standardized to have mean 0 and variance 1.
+
+    Parameters:
+    df (pandas.DataFrame): Input DataFrame with columns of numeric data.
+
+    Returns:
+    pandas.DataFrame: Standardized DataFrame.
+    matplotlib.figure.Figure: Figure object containing the heatmap of the correlation matrix.
+
+    Requirements:
+    - pandas
+    - numpy
+    - seaborn
+    - matplotlib
+    - sklearn
+
+    Raises:
+    - ValueError: If the DataFrame is empty or if no numeric columns are present.
+
+    Notes:
+    - Only numeric columns are considered for the heatmap. Non-numeric columns are ignored.
+
+    Examples:
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+    >>> standardized_df, fig = task_func(df)
+    >>> standardized_df
+              A         B
+    0 -1.224745 -1.224745
+    1  0.000000  0.000000
+    2  1.224745  1.224745
+    >>> type(fig)
+    <class 'matplotlib.figure.Figure'>
+    """
+    # Filter out non-numeric columns
+    numeric_cols = df.select_dtypes(include=np.number).columns
+
+    if len(numeric_cols) == 0:
+        raise ValueError("No numeric columns found in the input DataFrame.")
+
+    # Standardize the numeric columns
+    scaler = StandardScaler()
+    standardized_df = scaler.fit_transform(df[numeric_cols])
+
+    # Plot the correlation matrix
+    corr_matrix = np.corrcoef(standardized_df, rowvar=False)
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+    plt.title('Correlation Matrix of Standardized Numeric Columns')
+    plt.show()
+
+    return standardized_df, plt.gcf()  # Return the standardized DataFrame and figure object

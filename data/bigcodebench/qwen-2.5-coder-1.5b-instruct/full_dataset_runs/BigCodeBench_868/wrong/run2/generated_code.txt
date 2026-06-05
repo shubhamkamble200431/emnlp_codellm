@@ -1,0 +1,47 @@
+from itertools import cycle
+from random import choice, seed
+
+
+def task_func(n_colors, colors=['Red', 'Green', 'Blue', 'Yellow', 'Purple'], rng_seed=None):
+    """
+    Generates a list representing a color pattern. The pattern consists of 'n_colors' elements 
+    and alternates between a cyclic sequence of colors as defined in the parameter 'colors',
+    and random colors from the same list.
+    Optionally, a seed for the random number generator can be provided for repeatable randomness.
+
+    If n_colors is smaller than or equal to zero an empty list is returned.
+
+    Parameters:
+    n_colors (int): The number of colors to include in the pattern. This number indicates the total 
+                    elements in the returned list, alternating between cyclic and random colors.
+    colors (list of str, optional): The list of colors to generate from. 
+                Defaults to  ['Red', 'Green', 'Blue', 'Yellow', 'Purple'].
+    rng_seed (int, optional): A seed for the random number generator to ensure repeatability of the color selection. 
+                              If 'None', the randomness is based on system time or other sources of entropy.
+
+    Returns:
+    list: A list representing the color pattern. Each element of the list is a string indicating 
+          the color. For example, with n_colors=4 and a specific seed, the result could be consistent 
+          across calls with the same seed.
+
+    Requirements:
+    - itertools
+    - random
+
+    Examples:
+    >>> color_pattern = task_func(4, rng_seed=123)
+    >>> print(color_pattern)
+    ['Red', 'Red', 'Green', 'Blue']
+
+    >>> colors = ['Brown', 'Green', 'Black']
+    >>> color_pattern = task_func(12, colors=colors, rng_seed=42)
+    >>> print(color_pattern)
+    ['Brown', 'Black', 'Green', 'Brown', 'Black', 'Brown', 'Brown', 'Black', 'Green', 'Green', 'Black', 'Brown']
+    """
+if rng_seed is None:
+    seed(None)  # Seed for the random number generator if none provided
+cycler = cycle(colors)
+color_pattern = []
+
+for _ in range(n_colors):
+    color_pattern.append(next(cycler))

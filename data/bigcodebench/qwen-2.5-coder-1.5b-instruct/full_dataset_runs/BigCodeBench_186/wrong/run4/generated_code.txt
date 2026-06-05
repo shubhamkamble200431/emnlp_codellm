@@ -1,0 +1,44 @@
+from geopy.distance import geodesic
+import folium
+
+def task_func(dic):
+    """
+    Generates a Folium map with markers for specified locations and calculates the geodesic
+    distances between each pair of locations.
+
+    Parameters:
+        dic (dict): A dictionary with location names as keys and their latitudes and longitudes
+                    as values (e.g., {'Location': {'Lat': latitude, 'Lon': longitude}}).
+
+    Returns:
+        tuple: A tuple containing a Folium map object and a dictionary with pairs of location
+               names as keys and their distances in kilometers as values.
+
+    Raises:
+        ValueError: If the input dictionary is empty.
+
+    Requirements:
+    - geopy.distance.geodesic
+    - folium
+
+    Examples:
+    >>> result = task_func({'Place1': {'Lat': 0, 'Lon': 0}, 'Place2': {'Lat': 0, 'Lon': 1}})
+    >>> isinstance(result, tuple) and len(result) == 2
+    True
+    >>> isinstance(result[0], folium.folium.Map) and isinstance(result[1], dict)
+    True
+    """
+    if not dic:
+        raise ValueError("Input dictionary cannot be empty.")
+
+    m = folium.Map(location=[list(dic.values())[0]['Lat'], list(dic.values())[0]['Lon']], zoom_start=5)
+
+    distances = {}
+    for i in range(len(dic)):
+        for j in range(i + 1, len(dic)):
+            loc1 = dic[list(dic.keys())[i]]
+            loc2 = dic[list(dic.keys())[j]]
+            distance_km = geodesic((loc1['Lat'], loc1['Lon']), (loc2['Lat'], loc2['Lon'])).km
+            distances[f"{list(dic.keys())[i]}-{list(dic.keys())[j]}" ] = distance_km
+
+    return m, distances

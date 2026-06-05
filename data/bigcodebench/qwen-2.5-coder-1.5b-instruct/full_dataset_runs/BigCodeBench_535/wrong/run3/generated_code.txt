@@ -1,0 +1,77 @@
+import sqlite3
+import numpy as np
+from random import choice, seed
+
+
+def task_func(db_path, table_name, num_entries, random_seed=None):
+    """
+    Insert random data into an SQLite3 table that contains random names, ages, and heights.
+    If the table does not exist, it will be created.
+    This function uses the following constants:
+    - NAMES: List of possible names ['John', 'Jane', 'Steve', 'Emma', 'Liam', 'Olivia'].
+    - AGES: Range of possible ages from 18 to 64.
+    - HEIGHTS: Range of possible heights from 150cm to 199cm.
+
+    Parameters:
+    db_path (str): The path to the SQLite3 database file.
+    table_name (str): The name of the table to insert data into.
+    num_entries (int): The number of entries to insert. Must not be negative.
+    random_seed (int, optional): Seed for random number generation. Defaults to None (no fixed seed).
+
+    Returns:
+    int: The number of rows inserted.
+
+    Raises:
+    ValueError: If num_entries is negative.
+    
+    Requirements:
+    - sqlite3
+    - numpy
+    - random.choice
+    - random.seed
+
+    Example:
+    >>> task_func('path_to_test.db', 'People', 100, random_seed=42)
+    100
+    """
+    if num_entries < 0:
+        raise ValueError("The number of entries must not be negative.")
+
+    # Define the tables and columns
+    NAMES = ['John', 'Jane', 'Steve', 'Emma', 'Liam', 'Olivia']
+    AGES = range(18, 65)  # 18-64 years old
+    HEIGHTS = range(150, 200)  # 150 cm to 199 cm
+
+    # Create a connection to the database
+    conn = sqlite3.connect(db_path)
+
+    # Create a cursor object using the cursor() method
+    cursor = conn.cursor()
+
+    # Check if the table exists
+    cursor.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
+    table_exists = cursor.fetchone()[0] > 0
+
+    if not table_exists:
+        # Create the table if it doesn't exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS {}
+                (name TEXT, age INTEGER, height INTEGER)
+        """.format(table_name))
+
+    # Insert random data
+    for _ in range(num_entries):
+        if random_seed is not None:
+            seed(random_seed)
+        name = choice(NAMES)
+        age = choice(AGES)
+        height = choice(HEIGHTS)
+        cursor.execute("INSERT INTO {} (name, age, height) VALUES (?, ?, ?)".format(table_name), (name, age, height))
+
+    # Commit the changes
+    conn.commit()
+
+    # Close the connection
+    conn.close()
+
+    return num_entries

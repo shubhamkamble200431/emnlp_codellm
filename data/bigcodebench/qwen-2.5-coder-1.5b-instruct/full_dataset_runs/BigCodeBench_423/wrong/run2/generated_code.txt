@@ -1,0 +1,49 @@
+import numpy as np
+import cv2
+import os
+
+def task_func(image_path='image.jpg', threshold=128):
+    """
+    Read an RGB image, convert it to grayscale, binarize it using a given threshold, and return both the original and binarized images as numpy arrays.
+    The function checks for the existence of the image file and validates the threshold value.
+
+    Parameters:
+    - image_path (str): Path to the image file. Defaults to 'image.jpg'.
+    - threshold (int): Threshold value for binarization. Must be an integer in the range 0-255. Defaults to 128.
+
+    Returns:
+    - tuple: A tuple containing two numpy arrays. The first array represents the original grayscale image,
+             and the second array represents the binarized image.
+
+    Raises:
+    - FileNotFoundError: If the image file does not exist at the specified path.
+    - ValueError: If the threshold is not an integer or not in the range 0-255.
+
+    Requirements:
+    - opencv
+    - numpy
+    - os
+    - PIL
+
+    Example:
+    >>> img_path = 'image.jpg'
+    >>> create_dummy_image(img_path)
+    >>> original_img_array, binary_img_array = task_func(img_path, 128)
+    >>> os.remove(img_path)
+    >>> original_img_array.shape, binary_img_array.shape # ((image_height, image_width), (image_height, image_width))
+    ((20, 20), (20, 20))
+    """
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image file {image_path} does not exist.")
+
+    if not isinstance(threshold, int) or threshold < 0 or threshold > 255:
+        raise ValueError("Threshold must be an integer between 0 and 255.")
+
+    # Open the image in grayscale
+    original_img = Image.open(image_path).convert('L')
+    original_img_array = np.array(original_img)
+
+    # Apply thresholding
+    binary_img_array = (original_img_array >= threshold).astype(np.uint8)
+
+    return original_img_array, binary_img_array

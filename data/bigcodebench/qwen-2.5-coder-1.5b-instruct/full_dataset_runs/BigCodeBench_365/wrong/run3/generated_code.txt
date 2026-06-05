@@ -1,0 +1,40 @@
+from collections import Counter
+import json
+import random
+
+
+# Constants
+WORDS = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape', 'honeydew']
+
+def task_func(n, file_name, seed=77):
+    """
+    Create a json file with a number of n randomly selected words from a constant list named WORDS.
+    
+    Parameters:
+    n (int): The number of words to select from the list.
+    file_name (str): The name of the json file to be generated.
+    seed (int, Optional): The seed for the random number generator. Defaults to 77.
+    
+    Returns:
+    str: The name of the json file generated.
+
+    Requirements:
+    - collections
+    - json
+    - random
+
+    Example:
+    >>> import tempfile
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> file_name = temp_dir + "/word_counts.json"
+    >>> task_func(5, file_name, 29).endswith('word_counts.json')
+    True
+    """
+    random.seed(seed)
+    selected_words = random.sample(WORDS, n)
+    word_counts = dict(Counter(selected_words))
+
+    with open(file_name, 'w') as f:
+        json.dump(word_counts, f)
+
+    return file_name

@@ -1,0 +1,63 @@
+import subprocess
+import shlex
+from datetime import datetime
+
+def task_func(script_path: str) -> dict:
+    '''
+    Run an R script and return the start time, end time, decoded stdout, and decoded stderr as a dictionary.
+    
+    Requirements:
+    - subprocess
+    - shlex
+    - datetime
+    
+    Parameters:
+    - script_path (str): Path to the R script to be executed.
+    
+    Returns:
+    - dict: A dictionary containing the start time, end time, stdout, and stderr of the script run.
+    
+    Example:
+    >>> task_func("/path/to/script.r")
+    {
+        'Start Time': '2023-09-26 14:30:00',
+        'End Time': '2023-09-26 14:32:00',
+        'Stdout': 'Script output here...',
+        'Stderr': 'Any errors here...'
+    }
+    '''
+    # Start time
+    start_time = datetime.now()
+
+    # Construct the command to run the R script
+    cmd = shlex.split(f"Rscript {script_path}")
+
+    try:
+        # Execute the R script using subprocess
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # Wait for the script to finish and capture the output and error
+        stdout, stderr = process.communicate()
+
+        # Decode the output and error from bytes to string
+        stdout_str = stdout.decode("utf-8")
+        stderr_str = stderr.decode("utf-8")
+
+        # End time
+        end_time = datetime.now()
+
+        # Return the results in a dictionary
+        result = {
+            'Start Time': start_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'End Time': end_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'Stdout': stdout_str,
+            'Stderr': stderr_str
+        }
+        return result
+    except Exception as e:
+        # If there is an exception during execution, capture it and return it in the result
+        result = {
+            'Start Time': start_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'End Time': end_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'Stdout': f"Exception: {e}",
+            'Stderr':

@@ -1,0 +1,45 @@
+import re
+import matplotlib.pyplot as plt
+
+
+def task_func(df):
+    """
+    Analyzes a DataFrame to find videos with titles containing "how" or "what" and visualizes their like ratios.
+    The like ratio for each video is calculated by dividing the number of likes by the number of views.
+    This function generates a bar plot of the like ratios for these specific videos.
+    If the DataFrame is empty, lacks the required columns, or contains no titles matching the criteria,
+    an empty subplot is returned.
+
+    Parameters:
+    df (DataFrame): A DataFrame containing video data with columns 'Title', 'Views', and 'Likes'.
+
+    Returns:
+    Axes: A matplotlib.axes.Axes object of the bar plot. The plot will be empty if the DataFrame is insufficient
+    or no video titles match the search criteria.
+
+    Requirements:
+    - re
+    - matplotlib
+
+    Note:
+    The function checks for the presence of the necessary data columns ('Title', 'Views', 'Likes') and whether
+    there are any entries matching the search criteria. If these conditions are not met, it returns an empty plot.
+
+    Example:
+    >>> import pandas as pd
+    >>> data = {'Title': ['How to code', 'What is Python', 'Tutorial'], 'Views': [1500, 1200, 1000], 'Likes': [150, 300, 100]}
+    >>> df = pd.DataFrame(data)
+    >>> ax = task_func(df)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    if 'Title' not in df.columns or 'Views' not in df.columns or 'Likes' not in df.columns:
+        return None
+    pattern = r'\b(how|what)\b'
+    matches = df[df['Title'].str.contains(pattern)]
+    if matches.empty:
+        return None
+    like_ratios = matches['Likes'] / matches['Views']
+    fig, ax = plt.subplots()
+    ax.bar(matches['Title'], like_ratios)
+    return ax

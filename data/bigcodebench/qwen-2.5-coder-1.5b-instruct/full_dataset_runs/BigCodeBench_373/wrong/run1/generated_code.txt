@@ -1,0 +1,52 @@
+from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
+
+def task_func(l, x_data, plot=False):
+    """
+    Adjust a quadratic curve to the specified data and return the parameters and fitted values.
+    
+    Parameters:
+    l (numpy array): The input y-values.
+    x_data (numpy array): The x-values corresponding to l.
+    plot (bool, optional): If True, a plot will be returned. Default is False.
+    
+    Returns:
+    tuple: A tuple containing the following:
+        - params (numpy array): Parameters of the fitted curve.
+        - fitted_values (numpy array): Fitted y-values for the provided x_data.
+        - ax (matplotlib.axes._axes.Axes, optional): Axes object of the plot if plot=True.
+
+    Requirements:
+    - scipy.optimize.curve_fit
+    - matplotlib.pyplot
+
+    Example:
+    >>> import numpy as np
+    >>> l = np.array([1, 4, 9, 16, 25])
+    >>> x_data = np.array([1, 2, 3, 4, 5])
+    >>> params, fitted_values = task_func(l, x_data)
+    >>> print(fitted_values)
+    [ 1.  4.  9. 16. 25.]
+    """
+    def quadratic_function(x, a, b, c):
+        return a * x**2 + b * x + c
+
+    try:
+        params, _ = curve_fit(quadratic_function, x_data, l)
+        fitted_values = quadratic_function(x_data, params[0], params[1], params[2])
+
+        if plot:
+            fig, ax = plt.subplots()
+            ax.plot(x_data, l, label='Original data')
+            ax.plot(x_data, fitted_values, label='Fitted curve', color='red')
+            ax.set_xlabel('x')
+            ax.set_ylabel('l')
+            ax.legend()
+            plt.show()
+
+            return params, fitted_values, ax
+        else:
+            return params, fitted_values
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None, None, None

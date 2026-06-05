@@ -1,0 +1,31 @@
+from datetime import datetime
+import pytz
+from dateutil.parser import parse
+
+
+def task_func(date_str, tz_str):
+    """
+    Determine the time in seconds until the next turn of the year in a certain time zone from a given date string.
+
+    Parameters:
+    - date_str (str): The date string in "yyyy-mm-dd hh:mm:ss" format.
+    - tz_str (str): The IANA timezone string (e.g., 'America/Chicago').
+
+    Returns:
+    - int: The time in seconds until the next New Year in the specified timezone.
+
+    Requirements:
+    - datetime
+    - dateutil.parser
+    - pytz
+
+    Example:
+    >>> type(task_func('2022-10-22 11:59:59', 'America/Chicago'))
+    <class 'int'>
+    """
+    current_date = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+    target_date = datetime(current_date.year + 1, 1, 1, 0, 0, 0)
+    if current_date >= target_date:
+        target_date += timedelta(days=365)
+
+    return (target_date - current_date).total_seconds()

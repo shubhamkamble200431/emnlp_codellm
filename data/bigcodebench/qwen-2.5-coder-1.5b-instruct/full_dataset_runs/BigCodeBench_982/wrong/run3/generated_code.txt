@@ -1,0 +1,58 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+
+def task_func(df, column, bins=30, density=True, alpha=0.6, color="g", seed=None):
+    """
+    Plots a histogram for a specified column of a pandas DataFrame and overlays
+    it with a fitted normal distribution curve.
+
+    Parameters:
+    - df (pandas.DataFrame): The input DataFrame.
+    - column (str): The column name for which the histogram is plotted.
+    - bins (int, optional): Number of bins for the histogram. Defaults to 30.
+    - density (bool, optional): If True, the histogram is normalized to form a
+                                probability density. Defaults to True.
+    - alpha (float, optional): Transparency level for the histogram bars.
+                               Defaults to 0.6.
+    - color (str, optional): Color of the histogram bars. Defaults to 'g'.
+    - seed (int, optional): Seed for the random number generator.
+                            Defaults to None (not set).
+
+    Returns:
+    - matplotlib.axes._axes.Axes: The matplotlib Axes object with the plot.
+
+    Requirements:
+    - numpy
+    - matplotlib
+    - scipy
+
+    Example:
+    >>> np.random.seed(0)
+    >>> df = pd.DataFrame({'A': np.random.normal(0, 1, 1000)})
+    >>> ax = task_func(df, 'A')
+    >>> ax.get_title()
+    "Normal Fit for 'A'"
+    """
+    if seed is not None:
+        np.random.seed(seed)
+
+    # Calculate the histogram data
+    hist, bin_edges = np.histogram(df[column], bins=bins, density=density)
+
+    # Calculate the mean and standard deviation of the data
+    mu, std = df[column].mean(), df[column].std()
+
+    # Generate x values for the normal distribution curve
+    x = np.linspace(bin_edges[0], bin_edges[-1], 100)
+
+    # Calculate the probability density function (PDF) of the normal distribution
+    pdf = norm.pdf(x, mu, std)
+
+    # Plotting
+    ax = df[column].plot(kind='hist', bins=bins, density=density,
+                         alpha=alpha, color=color, label=f'Original Data (bins={bins})')
+
+    # Plotting the normal distribution curve
+    ax.plot(x, pdf, label='Normal Distribution (μ={mu}, σ={std})

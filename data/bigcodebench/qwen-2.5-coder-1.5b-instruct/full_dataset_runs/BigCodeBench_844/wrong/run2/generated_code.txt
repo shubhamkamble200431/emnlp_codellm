@@ -1,0 +1,77 @@
+import csv
+import random
+from faker import Faker
+
+
+def task_func(file_path, num_rows, random_seed=None):
+    """
+    Generate a CSV file on a specific file path with fake personal data.
+    The personal data consists of the following columns:
+    - Name: random names generated with faker
+    - Age: random age values: 20<=age<=60
+    - Address: random adresses generated with faker
+    - Email: random email adresses generated with faker
+
+    Newlines '\n' in the generated addresses get replaced with ', '.
+    The number of rows in the CSV file is determined by num_rows.
+
+    Parameters:
+    file_path (str): The file path where the CSV file should be created.
+    num_rows (int): The number of rows of random data to generate.
+    random_seed (int, optional): Seed used random generation. Same seed used for faker and random module.
+                                 Defaults to None.
+    
+    Returns:
+    str: The file path of the generated CSV file.
+
+    Raises:
+    ValueError: If num_rows is not an integer >= 0.
+
+    Requirements:
+    - csv
+    - random
+    - faker
+
+    Example:
+    >>> task_func('/tmp/people.csv', 100)
+    '/tmp/people.csv'
+
+    >>> path = task_func('test.csv', 5, random_seed=12)
+    >>> with open(path, 'r') as file:
+    >>>     reader = csv.reader(file)
+    >>>     rows = list(reader)
+    >>> print(rows)
+    [
+        ['Name', 'Age', 'Address', 'Email'], 
+        ['Matthew Estrada', '50', '7479 Angela Shore, South Michael, MA 28059', 'johnstonjames@example.net'],
+        ['Gabrielle Sullivan', '37', '83167 Donna Dale, Nicoleside, GA 91836', 'peterswilliam@example.org'],
+        ['Jason Carlson', '53', '013 Kelly Lake Suite 414, West Michael, NY 75635', 'anthonycarson@example.com'],
+        ['Alexander Lowe', '42', '183 Christian Harbor, South Joshuastad, PA 83984', 'palmermicheal@example.com'],
+        ['John Benjamin', '29', '8523 Rhonda Avenue, Rosemouth, HI 32166', 'masonjohn@example.org']
+    ]
+    """
+    if not isinstance(num_rows, int) or num_rows < 0:
+        raise ValueError("num_rows must be an integer >= 0")
+
+    Faker.seed(random_seed)
+    fake = Faker()
+
+    fieldnames = ["Name", "Age", "Address", "Email"]
+    with open(file_path, mode='w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for _ in range(num_rows):
+            name = fake.name()
+            age = random.randint(20, 60)
+            address = fake.address().replace('\n', ', ')
+            email = fake.email()
+
+            writer.writerow({
+                "Name": name,
+                "Age": age,
+                "Address": address,
+                "Email": email
+            })
+
+    return file_path

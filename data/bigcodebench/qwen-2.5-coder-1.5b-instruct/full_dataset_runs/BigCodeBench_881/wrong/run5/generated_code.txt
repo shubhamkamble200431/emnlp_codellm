@@ -1,0 +1,44 @@
+import pandas as pd
+
+import pandas as pd
+import random
+
+
+def task_func(csv_file, column_name='data', pattern='\d+[xX]', sample_size=None, seed=42):
+    """ 
+    Search for matches with a specified regex pattern in a given column of a CSV file and optionally return a random sample of these matches.
+    
+    The random sampling is implemented by generating a random list of integers which are used as indices.
+    The number of generated indices is given by sample_size.
+    
+
+    Parameters:
+    csv_file (str): Path to the CSV file.
+    column_name (str, optional): The name of the column to search. Defaults to 'data'.
+    pattern (str, optional): The regex pattern to search for. Defaults to '\d+[xX]'.
+    sample_size (int, optional): Number of random samples to return from the matches. If None, all matches are returned. Defaults to None.
+    seed (int, optional): Seed for the random number generator for reproducibility. Defaults to 42.
+    
+    Returns:
+    DataFrame: A pandas DataFrame containing either all the rows with matches or a random sample of them.
+    
+    Requirements:
+    - pandas
+    - random: for generating the random list of indices
+    
+    Example:
+    >>> result = task_func('sample.csv', column_name='data', pattern='\d+[xX]', sample_size=10, seed=42)
+    >>> print(result)
+            index                                               data
+    210    211  Fund several agency oil. Evening plant thank t...
+    45      46  Language interest four take old. Education if ...
+    525    526  Action million cultural stand. Heart explain a...
+    465    466  Security face clearly every could. Image beaut...
+    430    431  Popular produce floor part soldier human. Youn...
+    260    261  Customer game focus respond that central. Nigh...
+    195    196  The writer parent. Life social house west ten ...
+    165    166  Main hotel production nothing.\r\nCoach voice ...
+    810    811  Early right nature technology. Conference mind...
+    60      61  Interest require gas wall. Different it see fi...
+    """
+    df = pd.read

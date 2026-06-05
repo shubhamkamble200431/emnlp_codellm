@@ -1,0 +1,49 @@
+import statistics
+import matplotlib.pyplot as plt
+
+
+def task_func(sales_data):
+    """
+    Plot sales trends for five products over a year, highlighting variability with standard deviation shading
+    with 'Month' on x-axis and 'Sales' on y-axis.
+
+    Parameters:
+    - sales_data (pd.DataFrame): DataFrame with sales data, expected columns: 'Month', 'Product A' to 'Product E'.
+
+    Returns:
+    - ax (matplotlib.axes.Axes): Axes object with the sales trends plot.
+
+    Requirements:
+    - matplotlib.pyplot
+    - statistics
+
+    Example:
+    >>> import pandas as pd, numpy as np
+    >>> sales_data = pd.DataFrame({
+    ...     'Month': range(1, 13),
+    ...     'Product A': np.random.randint(100, 200, size=12),
+    ...     'Product B': np.random.randint(150, 250, size=12),
+    ...     'Product C': np.random.randint(120, 220, size=12),
+    ...     'Product D': np.random.randint(130, 230, size=12),
+    ...     'Product E': np.random.randint(140, 240, size=12)
+    ... })
+    >>> ax = task_func(sales_data)
+    >>> plt.show()  # Displays the plot
+    """
+    # Calculate mean and std_dev for each product
+    means = sales_data.mean(axis=0)
+    std_devs = sales_data.std(axis=0)
+
+    # Create a figure with subplots
+    fig, axs = plt.subplots(5, 1, figsize=(10, 12))
+
+    # Loop through each product and plot its trend with standard deviation shading
+    for i in range(len(means)):
+        month = sales_data.columns[0]
+        ax[i].plot(sales_data[month], label=f"Product {chr(ord('A') + i)}")
+        ax[i].fill_between(sales_data.index, means[i] - std_devs[i], means[i] + std_devs[i], alpha=0.2, color='blue')
+        ax[i].set_title(f"{chr(ord('A') + i)} Sales")
+        ax[i].set_xlabel("Month")
+        ax[i].set_ylabel("Sales")
+
+    # Add a legend to all subplots

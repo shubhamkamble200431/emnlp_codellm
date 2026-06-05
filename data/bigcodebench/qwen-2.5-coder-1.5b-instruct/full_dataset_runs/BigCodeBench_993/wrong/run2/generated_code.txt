@@ -1,0 +1,64 @@
+import re
+from scipy.stats import gaussian_kde
+from scipy import linalg
+import matplotlib.pyplot as plt
+
+
+def task_func(text):
+    """
+    This code takes a text input, calculates the lengths of the words, 
+    and visualizes the distribution of word lengths using a histogram and a KDE curve (if applicable) on a matplotlib subplot.
+
+    Parameters:
+    text (str): The text string to be analyzed. The function can handle strings with various types 
+                of characters and punctuation.
+
+    Returns:
+    matplotlib.axes._axes.Axes: An Axes object showing the histogram and optionally the KDE 
+                                           plot of word lengths. This visual representation helps in 
+                                           understanding the distribution of word lengths in the given text.
+
+    Requirements:
+    - re
+    - matplotlib
+    - scipy
+    - matplotlib
+
+    Example:
+    >>> ax = task_func('Hello world! This is a test.')
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    """
+    # Remove punctuation from the text
+    cleaned_text = re.sub(r'[^\w\s]', '', text.lower())
+
+    # Split the text into words
+    words = cleaned_text.split()
+
+    # Calculate the lengths of the words
+    word_lengths = [len(word) for word in words]
+
+    # Create a histogram of the word lengths
+    plt.subplot(121)
+    plt.hist(word_lengths, bins=30, edgecolor='black')
+    plt.title('Histogram of Word Lengths')
+    plt.xlabel('Word Length')
+    plt.ylabel('Frequency')
+
+    # If there are at least 5 unique word lengths, calculate the kernel density estimate (KDE)
+    if len(set(word_lengths)) >= 5:
+        # Calculate the KDE
+        kde = gaussian_kde(word_lengths)
+
+        # Generate x values for the KDE plot
+        x_values = np.linspace(min(word_lengths), max(word_lengths), 400)
+
+        # Evaluate the KDE at the x values
+        y_values = kde(x_values)
+
+        # Plot the KDE
+        plt.plot(x_values, y_values, label='Kernel Density Estimate', linestyle='--')
+        plt.legend()
+        plt.title('Kernel Density Estimate of Word Lengths')
+
+    return plt.gca()

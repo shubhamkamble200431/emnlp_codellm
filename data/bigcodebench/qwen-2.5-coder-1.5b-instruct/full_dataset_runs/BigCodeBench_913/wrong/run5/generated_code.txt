@@ -1,0 +1,31 @@
+from typing import List, Union
+import numpy as np
+import scipy.fft
+
+def task_func(data: List[Union[int, str]], repetitions: int = 1):
+    """
+    Calculates the mode(s), their count(s), and the fast fourier transform of the data after repeating it a specified number of times.
+    in a list of elements that can be repeated a specified number of times.
+    
+    Note:
+    If the data is empty or the number of repetitions is less than or equal to 0, the function will return empty arrays.
+    
+    Parameters:
+    - data (List[Union[int, str]]): The original list of elements (integers and/or strings).
+    - repetitions (int, optional): The number of times to repeat the original list before calculating the mode. Defaults to 1.
+
+    Requirements:
+    - numpy
+    - scipy
+    
+    Returns:
+    - dict: A dictionary with two keys:
+        'mode': a numpy array of the mode(s), sorted in ascending order.
+        'count': a numpy array of the count(s) of the mode(s).
+        
+    Examples:
+    >>> task_func([1, '2', '2'], repetitions=1)
+    {'mode': array(['2'], dtype='<U1'), 'count': [2], 'fft': array([ 5.-0.j, -1.+0.j, -1.-0.j])}
+    """
+import numpy as np
+import scipy.fft

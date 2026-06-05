@@ -1,0 +1,64 @@
+import urllib.request
+from pyquery import PyQuery as pq
+from datetime import datetime
+import pandas as pd
+
+def task_func(url):
+    """
+    Extracts the text and href attributes of all anchor tags from a given URL's HTML content, 
+    and returns this data in a pandas DataFrame along with the time of data extraction.
+
+    Parameters:
+    url (str): The URL from which to fetch the HTML content.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with columns 'text', 'href', and 'fetch_time'. Each row 
+                      corresponds to an anchor tag in the HTML, with 'text' and 'href' containing 
+                      the text and the hyperlink reference of the anchor tag, respectively. 
+                      'fetch_time' contains the timestamp of when the data was fetched in the format
+                        'YYYY-MM-DD HH:MM:SS'.
+
+    Raises:
+    ValueError: If the provided URL is invalid or empty.
+    URLError: If there is an issue with network connectivity or the server.
+
+    Requirements:
+    - urllib.request
+    - pyquery
+    - datime
+    - pandas
+    - urllib.error
+
+    Example:
+    >>> df = task_func('https://en.wikibooks.org/wiki/Main_Page')
+
+    Note:
+    The function requires internet connectivity to fetch HTML content.
+    """
+    if not url or not isinstance(url, str):
+        raise ValueError("URL must be a non-empty string.")
+
+    try:
+        response = urllib.request.urlopen(url)
+        html_content = response.read().decode('utf-8')
+    except (ValueError, IOError) as e:
+        raise ValueError(f"Invalid URL or error fetching content: {e}")
+
+    doc = pq(html_content)
+    links = doc('a')
+
+    data = []
+    for link in links:
+        text = link.text()
+        href = link.attr('href')
+
+        if href.startswith('//'):
+            href = f'https://{url.split("//")[1]}{href}'
+
+        data.append({
+            'text': text,
+            'href': href,
+            'fetch_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        })
+
+    return pd.DataFrame(data)

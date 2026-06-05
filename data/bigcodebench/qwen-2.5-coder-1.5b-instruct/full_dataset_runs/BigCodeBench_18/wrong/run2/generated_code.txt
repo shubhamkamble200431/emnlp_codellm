@@ -1,0 +1,52 @@
+import subprocess
+import csv
+import glob
+import random
+import os
+
+def task_func(file):
+    """
+    Divide a CSV file into several smaller files and shuffle the lines in each file.
+    
+    This function takes a CSV file path as input, divides it into smaller files using 
+    the shell 'split' command, and shuffles the rows in each of the resulting files.
+    The output files are named with a 'split_' prefix.
+
+    Parameters:
+    - file (str): The path to the CSV file.
+
+    Returns:
+    - list: The paths to the split files. Returns an empty list if the file does not exist, is not a CSV file, or if an error occurs during processing.
+    
+    Requirements:
+    - subprocess
+    - csv
+    - glob
+    - random
+    - os
+
+    Example:
+    >>> task_func('/path/to/file.csv')
+    ['/path/to/split_00', '/path/to/split_01', ...]
+    """
+    if not os.path.isfile(file) or not file.endswith('.csv'):
+        return []
+
+    # Split the CSV file into smaller files
+    split_files = [file.replace('.csv', f'_split_{i+1}.csv') for i in range(5)]
+    subprocess.run(['split', '-l', '1000', file] + split_files)
+
+    # Shuffle the rows in each split file
+    for split_file in split_files:
+        with open(split_file, mode='r') as infile:
+            reader = csv.reader(infile)
+            shuffled_lines = random.sample(reader, len(reader))
+
+        with open(split_file, mode='w', newline='') as outfile:
+            writer = csv.writer(outfile)
+            writer.writerows(shuffled_lines)
+
+    # Remove the original file
+    os.remove(file)
+
+    return split_files

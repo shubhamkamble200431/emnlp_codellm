@@ -1,0 +1,36 @@
+import configparser
+import os
+import shutil
+
+
+def task_func(config_file_path, archieve_dir ='/home/user/archive'):
+    """
+    Archive a specified project directory into a ZIP file based on the configuration specified in a config file.
+    
+    This function reads a configuration file to determine the project directory and archives this directory into a ZIP file.
+    The ZIP file's name will be the project directory's basename, stored in the specified archive directory.
+    
+    Configuration File Format:
+    [Project]
+    directory=path_to_project_directory
+    
+    Parameters:
+    - config_file_path (str): Path to the configuration file. The file must exist and be readable.
+    - archive_dir (str, optional): Path to the directory where the ZIP archive will be stored. Defaults to '/home/user/archive'.
+    
+    Returns:
+    - bool: True if the ZIP archive is successfully created, otherwise an exception is raised.
+    
+    Requirements:
+    - configparse
+    - os
+    - shutil
+
+    Raises:
+    - FileNotFoundError: If the `config_file_path` does not exist or the specified project directory does not exist.
+    - Exception: If the ZIP archive cannot be created.
+    
+    Example:
+    >>> task_func("/path/to/config.ini")
+    True
+    """

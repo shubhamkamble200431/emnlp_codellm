@@ -1,0 +1,41 @@
+from collections import defaultdict
+import re
+
+def task_func(word: str) -> dict:
+    """
+    Find the occurrences of each two-letter combination in the sanitized word,
+    where only alphabetic characters are considered.
+
+    Requirements:
+    - collections.defaultdict
+    - re
+    
+    Parameters:
+    word (str): The input string.
+
+    Returns:
+    collections.defaultdict: A dictionary with keys as two-letter combinations and values as their counts in the sanitized word.
+
+    Example:
+    >>> task_func('abcdef')
+    defaultdict(<class 'int'>, {'ab': 1, 'bc': 1, 'cd': 1, 'de': 1, 'ef': 1})
+    >>> task_func('aabbcc')
+    defaultdict(<class 'int'>, {'aa': 1, 'ab': 1, 'bb': 1, 'bc': 1, 'cc': 1})
+    >>> task_func('a1!b@c#d$')
+    defaultdict(<class 'int'>, {'ab': 1, 'bc': 1, 'cd': 1})
+    """
+    # Define a regular expression to match words containing only letters
+    pattern = r'\b[a-zA-Z]+\b'
+
+    # Sanitize the word by removing all non-alphabetic characters
+    sanitized_word = re.sub(r'[^a-zA-Z]', '', word)
+
+    # Initialize a defaultdict to store the count of two-letter combinations
+    letter_combinations = collections.defaultdict(int)
+
+    # Iterate over the sanitized word and count two-letter combinations
+    for i in range(len(sanitized_word) - 1):
+        combination = sanitized_word[i:i+2]
+        letter_combinations[combination] += 1
+
+    return letter_combinations

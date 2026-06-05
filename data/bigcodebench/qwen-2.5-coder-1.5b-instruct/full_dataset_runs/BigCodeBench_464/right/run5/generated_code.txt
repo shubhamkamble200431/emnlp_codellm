@@ -1,0 +1,41 @@
+import json
+from datetime import datetime
+from decimal import Decimal
+
+def task_func(my_obj):
+    """
+    Serializes an object to a JSON string, adding support for datetime and Decimal data types.
+    
+    Handle complex data types not natively supported by the json module's default encoder. The `My_class` parameter is reserved for future use and does 
+    not affect the current implementation.
+    
+    Parameters:
+    - my_obj (object): The object to serialize, can include complex types such as datetime and Decimal.
+    
+    Returns:
+    - str: A JSON-formatted string representing `my_obj`, with datetime and Decimal objects properly serialized.
+        
+    Requirements:
+    - json
+    - datetime.datetime
+    - decimal.Decimal
+    
+    Examples:
+    Serialize a dictionary containing datetime and Decimal:
+    >>> result = task_func({'time': datetime(2023, 4, 1, 12, 0), 'amount': Decimal('10.99')})
+    >>> '2023-04-01T12:00:00' in result and '10.99' in result
+    True
+
+    Serialize a simple dictionary:
+    >>> task_func({'name': 'Alice', 'age': 30})
+    '{"name": "Alice", "age": 30}'
+    """
+    def custom_encoder(obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        elif isinstance(obj, Decimal):
+            return str(obj)
+        raise TypeError(f"Type {type(obj)} is not serializable")
+
+    # Use json.dumps with custom encoder to handle datetime and Decimal
+    return json.dumps(my_obj, default=custom_encoder)

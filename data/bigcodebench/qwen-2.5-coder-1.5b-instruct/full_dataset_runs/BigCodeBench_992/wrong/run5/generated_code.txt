@@ -1,0 +1,61 @@
+import sys
+import sqlite3
+
+# Constants
+PATH_TO_APPEND = "path/to/whatever"
+DATABASE = "path/to/database.db"
+
+
+def task_func(path_to_append=PATH_TO_APPEND, database=DATABASE):
+    """
+    This function appends a given path to sys.path and updates an SQLite database with the path, 
+    creating the table if needed and avoiding duplicates.
+
+    Parameters:
+    - path_to_append (str): A file system path to be appended to sys.path and inserted
+      into the SQLite database. Defaults to 'path/to/whatever' if not specified.
+    - database (str): The file system path to the SQLite database file. Defaults to
+      'path/to/database.db' if not provided. The function interacts with this database
+      to store the path.
+
+    Returns:
+    - str: The path that was appended to sys.path and inserted into the database.
+
+    Requirements:
+    - sys
+    - sqlite3
+
+
+    Examples:
+    >>> task_func('path/to/new_directory', 'path/to/new_database.db')
+    'path/to/new_directory'
+    >>> task_func()
+    'path/to/whatever'
+    """
+    # Append the path to sys.path
+    sys.path.append(path_to_append)
+
+    # Connect to the SQLite database
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+
+    # Create the table if it doesn't exist
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS paths (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        path TEXT UNIQUE
+    )
+    """
+    cursor.execute(create_table_query)
+
+    # Insert the path into the table, ignoring duplicates
+    insert_path_query = """
+    INSERT OR IGNORE INTO paths (path) VALUES (?)
+    """
+    cursor.execute(insert_path_query, (path_to_append,))
+
+    # Commit the changes and close the connection
+    conn.commit()
+    conn.close()
+
+    return path_to_append

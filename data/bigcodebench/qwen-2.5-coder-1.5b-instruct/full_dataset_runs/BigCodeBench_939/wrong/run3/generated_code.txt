@@ -1,0 +1,37 @@
+import re
+import os
+import glob
+
+def task_func(dir_path: str) -> list:
+    """
+    Rename all files in the specified directory by removing all special characters,
+    punctuation marks, and spaces, using regular expressions. The function keeps
+    alphanumeric characters and removes the rest.
+
+    Requirements:
+    - re
+    - os
+    - glob
+
+    Parameters:
+    dir_path (str): The path to the directory containing the files to be renamed.
+
+    Returns:
+    list[str]: A list containing the new names of all files after renaming.
+
+    Example:
+    >>> task_func('path/to/directory')
+    ['file1', 'file2', 'file3']
+    >>> task_func('another/directory/path')
+    ['anotherFile1', 'anotherFile2']
+    """
+    # List all files in the specified directory
+    file_list = glob.glob(os.path.join(dir_path, '*'))
+
+    # Define a regex pattern to match non-alphanumeric characters and spaces
+    pattern = r'[^a-zA-Z0-9]+'
+
+    # Rename each file by replacing non-alphanumeric characters and spaces with an underscore
+    new_file_names = [re.sub(pattern, '_', file).rstrip('_') for file in file_list]
+
+    return new_file_names

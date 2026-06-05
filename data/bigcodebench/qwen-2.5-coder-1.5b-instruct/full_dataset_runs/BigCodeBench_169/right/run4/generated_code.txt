@@ -1,0 +1,47 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.ndimage import gaussian_filter
+
+def task_func(image, sigma=2):
+    """
+    Apply a Gaussian filter to a given image and draw the original and filtered images side by side.
+
+    Parameters:
+    - image (numpy.ndarray): The input image to apply the filter on.
+    - sigma (float, optional): The sigma value for the Gaussian filter. Default is 2.
+
+    Returns:
+    - ax (matplotlib.axes.Axes): Axes object containing the plot. Two plots with titles 'Original' and 'Filtered'. 
+    - filtered_image (numpy.ndarray): The numpy array of pixel values for the filtered image.
+
+    Raises:
+    - ValueError: If sigma is non-positive.
+    - TypeError: If the input is not a numpy array.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - scipy.ndimage
+
+    Example:
+    >>> from skimage import data
+    >>> ax, filtered_image = task_func(data.coins())
+    >>> ax[0].get_title()  # Checking the title of the first subplot
+    'Original'
+    >>> ax[1].get_title()  # Checking the title of the second subplot
+    'Filtered'
+    """
+    if sigma <= 0:
+        raise ValueError("sigma must be positive")
+    elif not isinstance(image, np.ndarray):
+        raise TypeError("Input must be a numpy array")
+
+    filtered_image = gaussian_filter(image, sigma=sigma)
+
+    fig, axs = plt.subplots(1, 2, figsize=(12, 5))
+    axs[0].imshow(image, cmap='gray')
+    axs[0].set_title('Original')
+    axs[1].imshow(filtered_image, cmap='gray')
+    axs[1].set_title('Filtered')
+
+    return axs, filtered_image

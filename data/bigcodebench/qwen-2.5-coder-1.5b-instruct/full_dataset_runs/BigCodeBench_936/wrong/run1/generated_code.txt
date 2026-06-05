@@ -1,0 +1,61 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import string
+
+# Constants
+ALPHABET = list(string.ascii_lowercase)
+
+def task_func(word):
+    """
+    Draws a bar chart representing the positions of each letter in the given word 
+    within the English alphabet using numpy and matplotlib.pyplot.
+    
+    Parameters:
+    word (str): The word whose letters' positions will be plotted. 
+                Should contain only lowercase alphabetic characters.
+                
+    Returns:
+    Axes: A matplotlib.axes._axes.Axes object representing the generated plot.
+    
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    
+    Constants:
+    - ALPHABET: A list containing all lowercase letters of the English alphabet.
+    
+    Examples:
+    >>> ax = task_func('abc')
+    >>> ax = task_func('hello')
+    
+    Note: 
+    The function uses the index of each letter in the English alphabet to represent its position.
+    For example, 'a' will be represented by 1, 'b' by 2, and so on.
+    """
+    # Extract unique letters from the input word
+    unique_letters = sorted(set(word.lower()))
+    
+    # Create a count array for each unique letter
+    counts = np.zeros(len(ALPHABET))
+    for char in unique_letters:
+        idx = ALPHABET.index(char)
+        counts[idx] += word.count(char)
+    
+    # Find the maximum count
+    max_count = np.max(counts)
+    
+    # Normalize counts to fit within a scale from 0 to 1
+    normalized_counts = counts / max_count
+    
+    # Create a figure and axis
+    fig, ax = plt.subplots()
+    
+    # Plot the bar chart
+    bars = ax.bar(unique_letters, normalized_counts)
+    
+    # Set labels and title
+    ax.set_xlabel('Alphabet Letter')
+    ax.set_ylabel('Position')
+    ax.set_title('Bar Chart of Word Positions in Alphabet')
+    
+    return ax

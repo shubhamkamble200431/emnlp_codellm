@@ -1,0 +1,37 @@
+from datetime import datetime
+import pandas as pd
+import numpy as np
+
+
+def task_func(start_time, end_time, step, amplitude, period, seed=0):
+    """
+    Generate a time series with a given seasonality from the start UTC time to the end UTC time
+    with a given step, and plot the time series with the seasonality.
+
+    Parameters:
+    - start_time (int): The start epoch time in milliseconds.
+    = end_time (int): The end epoch time in milliseconds.
+    - step (int): The step in milliseconds between each data point. Must be at least 1.
+    - amplitude (float): The amplitude of the seasonality.
+    - period (int): The period of the seasonality in milliseconds. Must be at least 0.
+    - seed (int): Random seed for reproducibility. Defaults to 0.
+
+    Returns:
+    matplotlib.pyplot.Axes: A plot of the generated 'Time Series with Seasonality',
+              with 'Timestamp' on x-axis and 'Value' on y-axis.
+
+    Requirements:
+    - datetime.datetime
+    - pandas
+    - numpy
+
+    Example:
+    >>> ax = task_func(0, 10000, 100, 1, 1000)
+    >>> type(ax)
+    <class 'matplotlib.axes._axes.Axes'>
+    >>> ax.get_xticklabels()
+    [Text(-20.0, 0, '1970-01-01 10:00:08.000000'), Text(0.0, 0, '1970-01-01 10:00:00.000000'), Text(20.0, 0, '1970-01-01 10:00:02.000000'), Text(40.0, 0, '1970-01-01 10:00:04.000000'), Text(60.0, 0, '1970-01-01 10:00:06.000000'), Text(80.0, 0, '1970-01-01 10:00:08.000000'), Text(100.0, 0, ''), Text(120.0, 0, '')]
+    """
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np

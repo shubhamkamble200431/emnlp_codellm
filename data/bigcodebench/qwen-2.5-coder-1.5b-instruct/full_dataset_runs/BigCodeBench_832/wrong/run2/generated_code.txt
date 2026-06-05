@@ -1,0 +1,35 @@
+import pickle
+import os
+
+def task_func(filename, data):
+    """
+    Serialize an object using pickle and overwrite the specified file with this serialized data.
+    Before writing, checks if the directory exists, creating it if necessary.
+
+    Parameters:
+    - filename (str): The path of the file to be overwritten with serialized data.
+    - data (object): The object to serialize and write to the file.
+
+    Returns:
+    - bool: True if the operation is successful, False otherwise.
+
+    Requirements:
+    - pickle
+    - os
+
+    Example:
+    >>> result = task_func('data.pkl', {'key': 'value'})
+    >>> print(result)
+    True
+    """
+    # Create the directory if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    try:
+        # Serialize the data and write to the file
+        with open(filename, 'wb') as file:
+            pickle.dump(data, file)
+        return True
+    except Exception as e:
+        print(f"Error occurred while serializing or writing to file: {e}")
+        return False

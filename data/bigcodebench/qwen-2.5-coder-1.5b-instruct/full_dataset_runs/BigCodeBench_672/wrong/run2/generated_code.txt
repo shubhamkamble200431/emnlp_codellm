@@ -1,0 +1,31 @@
+import csv
+import sys
+
+def task_func(filename):
+    """
+    Read a CSV file, inverse the order of the lines and write the inverted lines back into the file. Then reset the cursor to the beginning of the file.
+
+    Parameters:
+    - filename (str): The name of the CSV file.
+
+    Returns:
+    - filename (str): The name of the CSV file.
+
+    Requirements:
+    - csv
+    - sys
+
+    Example:
+    >>> task_func('file.csv')
+    'file.csv'
+    """
+with open(filename, 'r') as f_read, open(filename, 'w') as f_write:
+    reader = csv.reader(f_read)
+    writer = csv.writer(f_write)
+    
+    # Invert the order of the lines
+    lines = list(reader)
+    lines.reverse()
+    
+    # Write the inverted lines back to the file
+    writer.writerows(lines)

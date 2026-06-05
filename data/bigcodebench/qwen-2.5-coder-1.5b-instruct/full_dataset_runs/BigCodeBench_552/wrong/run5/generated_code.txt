@@ -1,0 +1,50 @@
+import collections
+import itertools
+import matplotlib.pyplot as plt
+
+# Constants
+ITEMS = ['apple', 'banana']
+
+
+def task_func(a, b, items=ITEMS):
+    """
+    Combine two lists and record the frequency of predefined items in the combined list.
+
+    Parameters:
+    a (list): A list of items.
+    b (list): Another list of items.
+    items (list, optional): a list of predefined items
+
+    Returns:
+    matplotlib.axes.Axes: A bar chart showing the frequency of predefined items in the combined list.
+
+    Requirements:
+    - collections
+    - itertools
+    - matplotlib.pyplot
+
+    Example:
+    >>> ax = task_func(['apple', 'banana', 'cherry'], ['date', 'elderberry', 'apple', 'banana', 'cherry'])
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    # Combine the two input lists into a single list
+    combined_list = list(itertools.chain(a, b))
+
+    # Create a Counter object to count the frequency of each item
+    item_counts = Counter(combined_list)
+
+    # Filter the counts to include only the predefined items
+    filtered_counts = {item: count for item, count in item_counts.items() if item in items}
+
+    # Extract the unique items and their frequencies
+    items_sorted = sorted(filtered_counts.keys())
+    frequencies = [filtered_counts[item] for item in items_sorted]
+
+    # Plotting the results
+    fig, ax = plt.subplots()
+    ax.bar(items_sorted, frequencies)
+    ax.set_title('Frequency of Predefined Items')
+    ax.xlabel('Items')
+    ax.ylabel('Frequency')
+    return ax

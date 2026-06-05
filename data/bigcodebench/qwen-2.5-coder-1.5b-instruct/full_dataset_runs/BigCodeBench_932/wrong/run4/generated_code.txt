@@ -1,0 +1,47 @@
+from collections import Counter
+import re
+
+def task_func(word: str) -> list:
+    """
+    Finds the most common two-letter combination in a given, cleaned word (lowercased and alphabetic characters only) 
+    and returns its frequency. The search is case-insensitive and ignores non-alphabetic characters.
+    
+    Requirements:
+    - collections.Counter
+    - re
+    
+    Parameters:
+    - word (str): The input string containing the word to analyze. The word should have a length of at least 2 to form pairs.
+    
+    Returns:
+    - list: A list containing a single tuple. The tuple consists of the most frequent two-letter combination (str) 
+      and its frequency (int). Returns an empty list if the word has fewer than 2 letters, or after cleaning, 
+      the word has fewer than 2 alphabetic characters.
+    
+    Examples:
+    >>> task_func("aaBBcc")
+    [('aa', 1)]
+    >>> task_func("abc!abc")
+    [('ab', 2)]
+    >>> task_func("a")
+    []
+    >>> task_func("abcd")
+    [('ab', 1)]
+    >>> task_func("a1b2c3")
+    [('ab', 1)]
+    """
+    # Clean the input word by removing non-alphabetic characters
+    cleaned_word = re.sub(r'[^a-zA-Z]', '', word.lower())
+
+    # Check if the cleaned word has fewer than 2 alphabetic characters
+    if len(cleaned_word) < 2:
+        return []
+
+    # Create a counter to count occurrences of each pair of adjacent characters
+    pair_counter = Counter(zip(cleaned_word, cleaned_word[1:]))
+
+    # Find the pair with the highest count
+    most_common_pair = pair_counter.most_common(1)
+
+    # Return the result as a list containing a tuple of the pair and its frequency
+    return most_common_pair

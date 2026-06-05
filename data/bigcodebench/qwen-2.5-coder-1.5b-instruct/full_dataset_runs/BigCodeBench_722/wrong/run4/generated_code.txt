@@ -1,0 +1,31 @@
+import urllib.request
+import os
+import re
+
+# Constants
+TARGET_FILE = 'downloaded_file.txt'
+SEARCH_PATTERN = r'\bERROR\b'
+
+def task_func(url):
+    """
+    Download a text file from the specified url and search for occurrences of the word "ERROR."
+
+    Parameters:
+    - url (str): The url of the text file to be downloaded.
+
+    Returns:
+    - occurrences (int): The number of occurrences of the word 'ERROR'.
+
+    Requirements:
+    - urllib
+    - os
+    - re
+
+    Example:
+    >>> task_func('http://example.com/log.txt')
+    5 # Assuming there are 5 occurrences of 'ERROR' in the file
+    """
+response = urllib.request.urlopen(url)
+file_content = response.read().decode()
+occurrences = len(re.findall(SEARCH_PATTERN, file_content))
+return occurrences

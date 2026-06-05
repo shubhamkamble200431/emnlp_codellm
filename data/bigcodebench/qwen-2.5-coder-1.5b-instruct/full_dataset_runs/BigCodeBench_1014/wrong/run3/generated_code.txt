@@ -1,0 +1,58 @@
+import requests
+import pandas as pd
+
+
+def task_func(api_url):
+    """
+    Fetches data from a specified API, processes the JSON response, converts it into a pandas DataFrame,
+    and plots the data using matplotlib.
+    If the data is empty, no plot is generated. If the API request fails, it raises an HTTPError.
+    The function also checks if the provided API URL is a string.
+
+    Parameters:
+    - api_url (str): The URL of the API to fetch data from.
+
+    Returns:
+    - DataFrame: A pandas DataFrame with the parsed data from the API.
+    - Axes or None: A matplotlib Axes object representing the plot of the data, or None if the data is empty.
+
+    Raises:
+    - HTTPError: If the API request fails due to issues like network problems, invalid response, etc.
+    - TypeError: If the `api_url` is not a string.
+
+    Requirements:
+    - requests
+    - pandas
+    - matplotlib.pyplot
+
+    Example:
+    >>> df, plot = task_func("https://api.example.com/data")
+    >>> df.head()
+    >>> if plot:
+    >>>     plot.show()
+    """
+    if not isinstance(api_url, str):
+        raise TypeError("The 'api_url' parameter must be a string.")
+
+    try:
+        # Fetching data from the API
+        response = requests.get(api_url)
+        response.raise_for_status()  # Raises an exception for bad responses
+
+        # Parsing JSON response
+        data = response.json()
+
+        # Converting JSON data to DataFrame
+        df = pd.DataFrame(data)
+
+        # Checking if the DataFrame is empty
+        if df.empty:
+            return None
+
+        # Plotting the data
+        axes = df.plot(kind='line', use_index=True, figsize=(10, 6))
+
+        return df, axes
+
+    except requests.exceptions.HTTPError as e:
+        raise HTTPError(f"HTTP error occurred: {e}")

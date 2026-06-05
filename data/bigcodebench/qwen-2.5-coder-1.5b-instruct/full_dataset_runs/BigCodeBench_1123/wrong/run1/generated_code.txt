@@ -1,0 +1,62 @@
+import re
+import urllib.parse
+import ssl
+import socket
+
+def task_func(myString):
+    """
+    Extracts all URLs from a string and retrieves the domain and the expiration date of the SSL certificate 
+    for each HTTPS URL. Only HTTPS URLs are processed; HTTP URLs are ignored. The function handles SSL errors 
+    by ignoring any HTTPS URLs where the SSL certificate cannot be retrieved due to such errors, and these domains 
+    are not included in the returned dictionary.
+
+    Parameters:
+    myString (str): The string from which to extract URLs.
+    
+    Returns:
+    dict: A dictionary with domains as keys and SSL certificate expiry dates in UTC format as values. 
+          The dictionary includes only those HTTPS URLs for which the SSL certificate was successfully retrieved.
+          Domains with SSL errors are excluded.
+
+    Requirements:
+    - re
+    - urllib.parse
+    - ssl
+    - socket
+    
+    Example:
+    >>> task_func("Check these links: https://www.google.com, https://www.python.org")
+    {'www.google.com': '2023-06-15 12:00:00', 'www.python.org': '2023-07-20 12:00:00'}
+    """
+    # Regular expression pattern to match HTTPS URLs
+    url_pattern = r'https?://[^\s]+'
+    urls = re.findall(url_pattern, myString)
+
+    domain_expiration_dates = {}
+
+    for url in urls:
+        if url.startswith('https://'):
+            parsed_url = urllib.parse.urlparse(url)
+            hostname = parsed_url.netloc
+
+            try:
+                # Establishing a connection to the server without verifying SSL certificates
+                context = ssl._create_unverified_context()
+                sock = socket.create_connection((hostname, 443), timeout=5)
+
+                # Retrieving the SSL certificate
+                cert_info = sock.getpeercert()
+                exp_date_str = cert_info['notAfter']
+                exp_date = datetime.strptime(exp_date_str, '%b %d %H:%M:%S %Y %Z')
+
+                # Adding the domain and its expiration date to the dictionary
+                domain_expiration_dates[hostname] = exp_date.strftime('%Y-%m-%d %H:%M:%S UTC')
+
+                # Closing the connection
+                sock.close()
+
+            except Exception as e:
+                # Ignoring the error and excluding the domain from the result
+                print(f"Error retrieving SSL certificate for {hostname}: {e}")
+
+    return domain_expiration_dates

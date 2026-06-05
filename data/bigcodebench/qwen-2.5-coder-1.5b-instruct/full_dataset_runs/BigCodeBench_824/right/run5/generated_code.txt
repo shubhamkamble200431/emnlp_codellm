@@ -1,0 +1,27 @@
+import re
+import string
+
+# Constants
+PUNCTUATION = string.punctuation
+
+def task_func(text):
+    """
+    Count the number of words and punctuation marks in a string.
+
+    Parameters:
+    - text (str): The input string.
+
+    Returns:
+    - tuple: A tuple containing the number of words and punctuation marks.
+
+    Requirements:
+    - re
+    - string
+
+    Example:
+    >>> task_func("Hello, world! This is a test.")
+    (6, 3)
+    """
+    words = len(re.findall(r'\b\w+\b', text))
+    punctuation_marks = sum(1 for char in text if char in PUNCTUATION)
+    return words, punctuation_marks

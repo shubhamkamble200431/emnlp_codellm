@@ -1,0 +1,27 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+
+def task_func(tuples_list, columns):
+    """
+    Convert a list of tuples into a Pandas DataFrame, perform a default scaling in each column, and return the transformed DataFrame.
+    
+    Parameters:
+    - tuples_list (list): The list of tuples.
+    - columns (list): The list of column names.
+    
+    Returns:
+    - df_scaled (DataFrame): A pandas DataFrame containing the scaled versions of the original data.
+
+    Requirements:
+    - pandas
+    - sklearn
+    
+    Example:
+    >>> df = task_func([(1, 2, 3, 4), (5, 6, 7, 8), (9, 10, 11, 12)], ['A', 'B', 'C', 'D'])
+    >>> print(df)
+              A         B         C         D
+    0 -1.224745 -1.224745 -1.224745 -1.224745
+    1  0.000000  0.000000  0.000000  0.000000
+    2  1.224745  1.224745  1.224745  1.224745
+    """

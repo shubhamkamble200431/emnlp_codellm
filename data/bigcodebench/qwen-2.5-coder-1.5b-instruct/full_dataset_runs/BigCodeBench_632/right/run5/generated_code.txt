@@ -1,0 +1,39 @@
+import pandas as pd
+import time
+OUTPUT_DIR = './output'
+
+
+def task_func(df: pd.DataFrame, filename: str) -> str:
+    """
+    Write a Pandas DataFrame into a JSON Lines file and save it in a specified directory.
+
+    Parameters:
+    - df (pd.DataFrame): A Pandas DataFrame to be saved.
+    - filename (str): The filename of the JSON Lines file to be saved.
+
+    Returns:
+    - str: The full path where the JSON Lines file was saved.
+
+    Requirements:
+    - pandas
+    - time
+
+    Example:
+    >>> df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+    >>> 'data.jsonl' in task_func(df, 'data.jsonl')
+    True
+    """
+    # Define the full path where the JSON Lines file will be saved
+    output_path = os.path.join(OUTPUT_DIR, filename)
+
+    # Open the file in write mode
+    with open(output_path, 'w') as f:
+        # Iterate over each row in the DataFrame
+        for index, row in df.iterrows():
+            # Convert the row to a dictionary and convert it to a JSON string
+            json_str = row.to_dict()
+
+            # Write the JSON string to the file followed by a newline character
+            f.write(json.dumps(json_str) + '\n')
+
+    return output_path

@@ -1,0 +1,32 @@
+import pickle
+import os
+
+# Constants
+FILE_NAME = 'save.pkl'
+
+def task_func(dt):
+    """
+    Save the date time object "dt" in the pickle file "save.pkl" and then read it back for validation.
+
+    Parameters:
+    - dt (datetime): The datetime object to be saved.
+
+    Returns:
+    - loaded_dt (datetime): The loaded datetime object from 'save.pkl'.
+
+    Requirements:
+    - pickle
+    - os
+
+    Example:
+    >>> dt = datetime.now(pytz.UTC)
+    >>> loaded_dt = task_func(dt)
+    >>> assert dt == loaded_dt
+    """
+    with open(FILE_NAME, 'wb') as file:
+        pickle.dump(dt, file)
+
+    with open(FILE_NAME, 'rb') as file:
+        loaded_dt = pickle.load(file)
+
+    return loaded_dt

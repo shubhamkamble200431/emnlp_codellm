@@ -1,0 +1,68 @@
+import subprocess
+import os
+import shutil
+from glob import glob
+
+
+def task_func(src_folder, dst_folder):
+    """Compress all files in the specified source folder and move the compressed files to a destination folder.
+    This operation is executed as a background process using the 'gzip' command.
+
+    Parameters:
+    src_folder (str): The path of the source folder containing the files to be compressed.
+    dst_folder (str): The path of the destination folder where the compressed files will be moved.
+
+    Returns:
+    dict: A dictionary containing:
+        - 'success': A boolean indicating if all files were compressed and moved successfully.
+        - 'message': A descriptive message about the operation's result.
+        - 'failed_files': A list of filenames that failed to compress or move.
+
+    Requirements:
+    - subprocess
+    - os
+    - shutil
+    - glob
+    - gzip
+
+    Example:
+    >>> import tempfile
+    >>> import os
+    >>> src_folder = tempfile.mkdtemp()
+    >>> dst_folder = tempfile.mkdtemp()
+    >>> for i in range(3):
+    ...     with open(os.path.join(src_folder, f'file{i}.txt'), 'w') as f:
+    ...         _ = f.write(f'This is file {i}.')
+    >>> task_func(src_folder, dst_folder)
+    {'success': True, 'message': 'All files compressed and moved successfully.', 'failed_files': []}
+    """
+    success = True
+    failed_files = []
+
+    try:
+        # Compress each file in the source folder
+        for filename in glob(os.path.join(src_folder, '*.txt')):
+            command = ['gzip', '-k', '-f', filename]
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            # Wait for the process to complete
+            stdout, stderr = process.communicate()
+
+            # Check if the compression was successful
+            if process.returncode != 0:
+                failed_files.append(filename)
+                success = False
+                break
+
+        # Move the compressed files to the destination folder
+        for filename in glob(os.path.join(src_folder, '*.gz')):
+            dest_path = os.path.join(dst_folder, os.path.basename(filename))
+            shutil.move(filename, dest_path)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        success = False
+
+    return {
+        'success': success,
+        'message': "All files compressed and moved successfully." if

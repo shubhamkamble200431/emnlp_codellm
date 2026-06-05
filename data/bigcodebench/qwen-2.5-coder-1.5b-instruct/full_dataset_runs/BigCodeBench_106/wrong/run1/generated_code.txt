@@ -1,0 +1,55 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
+def task_func(df):
+    """
+    Performs linear regression on a DataFrame using 'date' (converted to ordinal) as the predictor for 'value'. It plots both the original and 
+    predicted values, showcasing the linear relationship.
+
+    Parameters:
+        df (DataFrame): DataFrame containing 'group', 'date' (in datetime format), and 'value' columns.
+
+    Returns:
+        tuple: Consists of the LinearRegression model, the predictions array, and the matplotlib Axes object of the plot.
+               The Axes object will have a title 'Value vs Date (Linear Regression Prediction)', 
+               x-axis labeled as 'Date (ordinal)', and y-axis labeled as 'Value'.
+
+    Raises:
+        ValueError: If 'df' is not a valid DataFrame, lacks the required columns, or if 'date' column is not in datetime format.
+
+    Requirements:
+        - pandas
+        - sklearn
+        - matplotlib
+
+    Example:
+        >>> df = pd.DataFrame({
+        ...     "group": ["A", "A", "A", "B", "B"],
+        ...     "date": pd.to_datetime(["2022-01-02", "2022-01-13", "2022-02-01", "2022-02-23", "2022-03-05"]),
+        ...     "value": [10, 20, 16, 31, 56],
+        ... })
+        >>> model, predictions, ax = task_func(df)
+        >>> plt.show()  # Displays the plot with original and predicted values
+    """
+    # Convert date column to ordinal
+    df['date'] = df['date'].toordinal()
+
+    # Ensure 'group' is a categorical column
+    df['group'] = df['group'].astype('category')
+
+    # Separate features and target variable
+    X = df[['date']]
+    y = df['value']
+
+    # Train the model
+    model = LinearRegression()
+    model.fit(X, y)
+
+    # Make predictions
+    predictions = model.predict(X)
+
+    # Plotting
+    fig, ax = plt.subplots()
+    ax.scatter(df['date'], df['value'], label='Original Data')
+    ax.plot(df['date'], predictions, color='red', label='Predicted Values')

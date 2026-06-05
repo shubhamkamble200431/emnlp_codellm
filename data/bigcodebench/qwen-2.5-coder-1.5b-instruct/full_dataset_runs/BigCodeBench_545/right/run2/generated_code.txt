@@ -1,0 +1,36 @@
+import codecs
+import random
+import struct
+
+KEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']
+
+def task_func(hex_keys=KEYS):
+    """
+    Generate a random float number from a list of hex strings and then encode the float number in utf-8.
+
+    Parameters:
+    hex_keys (list of str): A list of hexadecimal strings to choose from.
+    
+    Returns:
+    bytes: The utf-8 encoded float number.
+
+    Requirements:
+    - struct
+    - codecs
+    - random
+
+    Example:
+    >>> random.seed(42)
+    >>> task_func()
+    b'36806.078125'
+    """
+    # Randomly select a hexadecimal string
+    selected_key = random.choice(hex_keys)
+
+    # Convert the hexadecimal string to a float
+    float_value = int(selected_key, 16) / 4294967295.0
+
+    # Encode the float value as UTF-8
+    encoded_float = codecs.encode(str(float_value), 'utf-8')
+
+    return encoded_float

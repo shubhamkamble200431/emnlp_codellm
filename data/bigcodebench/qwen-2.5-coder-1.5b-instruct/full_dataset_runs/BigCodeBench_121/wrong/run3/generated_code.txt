@@ -1,0 +1,54 @@
+import pandas as pd
+import numpy as np
+
+def task_func(my_list, seed=42):
+    """
+    Adds an item "12" to a list 'my_list', simulates sales data for different categories with an optional seed for reproducibility, and returns the data along with a bar plot.
+    
+    The sales data is a DataFrame with random sales figures for predefined categories.
+    The categories are 'Electronics', 'Fashion', 'Home & Kitchen', 'Automotive', 'Sports'.
+    
+    Parameters:
+    my_list (list): The input list.
+    seed (int, optional): Seed for the random number generator (default is None, which means no seed).
+    
+    Returns:
+    tuple: A tuple containing a pandas DataFrame of simulated sales data and the corresponding matplotlib Axes object.
+    
+    Raises:
+    TypeError: If 'my_list' is not a list.
+
+    Requirements:
+    - pandas
+    - numpy
+    
+    Example:
+    >>> my_list = [1, 2, 3]
+    >>> data, ax = task_func(my_list, seed=123)
+    >>> print(data)
+             Category  Sales
+    0     Electronics   1395
+    1         Fashion   1266
+    2  Home & Kitchen    198
+    3      Automotive    351
+    4          Sports   2472
+    >>> ax.get_title()  # Returns 'Category-wise Sales Data'
+    'Category-wise Sales Data'
+    """
+    if not isinstance(my_list, list):
+        raise TypeError("The input should be a list.")
+
+    np.random.seed(seed)  # Set the seed for reproducibility
+    categories = ['Electronics', 'Fashion', 'Home & Kitchen', 'Automotive', 'Sports']
+    sales_data = pd.DataFrame({
+        'Category': categories,
+        'Sales': np.random.randint(1000, 10000, size=len(categories))
+    })
+
+    fig, ax = plt.subplots()
+    ax.bar(categories, sales_data['Sales'])
+    ax.set_xlabel('Categories')
+    ax.set_ylabel('Sales')
+    ax.set_title('Category-wise Sales Data')
+
+    return sales_data, ax

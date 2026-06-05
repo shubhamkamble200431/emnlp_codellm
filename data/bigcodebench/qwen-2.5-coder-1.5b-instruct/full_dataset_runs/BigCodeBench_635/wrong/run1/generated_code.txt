@@ -1,0 +1,69 @@
+# Importing the required libraries
+import re
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+
+
+def task_func(text, n=2):
+    """
+    Analyzes a text string, removing duplicate consecutive words and stopwords defined by nltk.corpus,
+    generates a square co-occurrence matrix of words, and plots this matrix.
+
+    Parameters:
+    - text (str): Input text to be analyzed.
+    - n (int, optional): Size of n-grams for the co-occurrence matrix. Defaults to 2.
+
+    Returns:
+    - tuple:
+        - pd.DataFrame: Square co-occurrence matrix of words.
+        - matplotlib.axes.Axes: Plot object of the co-occurrence matrix.
+
+    Requirements:
+        - re
+        - pandas
+        - matplotlib.pyplot
+        - numpy
+        - sklearn.feature_extraction.text
+        - nltk.corpus
+
+    Example:
+    >>> import matplotlib
+    >>> text = "hello hello world world"
+    >>> df, ax = task_func(text, n=2)
+    >>> df.columns.tolist()
+    ['hello world']
+    >>> df.index.tolist()
+    ['hello world']
+    >>> df.iloc[0, 0]
+    0
+    >>> isinstance(ax, matplotlib.axes.Axes)
+    True
+    """
+    # Remove duplicate consecutive words
+    tokens = re.sub(r'\b(\w+)\s+\1\b', r'\1', text.lower())
+
+    # Tokenize the text into words
+    words = tokens.split()
+
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    filtered_words = [word for word in words if word not in stop_words]
+
+    # Generate the square co-occurrence matrix
+    vectorizer = CountVectorizer(ngram_range=(n, n))
+    matrix = vectorizer.fit_transform(filtered_words).toarray()
+
+    # Create DataFrame from the matrix
+    df = pd.DataFrame(matrix, index=filtered_words, columns=filtered_words)
+
+    # Plot the co-occurrence matrix
+    fig, ax = plt.subplots(figsize=(8, 8))
+    df.plot(kind='heatmap', cmap='coolwarm')
+    ax.set_xlabel('Words')
+    ax.set_ylabel('Words')
+    plt.title(f'Co-Occurrence Matrix of Words with n={n}')
+
+    return df, ax

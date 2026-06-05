@@ -1,0 +1,58 @@
+from collections import defaultdict
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def task_func(data):
+    """
+    Calculate statistical measurements (mean and standard deviation) of the values associated with
+    each key in a list of dictionaries, and visualize mean and standard deviation with bar charts.
+
+    Parameters:
+    data (list): The list of dictionaries. Must not be empty. Each dictionary must have numeric values.
+
+    Returns:
+    tuple:
+        - dict: A dictionary with keys and their corresponding mean and standard deviation.
+        - list: A list of matplotlib Axes objects for each key's visualization.
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - collections.defaultdict
+    
+    Raises:
+    - ValueError: If the input data is empty.
+    - TypeError: If the input is not a list of dictionaries or if any value in the dictionaries is not numeric.
+    
+    Example:
+    >>> stats, axes = task_func([{'cat': 1, 'dog': 3}, {'cat' : 2, 'dog': 5}, {'cat' : 3, 'dog': 7}])
+    >>> stats
+    {'cat': {'mean': 2.0, 'std': 0.816496580927726}, 'dog': {'mean': 5.0, 'std': 1.632993161855452}}
+    >>> axes
+    [<Axes: title={'center': 'Statistics of cat'}, ylabel='Value'>, <Axes: title={'center': 'Statistics of dog'}, ylabel='Value'>]
+    """
+stats = defaultdict(list)
+axes = []
+
+for item in data:
+    if not isinstance(item, dict) or not all(isinstance(value, (int, float)) for value in item.values()):
+        raise TypeError("Input should be a list of dictionaries with numeric values.")
+    for key, value in item.items():
+        stats[key].append(value)
+
+for key, values in stats.items():
+    mean = np.mean(values)
+    std = np.std(values)
+    stats[key] = {'mean': mean, 'std': std}
+
+fig, axs = plt.subplots(nrows=len(stats), figsize=(10, len(stats) * 2))
+
+for i, (key, val) in enumerate(stats.items()):
+    ax = axs[i]
+    ax.bar(key, val['mean'], yerr=val['std'], color='b')
+    ax.set_title(f'Statistics of {key}')
+    ax.set_ylabel('Value')
+
+plt.tight_layout()
+return stats, axs

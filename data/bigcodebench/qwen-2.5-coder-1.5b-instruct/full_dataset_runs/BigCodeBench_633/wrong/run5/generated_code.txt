@@ -1,0 +1,43 @@
+import re
+from nltk.corpus import stopwords
+
+
+def task_func(text: str) -> dict:
+    """
+    Analyzes a given text string by removing duplicate words and stopwords defined by nltk.corpus ,
+    and then returns a frequency distribution of the remaining words.
+
+    Parameters:
+    - text (str): The text string to analyze.
+
+    Returns:
+    - dict: The frequency distribution of the words in the text after filtering.
+
+    Requirements:
+    - re
+    - nltk.corpus
+
+    Note:
+    - A manually defined set of common English stopwords is used for filtering.
+
+    Examples:
+    >>> task_func("The quick brown fox jumps over the lazy dog and the dog was not that quick to respond.")
+    {'quick': 1, 'brown': 1, 'fox': 1, 'jumps': 1, 'lazy': 1, 'dog': 1, 'respond': 1}
+
+    >>> task_func("hello hello world")
+    {'hello': 1, 'world': 1}
+    """
+    # Remove all non-alphanumeric characters and convert to lowercase
+    cleaned_text = re.sub(r'[^a-zA-Z0-9\s]', '', text).lower()
+
+    # Split the cleaned text into words
+    words = cleaned_text.split()
+
+    # Filter out stopwords and remove duplicates
+    filtered_words = list(set([word for word in words if word not in stopwords]))
+
+    # Create a frequency distribution using collections.Counter
+    from collections import Counter
+    freq_dist = Counter(filtered_words)
+
+    return freq_dist

@@ -1,0 +1,44 @@
+import os
+import glob
+
+def task_func(directory_path):
+    """
+    Reverse the order of words in all the filenames of a directory, where words are separated by periods.
+    
+    Parameters:
+    - directory_path (str): The path to the directory.
+
+    Returns:
+    - new_filenames (list[str]): A list of new filenames after renaming.
+
+    Requirements:
+    - os
+    - glob
+
+    Example:
+    Given filenames in directory: ["hello.world.txt", "sample.data.csv"]
+    >>> task_func('/path/to/directory')
+    ["txt.world.hello", "csv.data.sample"]
+    """
+    # List all files in the directory
+    file_list = glob.glob(os.path.join(directory_path, '*.*'))
+
+    # For each file, split it into parts based on '.'
+    renamed_files = []
+    for filename in file_list:
+        # Splitting the filename into parts
+        name_parts = filename.rsplit('.', 1)
+
+        # If there are more than one part, reverse them and join with '.'
+        if len(name_parts) > 1:
+            new_filename = '.'.join(reversed(name_parts))
+        else:
+            new_filename = filename
+
+        # Rename the file
+        os.rename(filename, new_filename)
+
+        # Append the new filename to the list
+        renamed_files.append(new_filename)
+
+    return renamed_files

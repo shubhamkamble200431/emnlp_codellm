@@ -1,0 +1,46 @@
+import os
+import glob
+from collections import Counter
+
+
+def task_func(directory, extensions=[".txt", ".docx", ".xlsx", ".csv"], keep_zero=True):
+    """
+    Traverses a given directory recursively to count files by specified extensions.
+
+    Parameters:
+    - directory (str): The path of the directory to search.
+    - extensions (list of str): File extensions to count. Defaults to ['.txt', '.docx', '.xlsx', '.csv'].
+    - keep_zero (bool): Whether to include extensions with zero counts. Defaults to True.
+
+    Returns:
+    - Counter: An object containing counts of files for each of the specified extensions.
+
+    Raises:
+    - OSError: If the specified directory does not exist.
+
+    Requirements:
+    - os
+    - glob
+    - collections
+
+    Note:
+    - This function counts files in a case-sensitive manner.
+
+    Examples:
+    >>> task_func('/path/to/documents')
+    Counter({'.txt': 5, '.docx': 2, '.xlsx': 1, '.csv': 0})
+    >>> task_func('/path/to/documents', keep_zero=False)
+    Counter({'.txt': 5, '.docx': 2, '.xlsx': 1})
+    >>> task_func('/path/to/documents', extensions=['.txt'], keep_zero=False)
+    Counter({'.txt': 5})
+    """
+    if not os.path.exists(directory):
+        raise OSError(f"Directory {directory} does not exist.")
+
+    file_counts = Counter()
+    for extension in extensions:
+        pattern = os.path.join(directory, f'*{extension}')
+        matches = glob.glob(pattern)
+        file_counts[extension] = len(matches)
+
+    return file_counts

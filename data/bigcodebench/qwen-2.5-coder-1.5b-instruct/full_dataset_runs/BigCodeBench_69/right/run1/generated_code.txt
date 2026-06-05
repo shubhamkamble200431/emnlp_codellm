@@ -1,0 +1,43 @@
+import random
+import matplotlib.pyplot as plt
+
+# Constants
+SALARY_RANGE = (20000, 100000)
+
+def task_func(dict1):
+    """
+    Analyze the salary distribution within the department with code 'EMPXX'. Generate random salaries for each employee and create a histogram.
+    - For the department of interest, randomly generate as many salaries as its number of employees.
+    - Make sure that the salary is within SALARY_RANGE.
+    - The histogram title should be 'Salary Distribution in EMPXX Department'
+    - The x-label should be set to 'Salary'
+    - The y-label should be set to 'Number of Employees'
+
+    Parameters:
+    - dict1 (dict): A dictionary with department codes as keys and number of employees as values.
+
+    Returns:
+    - matplotlib.axes._axes.Axes: Axes object representing the histogram.
+
+    Requirements:
+    - random
+    - matplotlib.pyplot
+
+    Example:
+    >>> d = {'EMPXX': 10, 'MANXX': 5, 'DEVXX': 8, 'HRXX': 7}
+    >>> ax = task_func(d)
+    >>> print(ax)
+    Axes(0.125,0.11;0.775x0.77)
+    """
+    ax = plt.subplots()[1]
+    total_salaries = []
+    for dept_code, num_employees in dict1.items():
+        if dept_code == 'EMPXX':
+            for _ in range(num_employees):
+                salary = random.randint(*SALARY_RANGE)
+                total_salaries.append(salary)
+    ax.hist(total_salaries, bins=30, edgecolor='black')
+    ax.set_title('Salary Distribution in EMPXX Department')
+    ax.set_xlabel('Salary')
+    ax.set_ylabel('Number of Employees')
+    return ax

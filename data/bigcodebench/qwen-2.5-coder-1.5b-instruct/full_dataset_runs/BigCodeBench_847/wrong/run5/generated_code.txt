@@ -1,0 +1,57 @@
+import re
+import os
+import string
+import random
+
+def task_func(input_string, directory='./text_files'):
+    """
+    Split a multi-line string into separate strings, remove special characters, and save each string as a separate text file.
+    
+    Parameters:
+    - input_string (str): The multi-line string to be split and saved.
+    - directory (str): The directory where the text files will be saved. Default is './text_files'.
+    
+    Returns:
+    - file_paths (list): A list of file paths where the text is saved.
+    
+    Requirements:
+    - re
+    - os
+    - string
+    - random 
+    
+    Example:
+    >>> task_func('line a\nfollows by line b\n...bye\n')
+    ['./text_files/12345.txt', './text_files/67890.txt', './text_files/11223.txt']
+    """
+    # Split the input string into lines
+    lines = input_string.split('\n')
+
+    # Initialize a counter for file names
+    file_number = 1
+
+    # List to store the paths of the created files
+    file_paths = []
+
+    # Iterate over the lines
+    for line in lines:
+        # Remove special characters using regex
+        cleaned_line = re.sub(r'[^\w\s]', '', line)
+
+        # Generate a filename based on the line number
+        filename = f'{file_number:05d}.txt'
+
+        # Create the full file path
+        file_path = os.path.join(directory, filename)
+
+        # Write the cleaned line to the file
+        with open(file_path, 'w') as file:
+            file.write(cleaned_line)
+
+        # Append the file path to the list
+        file_paths.append(file_path)
+
+        # Increment the file number
+        file_number += 1
+
+    return file_paths

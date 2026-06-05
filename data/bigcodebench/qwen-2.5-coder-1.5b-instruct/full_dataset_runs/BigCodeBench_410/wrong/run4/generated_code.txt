@@ -1,0 +1,45 @@
+import os
+import pandas as pd
+from datetime import datetime
+
+def task_func(excel_directory: str, file_name: str, column_name: str, start_date: str, end_date: str) -> pd.DataFrame:
+    """
+    Filters data in a specific date range from a column in an Excel file and returns a Pandas DataFrame of the filtered data.
+
+    Parameters:
+    excel_directory (str): The directory of the Excel file.
+    file_name (str): The name of the Excel file.
+    column_name (str): The name of the date column to filter.
+    start_date (str): The start date in 'yyyy-mm-dd' format.
+    end_date (str): The end date in 'yyyy-mm-dd' format.
+
+    Returns:
+    pd.DataFrame: A pandas DataFrame with the filtered data.
+
+    Raises:
+    FileNotFoundError: If the specified Excel file does not exist.
+    ValueError: If start_date or end_date are in an incorrect format, or if column_name does not exist in the DataFrame.
+
+    Example:
+    >>> data_dir, file_name = './excel_files/', 'excel_file1.xls'
+    >>> test_file = create_dummy_file(data_dir, file_name)
+    >>> filtered_df = task_func(data_dir, file_name, 'Date', '2020-01-01', '2020-12-31')
+    >>> os.remove(test_file)
+    >>> os.rmdir(data_dir)
+    >>> print(filtered_df.head())
+       Unnamed: 0       Date     Value
+    0           0 2020-01-01  0.823110
+    1           1 2020-01-02  0.026118
+    2           2 2020-01-03  0.210771
+    3           3 2020-01-04  0.618422
+    4           4 2020-01-05  0.098284
+    
+    Requirements:
+    - os
+    - pandas
+    - datetime
+    """
+    try:
+        df = pd.read_excel(os.path.join(excel_directory, file_name))
+        start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date_obj = datetime.strptime(end_date, '%Y-%m-%

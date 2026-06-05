@@ -1,0 +1,51 @@
+import json
+import re
+from collections import Counter
+
+# Constants
+REPLACE_NONE = "None"
+
+def task_func(json_str):
+    """
+    Process a JSON string by:
+    1. Removing None values.
+    2. Counting the frequency of each unique value.
+    3. Replacing all email addresses with the placeholder "None".
+    
+    Parameters:
+    json_str (str): The JSON string to be processed.
+    
+    Returns:
+    dict: A dictionary containing:
+        - "data": Processed JSON data.
+        - "value_counts": A Counter object with the frequency of each unique value.
+    
+    Requirements:
+    - json
+    - re
+    - collections.Counter
+    
+    Example:
+    >>> json_str = '{"name": "John", "age": null, "email": "john@example.com"}'
+    >>> task_func(json_str)
+    {'data': {'name': 'John', 'email': 'None'}, 'value_counts': Counter({'John': 1, 'None': 1})}
+    """
+    try:
+        # Parse the JSON string into a dictionary
+        data = json.loads(json_str)
+
+        # Remove None values from the dictionary
+        cleaned_data = {key: value for key, value in data.items() if value is not None}
+
+        # Replace email addresses with the placeholder "None"
+        cleaned_data = {key: replace_email(value) if isinstance(value, str) else value for key, value in cleaned_data.items()}
+
+        # Count the frequency of each unique value
+        value_counts = Counter(cleaned_data.values())
+
+        return {
+            'data': cleaned_data,
+            'value_counts': value_counts
+        }
+    except json.JSONDecodeError:
+        return {"error": "Invalid JSON format"}

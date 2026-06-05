@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+
+
+CATEGORIES = ["Electronics", "Clothing", "Home Decor", "Automotive", "Books"]
+
+
+def task_func(s1, s2):
+    """
+    Compares and visualizes the sales data of two stores for predefined categories.
+    The function generates a bar plot for categories where both stores have sales exceeding a specified threshold.
+    The Euclidean distance between the two series is also computed.
+    
+    Parameters:
+    s1 (pd.Series): Sales data for store 1, indexed by categories.
+    s2 (pd.Series): Sales data for store 2, indexed by categories.
+
+    Returns:
+    matplotlib.axes.Axes or None: A bar plot for categories where both stores' sales exceed the threshold of 200,
+    or None if no such categories exist.
+    float: The Euclidean distance between the two series or 0.0 if no categories meet the threshold.
+
+    Requirements:
+    - pandas
+    - numpy
+
+    Example:
+    >>> np.random.seed(seed=32)
+    >>> s1 = pd.Series(np.random.randint(100, 500, size=5), index=CATEGORIES)
+    >>> s2 = pd.Series(np.random.randint(150, 600, size=5), index=CATEGORIES)
+    >>> ax, edit_distance = task_func(s1, s2)
+    >>> ax.get_title()
+    'Sales Comparison Above Threshold in Categories'
+    >>> edit_distance
+    387.5590277622236
+    """
+    # Define the threshold
+    threshold = 200
+
+    # Find common categories with sales above the threshold
+    common_categories = [cat for cat in CATEGORIES if s1[cat] > threshold and s2[cat] > threshold]
+
+    # If there are no common categories, return None
+    if not common_categories:
+        return None
+
+    # Filter the series to include only these categories
+    s1_filtered = s1[common_categories]
+    s2_filtered = s2[common_categories]
+
+    # Compute the Euclidean distance
+    edit_distance = euclidean(s1_filtered.values, s2_filtered.values)
+
+    # Create a bar plot for the categories with high sales
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(common_categories, s1

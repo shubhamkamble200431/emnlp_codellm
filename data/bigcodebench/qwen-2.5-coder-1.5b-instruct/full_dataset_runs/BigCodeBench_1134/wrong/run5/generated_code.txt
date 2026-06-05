@@ -1,0 +1,45 @@
+import os
+import glob
+import hashlib
+
+def task_func(source_dir, target_dir, prefix='#Hash: '):
+    """
+    Computes the MD5 hash of each file's content in the specified `source_dir`, prepends the hash along with a prefix 
+    to the original content, and writes the modified content to new files in the `target_dir`. 
+    Existing files with the same name in `target_dir` are overwritten.
+
+    Parameters:
+    - source_dir (str): The directory containing the files to be processed. Must exist.
+    - target_dir (str): The directory where the processed files will be written. Created if it does not exist.
+    - prefix (str): The prefix to prepend before the hash in each new file. Default is '#Hash: '.
+
+    Returns:
+    - list: A list of paths to the newly created files in the `target_dir`, each with the hash prepended.
+
+    Requirements:
+    - os
+    - glob
+    - hashlib
+
+    Raises:
+    FileNotFoundError if the source directory does not exist.
+
+    Example:
+    >>> task_func(source_dir='samples', target_dir='hashed_samples', prefix='#MD5: ')
+    ['hashed_samples/file1.txt', 'hashed_samples/file2.txt']
+    """
+os.makedirs(target_dir, exist_ok=True)
+file_hashes = []
+
+for file_path in glob.glob(os.path.join(source_dir, '*.txt')):
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
+        file_hash = hashlib.md5(file_content).hexdigest()
+        new_file_name = os.path.splitext(os.path.basename(file_path))[0] + '.txt'
+        new_file_path = os.path.join(target_dir, new_file_name)
+        with open(new_file_path, 'wb') as f_new:
+            f_new.write(prefix + file_hash + '\n')
+            f_new.write(file_content)
+    file_hashes.append(new_file_path)
+
+return file_hashes

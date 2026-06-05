@@ -1,0 +1,37 @@
+from dateutil.parser import parse
+from datetime import timedelta
+
+
+def task_func(date_str):
+    """
+    Get the next business day (Mon-Fri) after a certain date string. Implemented by dateutil.parser and datetime.
+
+    Parameters:
+    date_str (str): The date string in "yyyy-mm-dd" format.
+
+    Returns:
+    datetime: The datetime object of the next business day.
+
+    Requirements:
+    - datetime
+    - dateutil.parser
+
+    Example:
+    >>> task_func('2022-10-22')
+    datetime.datetime(2022, 10, 24, 0, 0)
+    >>> task_func('2022-10-28')
+    datetime.datetime(2022, 10, 31, 0, 0)
+    """
+    dt = parse(date_str)
+    # Calculate the difference between today and the given date
+    diff = dt - datetime.now()
+    if diff.days > 0:
+        # If there is more than one day left, find the next business day
+        while diff.days > 0:
+            dt += timedelta(days=1)
+            if dt.weekday() < 5:  # Monday (0), Tuesday (1), Wednesday (2), Thursday (3), Friday (4)
+                break
+        return dt
+    else:
+        # If the current date is already a business day, return it
+        return dt

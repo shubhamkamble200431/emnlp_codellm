@@ -1,0 +1,45 @@
+import os
+import shutil
+import csv
+
+def task_func(target_value='332', csv_dir='./csv_files/', processed_dir='./processed_files/', simulate=False):
+    """
+    Scans a directory for CSV files, finds for each file the index of the row with the first cell equal to the target value,
+    and optionally moves the processed files to another directory.
+    
+    Parameters:
+    - target_value (str): The value to search for in the first cell of each row. Defaults to '332'.
+    - csv_dir (str): The directory to scan for CSV files. Defaults to './csv_files/'.
+    - processed_dir (str): The directory to move processed files to. Defaults to './processed_files/'.
+    - simulate (bool): If True, the function will simulate file moving without performing the action. Defaults to False.
+    
+    Returns:
+    - result (dict): A dictionary with file names as keys and the row indices as values where the target value was found.
+    
+    Requirements:
+    - os
+    - shutil
+    - csv
+    
+    Example:
+    >>> task_func(target_value='332', csv_dir='./csv_files/', processed_dir='./processed_files/', simulate=True)
+    {'file1.csv': 10, 'file2.csv': 15}
+    
+    The above example assumes that '332' is found at index 10 in 'file1.csv' and index 15 in 'file2.csv' and that the 
+    file moving is simulated.
+    """
+    result = {}
+    for file_name in os.listdir(csv_dir):
+        if file_name.endswith('.csv'):
+            full_path = os.path.join(csv_dir, file_name)
+            df = pd.read_csv(full_path)
+            try:
+                # Find the index of the first occurrence of the target value in the first column
+                index = df[df.iloc[:, 0] == target_value].index[0]
+                result[file_name] = index
+                if not simulate:
+                    processed_file_path = os.path.join(processed_dir, file_name)
+                    shutil.move(full_path, processed_file_path)
+            except (IndexError, ValueError):
+                continue
+    return result

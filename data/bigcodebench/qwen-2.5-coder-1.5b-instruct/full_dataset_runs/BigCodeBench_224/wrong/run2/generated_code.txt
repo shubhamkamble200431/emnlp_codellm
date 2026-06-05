@@ -1,0 +1,53 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.fft import fft
+
+
+def task_func(range_start=-10, range_end=10, step=0.1):
+    """
+    Create a generator object that generates a sequence of tuples. Each tuple contains x, sin(x), and cos(x) 
+    values. The function then plots the sine and cosine functions using these values along with the absolute 
+    difference between the two functions and returns the plot. Finally, it returns the magnitude of the mean 
+    and median of the 1D fft of the absolute difference between the two functions.
+
+    Parameters:
+    - range_start: The starting value of the x range.
+    - range_end: The ending value of the x range.
+    - step: The step size for the x values.
+
+    Returns:
+    tuple: A tuple containing two items:
+        - generator: A generator object producing tuples in the format (x, sin(x), cos(x), abs(sin(x) - cos(x)).
+        - ax: An Axes object representing the plot.
+        - float: The abs of the mean of the 1D fft of the absolute difference between sin(x) and cos(x).
+        - float: The abs of the median of the 1D fft of the absolute difference between sin(x) and cos(x).
+
+    Requirements:
+    - numpy
+    - matplotlib.pyplot
+    - scipy.fft
+
+    Example:
+    >>> data, ax, fft_mean, fft_median = task_func()
+    >>> print(next(data))
+    (-10.0, 0.5440211108893698, -0.8390715290764524, 1.383092639965822)
+    """
+    def gen_data():
+        for x in np.arange(range_start, range_end + step, step):
+            yield x, np.sin(x), np.cos(x)
+
+    data_gen = gen_data()
+
+    fig, ax = plt.subplots()
+    ax.plot([x[0] for x in data_gen], [x[1] for x in data_gen], label='sin(x)')
+    ax.plot([x[0] for x in data_gen], [x[2] for x in data_gen], label='cos(x)')
+    ax.plot([x[0] for x in data_gen], [abs(x[1] - x[2]) for x in data_gen], label='|sin(x) - cos(x)|')
+    ax.set_xlabel('x')
+    ax.set_ylabel('Value')
+    ax.legend()
+
+    fft_result = fft(np.abs([x[1] - x[2] for x in data_gen]))
+    fft_mean = abs(fft_result.mean())
+    fft_median = abs(fft_result.median())
+
+    return data_gen, ax, fft_mean, fft_median

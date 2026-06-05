@@ -1,0 +1,44 @@
+import struct
+import io
+import gzip
+
+def task_func(newArray):
+    """
+    Compresses a given NumPy array using gzip compression and returns the compressed data.
+
+    This method takes a NumPy array as input, compresses it using gzip, and returns the compressed data as bytes.
+    It is useful for efficiently handling large datasets, especially when saving space is a concern.
+    The function utilizes the struct module to pack the array elements into bytes before compressing them.
+    The compressed data can then be used for storage or transmission purposes where space efficiency is crucial.
+
+    Parameters:
+        newArray (numpy.array): The NumPy array to be compressed. The array should contain numerical data.
+
+    Returns:
+        bytes: The gzipped data of the NumPy array.
+
+    Requirements:
+    - struct
+    - io
+    - gzip
+
+    Examples:
+    >>> isinstance(task_func(np.array([1, 2, 3])), bytes)
+    True
+    >>> len(task_func(np.array([1, 2, 3, 4, 5]))) > 0
+    True
+    """
+    # Pack the array elements into bytes
+    packed_array = newArray.tobytes()
+    
+    # Create a memory file to write to
+    with io.BytesIO() as buffer:
+        # Gzip the packed array
+        gzip_file = gzip.GzipFile(fileobj=buffer)
+        gzip_file.write(packed_array)
+        gzip_file.close()
+        
+        # Get the compressed data from the buffer
+        compressed_data = buffer.getvalue()
+        
+    return compressed_data
