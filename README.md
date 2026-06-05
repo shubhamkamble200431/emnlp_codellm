@@ -13,8 +13,8 @@ emnlp_codellm/
 │   │   ├── qwen-2.5-coder-1.5b-instruct/full_dataset_runs/
 │   │   └── qwen-2.5-coder-7b-instruct/full_dataset_runs/
 │   └── bigcodebench/
-│       ├── qwen-coder-1.5b-instruct/full_dataset_runs/   
-│       └── qwen-coder-7b-instruct/full_dataset_runs/
+│       ├── qwen-2.5-coder-1.5b-instruct/full_dataset_runs/   
+│       └── qwen-2.5-coder-7b-instruct/full_dataset_runs/
 ├── scripts/
 │   ├── pipeline_humanevalplus.py
 │   ├── pipeline_mbppplus.py
